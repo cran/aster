@@ -1,0 +1,242 @@
+
+R : Copyright 2004, The R Foundation for Statistical Computing
+Version 2.0.1  (2004-11-15), ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for a HTML browser interface to help.
+Type 'q()' to quit R.
+
+> 
+>  library(aster)
+> 
+>  set.seed(42)
+>  nind <- 25
+>  nnode <- 5
+>  ncoef <- nnode + 1
+> 
+>  famnam <- families()
+>  fam <- c(1, 1, 2, 3, 3)
+>  print(famnam[fam])
+[1] "bernoulli"        "bernoulli"        "poisson"          "non.zero.poisson"
+[5] "non.zero.poisson"
+> 
+>  pred <- c(0, 1, 1, 2, 3)
+>  print(pred)
+[1] 0 1 1 2 3
+> 
+>  modmat <- array(0, c(nind, nnode, ncoef))
+>  modmat[ , , 1] <- 1
+>  for (i in 2:nnode)
++      modmat[ , i, i] <- 1
+>  modmat[ , , ncoef] <- rnorm(nind * nnode)
+> 
+>  beta <- rnorm(ncoef) / 10
+> 
+>  theta <- matrix(modmat, ncol = ncoef) %*% beta
+>  theta <- matrix(theta, ncol = nnode)
+> 
+>  root <- sample(1:3, nind * nnode, replace = TRUE)
+>  root <- matrix(root, nind, nnode)
+> 
+>  x <- raster(theta, pred, fam, root)
+>  
+>  out <- mlogl(beta, pred, fam, x, root, modmat, deriv = 2,
++      type = "conditional")
+>  print(out)
+$value
+[1] 72.7496
+
+$gradient
+[1] 13.2401871  2.5558673  5.7239436  1.3888943  0.5841023 -3.5043758
+
+$hessian
+          [,1]     [,2]      [,3]     [,4]      [,5]      [,6]
+[1,] 42.563189 4.988922 15.723944 3.795239  6.326043  2.068417
+[2,]  4.988922 4.988922  0.000000 0.000000  0.000000  1.347561
+[3,] 15.723944 0.000000 15.723944 0.000000  0.000000  1.670238
+[4,]  3.795239 0.000000  0.000000 3.795239  0.000000  0.175050
+[5,]  6.326043 0.000000  0.000000 0.000000  6.326043 -0.973528
+[6,]  2.068417 1.347561  1.670238 0.175050 -0.973528 43.793613
+
+> 
+>  my.value <- 0
+>  for (j in 1:nnode) {
++      k <- pred[j]
++      if (k > 0)
++          xpred <- x[ , k]
++      else
++          xpred <- root[ , j]
++      for (i in 1:nind)
++          my.value <- my.value -
++              sum(x[i, j] * theta[i, j] -
++              xpred[i] * famfun(fam[j], 0, theta[i, j]))
++  }
+>  all.equal(out$value, my.value)
+[1] TRUE
+> 
+>  my.grad <- NaN * out$gradient
+>  epsilon <- 1e-9
+>  for (i in 1:ncoef) {
++      beta.eps <- beta
++      beta.eps[i] <- beta[i] + epsilon
++      out.eps <- mlogl(beta.eps, pred, fam, x, root, modmat, deriv = 0,
++          type = "conditional")
++      my.grad[i] <- (out.eps$value - out$value) / epsilon
++  }
+> 
+>  all.equal(out$gradient, my.grad, tolerance = sqrt(epsilon))
+[1] TRUE
+> 
+>  my.hess <- matrix(NaN, ncoef, ncoef)
+>  for (i in 1:ncoef) {
++      beta.eps <- beta
++      beta.eps[i] <- beta[i] + epsilon
++      out.eps <- mlogl(beta.eps, pred, fam, x, root, modmat, deriv = 1,
++          type = "conditional")
++      my.hess[ , i] <- (out.eps$gradient - out$gradient) / epsilon
++  }
+> 
+>  all.equal(out$hessian, my.hess, tolerance = sqrt(epsilon))
+[1] TRUE
+> 
+>  ##########
+> 
+>  objfun <- function(beta) {
++      out <- mlogl(beta, pred, fam, x, root, modmat, deriv = 1,
++          type = "conditional")
++      result <- out$value
++      attr(result, "gradient") <- out$gradient
++      return(result)
++  }
+>  out <- nlm(objfun, beta, fscale = nind)
+>  print(out)
+$minimum
+[1] 69.86231
+
+$estimate
+[1] -0.3017596 -0.3692058 -0.4160889 -0.3519324  0.1824371  0.1868149
+
+$gradient
+[1]  1.246472e-05 -1.209243e-05  3.638432e-06  8.298376e-06 -7.504734e-06
+[6]  5.915216e-07
+
+$code
+[1] 1
+
+$iterations
+[1] 22
+
+> 
+>  ##########
+> 
+>  objfun <- function(beta) {
++      out <- mlogl(beta, pred, fam, x, root, modmat, deriv = 2,
++          type = "conditional")
++      result <- out$value
++      attr(result, "gradient") <- out$gradient
++      attr(result, "hessian") <- out$hessian
++      return(result)
++  }
+>  out <- nlm(objfun, beta, fscale = nind)
+>  print(out)
+$minimum
+[1] 69.86231
+
+$estimate
+[1] -0.3017688 -0.3691924 -0.4160757 -0.3519262  0.1824507  0.1868138
+
+$gradient
+[1] -1.704300e-05  5.650300e-06  4.206927e-05  1.844440e-06  1.731154e-05
+[6] -2.904894e-05
+
+$code
+[1] 1
+
+$iterations
+[1] 18
+
+> 
+>  ########## expected Fisher information ##########
+> 
+>  fout <- .C("aster_fish_cond",
++      nind = as.integer(nind),
++      nnode = as.integer(nnode),
++      ncoef = as.integer(ncoef),
++      pred = as.integer(pred),
++      fam = as.integer(fam),
++      beta = as.double(out$estimate),
++      root = as.double(root),
++      x = as.double(x),
++      modmat = as.double(modmat),
++      fish = matrix(as.double(0), ncoef, ncoef))
+> 
+>  mout <- mlogl(out$estimate, pred, fam, x, root, modmat, deriv = 2,
++      type = "conditional")
+> 
+>  theta <- .C("aster_mat_vec_mult",
++     nrow = as.integer(nind * nnode),
++     ncol = as.integer(ncoef),
++     a = as.double(modmat),
++     b = as.double(out$estimate),
++     c = matrix(as.double(0), nind, nnode))$c
+>  ctau <- .C("aster_theta2ctau",
++      nind = as.integer(nind),
++      nnode = as.integer(nnode),
++      pred = as.integer(pred),
++      fam = as.integer(fam),
++      theta = as.double(theta),
++      ctau = matrix(as.double(0), nind, nnode))$ctau
+>  tau <- .C("aster_ctau2tau",
++      nind = as.integer(nind),
++      nnode = as.integer(nnode),
++      pred = as.integer(pred),
++      fam = as.integer(fam),
++      x = as.double(x),
++      root = as.double(root),
++      ctau = as.double(ctau),
++      tau = matrix(as.double(0), nind, nnode))$tau
+>  psiDoublePrime <- .C("aster_theta2whatsis",
++      nind = as.integer(nind),
++      nnode = as.integer(nnode),
++      pred = as.integer(pred),
++      fam = as.integer(fam),
++      deriv = as.integer(2),
++      theta = as.double(theta),
++      result = matrix(as.double(0), nind, nnode))$result
+> 
+>  my.hessian <- theta * NaN
+>  my.fish <- theta * NaN
+> 
+>  for (i in 1:nind) {
++      for (j in 1:nnode) {
++          k <- pred[j]
++          if (k > 0) {
++              my.hessian[i, j] <- x[i, k] * psiDoublePrime[i, j]
++              my.fish[i, j] <- tau[i, k] * psiDoublePrime[i, j]
++          } else {
++              my.hessian[i, j] <- root[i, j] * psiDoublePrime[i, j]
++              my.fish[i, j] <- root[i, j] * psiDoublePrime[i, j]
++          }
++      }
++  }
+> 
+>  modmat <- matrix(as.double(modmat), ncol = ncoef)
+>  my.hessian <- as.numeric(my.hessian)
+>  my.fish <- as.numeric(my.fish)
+>  my.hessian <- t(modmat) %*% diag(my.hessian) %*% modmat
+>  my.fish <- t(modmat) %*% diag(my.fish) %*% modmat
+> 
+>  all.equal(my.hessian, mout$hessian)
+[1] TRUE
+>  all.equal(my.fish, fout$fish)
+[1] TRUE
+> 
+> 

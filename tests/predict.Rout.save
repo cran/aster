@@ -1,0 +1,585 @@
+
+R : Copyright 2004, The R Foundation for Statistical Computing
+Version 2.0.1  (2004-11-15), ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for a HTML browser interface to help.
+Type 'q()' to quit R.
+
+> 
+>  library(aster)
+> 
+>  set.seed(42)
+> 
+>  nind <- 25
+> 
+>  vars <- c("l2", "l3", "f2", "f3", "h2", "h3")
+>  pred <- c(0, 1, 1, 2, 3, 4)
+>  fam <- c(1, 1, 1, 1, 3, 3)
+>  length(pred) == length(fam)
+[1] TRUE
+>  nnode <- length(pred)
+> 
+>  famnam <- families()
+>  print(famnam[fam])
+[1] "bernoulli"        "bernoulli"        "bernoulli"        "bernoulli"       
+[5] "non.zero.poisson" "non.zero.poisson"
+> 
+>  theta <- matrix(0, nind, nnode)
+>  root <- matrix(1, nind, nnode)
+>  x <- raster(theta, pred, fam, root)
+>  dimnames(x) <- list(NULL, vars)
+> 
+>  data <- as.data.frame(x)
+>  site <- factor(sample(LETTERS[1:4], nind, replace = TRUE))
+>  foo <- rnorm(nind)
+>  data <- data.frame(x, site = site, foo = foo, root = 1)
+> 
+>  redata <- reshape(data, varying = list(vars),
++      direction = "long", timevar = "varb", times = as.factor(vars),
++      v.names = "resp")
+> 
+>  out <- aster(resp ~ foo + site + varb, pred, fam, varb, id, root,
++      data = redata)
+>  summary(out, show.graph = TRUE)
+
+Call:
+aster.formula(formula = resp ~ foo + site + varb, pred = pred, 
+    fam = fam, varvar = varb, idvar = id, root = root, data = redata)
+
+
+Graphical Model:
+ variable predecessor family          
+ l2       root        bernoulli       
+ l3       l2          bernoulli       
+ f2       l2          bernoulli       
+ f3       l3          bernoulli       
+ h2       f2          non.zero.poisson
+ h3       f3          non.zero.poisson
+
+            Estimate Std. Error z value Pr(>|z|)
+(Intercept)  1.10940    0.99528   1.115    0.265
+foo          0.07857    0.10960   0.717    0.473
+siteB        0.14573    0.26619   0.547    0.584
+siteC       -0.25967    0.24569  -1.057    0.291
+siteD       -0.35936    0.35182  -1.021    0.307
+varbf3      -0.96858    1.43012  -0.677    0.498
+varbh2      -1.95067    1.60196  -1.218    0.223
+varbh3      -0.99839    1.09216  -0.914    0.361
+varbl2      -1.87307    1.24891  -1.500    0.134
+varbl3      -1.80743    1.19680  -1.510    0.131
+> 
+>  ##### redo with aster.default and predict.aster
+> 
+>  out2 <- aster(x, root, pred, fam, modmat = out$modmat)
+>  summary(out2)
+
+Call:
+NULL
+
+            Estimate Std. Error z value Pr(>|z|)
+(Intercept)  1.10940    0.99528   1.115    0.265
+foo          0.07857    0.10960   0.717    0.473
+siteB        0.14573    0.26619   0.547    0.584
+siteC       -0.25967    0.24569  -1.057    0.291
+siteD       -0.35936    0.35182  -1.021    0.307
+varbf3      -0.96858    1.43012  -0.677    0.498
+varbh2      -1.95067    1.60196  -1.218    0.223
+varbh3      -0.99839    1.09216  -0.914    0.361
+varbl2      -1.87307    1.24891  -1.500    0.134
+varbl3      -1.80743    1.19680  -1.510    0.131
+> 
+>  foo <- match(sort(unique(site)), site)
+>  modmat.pred <- out$modmat[foo, , ]
+> 
+>  predict(out2, modmat = modmat.pred, parm.type = "canon")
+ [1] -0.7168207 -0.4974769 -1.0055270 -1.1072011 -0.6511814 -0.4318376
+ [7] -0.9398877 -1.0415618  1.1562501  1.3755940  0.8675439  0.7658698
+[13]  0.1876725  0.4070163 -0.1010338 -0.2027079 -0.7944243 -0.5750805
+[19] -1.0831305 -1.1848047  0.1578649  0.3772087 -0.1308413 -0.2325154
+> 
+>  ##### case 1: model = "unco", obj = "unco", parm = "cano" ####
+> 
+>  fred <- predict(out2, modmat = modmat.pred, parm.type = "canon",
++      se.fit = TRUE)
+> 
+>  all.equal(fred$se.fit, sqrt(diag(fred$gradient %*% solve(out2$fisher) %*%
++      t(fred$gradient))))
+[1] TRUE
+> 
+>  sally <- matrix(modmat.pred, ncol = length(out2$coef))
+> 
+>  all.equal(fred$gradient, sally)
+[1] TRUE
+> 
+>  all.equal(fred$fit, as.numeric(sally %*% out$coef))
+[1] TRUE
+> 
+>  ##### case 1a: same but with amat
+> 
+>  node.names <- dimnames(out$modmat)[[2]]
+>  site.names <- levels(site)
+>  amat <- array(0, c(dim(modmat.pred)[1:2], length(site.names)))
+>  for (i in seq(along = site.names))
++      amat[i, grep("h", node.names), i] <- 1
+> 
+>  alfie <- predict(out2, modmat = modmat.pred, parm.type = "canon",
++      se.fit = TRUE, amat = amat)
+> 
+>  amatmat <- matrix(amat, ncol = dim(amat)[3])
+> 
+>  all.equal(alfie$fit, as.numeric(t(amatmat) %*% fred$fit))
+[1] TRUE
+> 
+>  all.equal(alfie$gradient, t(amatmat) %*% fred$gradient)
+[1] TRUE
+> 
+>  all.equal(alfie$se.fit, sqrt(diag(alfie$gradient %*% solve(out2$fisher) %*%
++      t(alfie$gradient))))
+[1] TRUE
+> 
+>  ##### case 2: model = "cond", obj = "cond", parm = "cano" ####
+>  ##### no test -- same code as case 1
+> 
+>  ##### case 3: model = "unco", obj = "cond", parm = "cano" ####
+> 
+>  out3 <- aster(x, root, pred, fam, modmat = out$modmat, type = "cond")
+>  summary(out3)
+
+Call:
+NULL
+
+              Estimate Std. Error   z value Pr(>|z|)
+(Intercept)  8.173e-01  6.865e-01     1.191    0.234
+foo          1.167e-01  2.630e-01     0.444    0.657
+siteB       -2.681e-01  6.180e-01    -0.434    0.664
+siteC       -9.232e-01  5.999e-01    -1.539    0.124
+siteD       -1.326e+00  8.440e-01    -1.571    0.116
+varbf3       4.307e-01  9.032e-01     0.477    0.634
+varbh2      -1.350e+00  9.006e-01    -1.499    0.134
+varbh3      -2.720e-01  7.136e-01    -0.381    0.703
+varbl2       5.227e-01  6.754e-01     0.774    0.439
+varbl3      -1.028e-12  7.319e-01 -1.41e-12    1.000
+> 
+>  fred <- predict(out3, modmat = modmat.pred, parm.type = "canon",
++      se.fit = TRUE)
+> 
+>  nind <- dim(modmat.pred)[1]
+>  nnode <- dim(modmat.pred)[2]
+>  ncoef <- dim(modmat.pred)[3]
+> 
+>  beta.hat <- out3$coef
+>  theta.hat <- as.numeric(sally %*% beta.hat)
+>  phi.hat <- .C("aster_theta2phi",
++      nind = as.integer(nind),
++      nnode = as.integer(nnode),
++      pred = as.integer(pred),
++      fam = as.integer(fam),
++      theta = as.double(theta.hat),
++      phi = double(nind * nnode))$phi
+> 
+>  all.equal(fred$fit, phi.hat)
+[1] TRUE
+> 
+>  all.equal(fred$se.fit, sqrt(diag(fred$gradient %*% solve(out3$fisher) %*%
++      t(fred$gradient))))
+[1] TRUE
+> 
+>  my.gradient <- 0 * fred$gradient
+>  epsilon <- 1e-9
+>  for (k in 1:ncoef) {
++      beta.epsilon <- beta.hat
++      beta.epsilon[k] <- beta.hat[k] + epsilon
++      theta.epsilon <- as.numeric(sally %*% beta.epsilon)
++      phi.epsilon <- .C("aster_theta2phi",
++          nind = as.integer(nind),
++          nnode = as.integer(nnode),
++          pred = as.integer(pred),
++          fam = as.integer(fam),
++          theta = as.double(theta.epsilon),
++          phi = double(nind * nnode))$phi
++      my.gradient[ , k] <- (phi.epsilon - phi.hat) / epsilon
++  }
+> 
+>  all.equal(fred$gradient, my.gradient, tolerance = sqrt(epsilon))
+[1] TRUE
+> 
+>  alfie <- predict(out3, modmat = modmat.pred, parm.type = "canon",
++      se.fit = TRUE, amat = amat)
+> 
+>  all.equal(alfie$fit, as.numeric(t(amatmat) %*% fred$fit))
+[1] TRUE
+> 
+>  all.equal(alfie$gradient, t(amatmat) %*% fred$gradient)
+[1] TRUE
+> 
+>  all.equal(alfie$se.fit, sqrt(diag(alfie$gradient %*% solve(out3$fisher) %*%
++      t(alfie$gradient))))
+[1] TRUE
+> 
+>  ##### case 4: model = "cond", obj = "unco", parm = "cano" ####
+> 
+>  fred <- predict(out2, modmat = modmat.pred, parm.type = "canon",
++      model.type = "cond", se.fit = TRUE)
+> 
+>  beta.hat <- out2$coef
+>  phi.hat <- as.numeric(sally %*% beta.hat)
+>  theta.hat <- .C("aster_phi2theta",
++      nind = as.integer(nind),
++      nnode = as.integer(nnode),
++      pred = as.integer(pred),
++      fam = as.integer(fam),
++      phi = as.double(phi.hat),
++      theta = double(nind * nnode))$theta
+> 
+>  all.equal(fred$fit, theta.hat)
+[1] TRUE
+> 
+>  all.equal(fred$se.fit, sqrt(diag(fred$gradient %*% solve(out2$fisher) %*%
++      t(fred$gradient))))
+[1] TRUE
+> 
+>  my.gradient <- 0 * fred$gradient
+>  epsilon <- 1e-9
+>  for (k in 1:ncoef) {
++      beta.epsilon <- beta.hat
++      beta.epsilon[k] <- beta.hat[k] + epsilon
++      phi.epsilon <- as.numeric(sally %*% beta.epsilon)
++      theta.epsilon <- .C("aster_phi2theta",
++          nind = as.integer(nind),
++          nnode = as.integer(nnode),
++          pred = as.integer(pred),
++          fam = as.integer(fam),
++          phi = as.double(phi.epsilon),
++          theta = double(nind * nnode))$theta
++      my.gradient[ , k] <- (theta.epsilon - theta.hat) / epsilon
++  }
+> 
+>  all.equal(fred$gradient, my.gradient, tolerance = sqrt(epsilon))
+[1] TRUE
+> 
+>  alfie <- predict(out2, modmat = modmat.pred, parm.type = "canon",
++      model.type = "cond", se.fit = TRUE, amat = amat)
+> 
+>  all.equal(alfie$fit, as.numeric(t(amatmat) %*% fred$fit))
+[1] TRUE
+> 
+>  all.equal(alfie$gradient, t(amatmat) %*% fred$gradient)
+[1] TRUE
+> 
+>  all.equal(alfie$se.fit, sqrt(diag(alfie$gradient %*% solve(out2$fisher) %*%
++      t(alfie$gradient))))
+[1] TRUE
+> 
+>  ##### case 5: model = "cond", obj = "cond", parm = "mean" ####
+> 
+>  root.pred <- matrix(1, nind, nnode)
+> 
+>  fred <- predict(out3, modmat = modmat.pred, parm.type = "mean",
++      model.type = "cond", root = root.pred, x = root.pred)
+> 
+>  beta.hat <- out3$coef
+>  theta.hat <- as.numeric(sally %*% beta.hat)
+>  xi.hat <- .C("aster_theta2ctau",
++      nind = as.integer(nind),
++      nnode = as.integer(nnode),
++      pred = as.integer(pred),
++      fam = as.integer(fam),
++      theta = as.double(theta.hat),
++      ctau = double(nind * nnode))$ctau
+> 
+>  all.equal(fred, xi.hat)
+[1] TRUE
+> 
+>  fred <- predict(out3, modmat = modmat.pred, parm.type = "mean",
++      model.type = "cond", root = root.pred, x = root.pred, se.fit = TRUE)
+> 
+>  all.equal(fred$fit, xi.hat)
+[1] TRUE
+> 
+>  all.equal(fred$se.fit, sqrt(diag(fred$gradient %*% solve(out3$fisher) %*%
++      t(fred$gradient))))
+[1] TRUE
+> 
+>  my.gradient <- 0 * fred$gradient
+>  epsilon <- 1e-9
+>  for (k in 1:ncoef) {
++      beta.epsilon <- beta.hat
++      beta.epsilon[k] <- beta.hat[k] + epsilon
++      theta.epsilon <- as.numeric(sally %*% beta.epsilon)
++      xi.epsilon <- .C("aster_theta2ctau",
++          nind = as.integer(nind),
++          nnode = as.integer(nnode),
++          pred = as.integer(pred),
++          fam = as.integer(fam),
++          theta = as.double(theta.epsilon),
++          ctau = double(nind * nnode))$ctau
++      my.gradient[ , k] <- (xi.epsilon - xi.hat) / epsilon
++  }
+> 
+>  all.equal(fred$gradient, my.gradient, tolerance = sqrt(epsilon))
+[1] TRUE
+> 
+>  ##### case 6: model = "unco", obj = "unco", parm = "mean" ####
+> 
+>  fred <- predict(out2, modmat = modmat.pred, parm.type = "mean",
++      root = root.pred)
+> 
+>  beta.hat <- out2$coef
+> 
+>  beta2tau <- function(beta) {
++ 
++      phi <- matrix(sally %*% beta, nrow = nind)
++ 
++      theta <- .C("aster_phi2theta",
++          nind = as.integer(nind),
++          nnode = as.integer(nnode),
++          pred = as.integer(pred),
++          fam = as.integer(fam),
++          phi = as.double(phi),
++          theta = matrix(as.double(0), nind, nnode))$theta
++ 
++      ctau <- .C("aster_theta2ctau",
++          nind = as.integer(nind),
++          nnode = as.integer(nnode),
++          pred = as.integer(pred),
++          fam = as.integer(fam),
++          theta = as.double(theta),
++          ctau = double(nind * nnode))$ctau
++ 
++      tau <- .C("aster_ctau2tau",
++          nind = as.integer(nind),
++          nnode = as.integer(nnode),
++          pred = as.integer(pred),
++          fam = as.integer(fam),
++          x = as.double(root.pred),
++          root = as.double(root.pred),
++          ctau = as.double(ctau),
++          tau = double(nind * nnode))$tau
++ 
++      return(tau)
++  }
+> 
+>  tau.hat <- beta2tau(beta.hat)
+> 
+>  all.equal(fred, tau.hat)
+[1] TRUE
+> 
+>  fred <- predict(out2, modmat = modmat.pred, parm.type = "mean",
++      root = root.pred, se.fit = TRUE)
+> 
+>  all.equal(fred$fit, tau.hat)
+[1] TRUE
+> 
+>  all.equal(fred$se.fit, sqrt(diag(fred$gradient %*% solve(out2$fisher) %*%
++      t(fred$gradient))))
+[1] TRUE
+> 
+>  my.gradient <- 0 * fred$gradient
+>  for (k in 1:ncoef) {
++      beta.epsilon <- beta.hat
++      beta.epsilon[k] <- beta.hat[k] + epsilon
++      tau.epsilon <- beta2tau(beta.epsilon)
++      my.gradient[ , k] <- (tau.epsilon - tau.hat) / epsilon
++  }
+> 
+>  all.equal(fred$gradient, my.gradient, tolerance = sqrt(epsilon))
+[1] TRUE
+> 
+>  ##### case 7: model = "cond", obj = "unco", parm = "mean" ####
+> 
+>  fred <- predict(out2, modmat = modmat.pred, parm.type = "mean",
++      model.type = "cond", root = root.pred, x = root.pred)
+> 
+>  beta.hat <- out2$coef
+> 
+>  beta2xi <- function(beta) {
++ 
++      phi <- matrix(sally %*% beta, nrow = nind)
++ 
++      theta <- .C("aster_phi2theta",
++          nind = as.integer(nind),
++          nnode = as.integer(nnode),
++          pred = as.integer(pred),
++          fam = as.integer(fam),
++          phi = as.double(phi),
++          theta = matrix(as.double(0), nind, nnode))$theta
++ 
++      ctau <- .C("aster_theta2ctau",
++          nind = as.integer(nind),
++          nnode = as.integer(nnode),
++          pred = as.integer(pred),
++          fam = as.integer(fam),
++          theta = as.double(theta),
++          ctau = double(nind * nnode))$ctau
++ 
++      return(ctau)
++  }
+> 
+>  xi.hat <- beta2xi(beta.hat)
+> 
+>  all.equal(fred, xi.hat)
+[1] TRUE
+> 
+>  fred <- predict(out2, modmat = modmat.pred, parm.type = "mean",
++      model.type = "cond", root = root.pred, x = root.pred, se.fit = TRUE)
+> 
+>  all.equal(fred$fit, xi.hat)
+[1] TRUE
+> 
+>  all.equal(fred$se.fit, sqrt(diag(fred$gradient %*% solve(out2$fisher) %*%
++      t(fred$gradient))))
+[1] TRUE
+> 
+>  my.gradient <- 0 * fred$gradient
+>  for (k in 1:ncoef) {
++      beta.epsilon <- beta.hat
++      beta.epsilon[k] <- beta.hat[k] + epsilon
++      xi.epsilon <- beta2xi(beta.epsilon)
++      my.gradient[ , k] <- (xi.epsilon - xi.hat) / epsilon
++  }
+> 
+>  all.equal(fred$gradient, my.gradient, tolerance = sqrt(epsilon))
+[1] TRUE
+> 
+>  ##### case 8: model = "unco", obj = "cond", parm = "mean" ####
+> 
+>  fred <- predict(out3, modmat = modmat.pred, root = root.pred)
+> 
+>  beta.hat <- out3$coef
+> 
+>  beta2tau <- function(beta) {
++ 
++      theta <- matrix(sally %*% beta, nrow = nind)
++ 
++      ctau <- .C("aster_theta2ctau",
++          nind = as.integer(nind),
++          nnode = as.integer(nnode),
++          pred = as.integer(pred),
++          fam = as.integer(fam),
++          theta = as.double(theta),
++          ctau = double(nind * nnode))$ctau
++ 
++      tau <- .C("aster_ctau2tau",
++          nind = as.integer(nind),
++          nnode = as.integer(nnode),
++          pred = as.integer(pred),
++          fam = as.integer(fam),
++          x = as.double(root.pred),
++          root = as.double(root.pred),
++          ctau = as.double(ctau),
++          tau = double(nind * nnode))$tau
++ 
++      return(tau)
++  }
+> 
+>  tau.hat <- beta2tau(beta.hat)
+> 
+>  all.equal(fred, tau.hat)
+[1] TRUE
+> 
+>  fred <- predict(out3, modmat = modmat.pred, root = root.pred, se.fit = TRUE)
+> 
+>  all.equal(fred$fit, tau.hat)
+[1] TRUE
+> 
+>  all.equal(fred$se.fit, sqrt(diag(fred$gradient %*% solve(out3$fisher) %*%
++      t(fred$gradient))))
+[1] TRUE
+> 
+>  my.gradient <- 0 * fred$gradient
+>  for (k in 1:ncoef) {
++      beta.epsilon <- beta.hat
++      beta.epsilon[k] <- beta.hat[k] + epsilon
++      tau.epsilon <- beta2tau(beta.epsilon)
++      my.gradient[ , k] <- (tau.epsilon - tau.hat) / epsilon
++  }
+> 
+>  all.equal(fred$gradient, my.gradient, tolerance = sqrt(epsilon))
+[1] TRUE
+> 
+>  ##### HOORAY !!!!! ##### That's it for aster.predict #####
+>  ##### now for aster.predict.formula #####
+> 
+>  ##### case 1: newdata missing
+> 
+>  predict(out)
+  [1] 0.57489876 0.54506539 0.67263708 0.80063344 0.78185456 0.92190579
+  [7] 0.49870521 0.42489180 0.58032491 0.48015800 0.60863201 0.81730933
+ [13] 0.66085724 0.43306920 0.46293262 0.85153213 0.60788619 0.45408763
+ [19] 0.79351501 0.86951109 0.51086141 0.43922287 0.84149617 0.82034174
+ [25] 0.54767041 0.27018012 0.24376792 0.36766097 0.52656290 0.50048149
+ [31] 0.73247472 0.20556931 0.15156130 0.27514347 0.19122498 0.30185792
+ [37] 0.55071310 0.35495613 0.15714325 0.17837184 0.60363544 0.30113606
+ [43] 0.17194559 0.51654338 0.63357115 0.21525848 0.16140903 0.58760323
+ [49] 0.55521225 0.24601596 0.28147863 0.25540999 0.37416994 0.51624470
+ [55] 0.49352798 0.69080432 0.21685603 0.16038928 0.28632758 0.20209471
+ [61] 0.31217154 0.53710950 0.36236934 0.16634133 0.18872685 0.58234242
+ [67] 0.31147867 0.18199149 0.50754132 0.60768673 0.22673655 0.17087117
+ [73] 0.56870334 0.54097987 0.25764673 0.15113516 0.13053263 0.23303629
+ [79] 0.38365446 0.35756433 0.60947432 0.10212074 0.06520683 0.15508800
+ [85] 0.09191583 0.17678284 0.40829018 0.22187840 0.06882044 0.08300730
+ [91] 0.46391075 0.17618754 0.07864119 0.37356847 0.49639738 0.10916261
+ [97] 0.07161579 0.44682061 0.41293088 0.13225705 0.33180681 0.29925301
+[103] 0.45028412 0.64162836 0.61008081 0.90327761 0.25170131 0.18334475
+[109] 0.33789808 0.23368237 0.37055688 0.67098984 0.43495305 0.19047611
+[115] 0.21745483 0.73608696 0.36967701 0.20931151 0.62949196 0.77356303
+[121] 0.26382042 0.19591539 0.71623265 0.67647969 0.30203344 0.22700752
+[127] 0.19327686 0.36732494 0.65115620 0.59945400 1.15819877 0.14787817
+[133] 0.09105222 0.23355366 0.13190943 0.26989753 0.70105122 0.34763865
+[139] 0.09649502 0.11812552 0.81786980 0.26889099 0.11142546 0.63103347
+[145] 0.88905830 0.15900423 0.10072450 0.78132716 0.71057173 0.19607468
+> 
+>  newdata <- data.frame(site = factor(LETTERS[1:4]))
+>  for (v in vars)
++  newdata[[v]] <- 1
+>  newdata$root <- 1
+>  newdata$foo <- modmat.pred[ , "l2", "foo"]
+> 
+>  renewdata <- reshape(newdata, varying = list(vars),
++      direction = "long", timevar = "varb", times = as.factor(vars),
++      v.names = "resp")
+> 
+>  louise <- predict(out, newdata = renewdata, varvar = varb, idvar = id,
++      root = root, se.fit = TRUE)
+> 
+>  all.equal(louise$modmat, modmat.pred)
+[1] TRUE
+> 
+>  fred <- predict(out2, modmat = modmat.pred, root = root.pred, se.fit = TRUE)
+> 
+>  all.equal(louise$fit, fred$fit)
+[1] TRUE
+> 
+>  all.equal(louise$se.fit, fred$se.fit)
+[1] TRUE
+> 
+>  ##### test for global variables #####
+> 
+>  save(out, renewdata, out2, modmat.pred, root.pred, louise, fred,
++      file = "blurfle.RData")
+>  rm(list = ls(all.names = TRUE))
+>  load("blurfle.RData")
+>  unlink("blurfle.RData")
+> 
+>  louise.too <- predict(out, newdata = renewdata, varvar = varb, idvar = id,
++      root = root, se.fit = TRUE)
+>  identical(louise, louise.too)
+[1] TRUE
+> 
+>  fred.too <- predict(out2, modmat = modmat.pred, root = root.pred,
++      se.fit = TRUE)
+>  identical(fred, fred.too)
+[1] TRUE
+> 
+> 
+> 
+> 

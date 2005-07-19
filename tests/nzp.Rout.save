@@ -1,0 +1,106 @@
+
+R : Copyright 2004, The R Foundation for Statistical Computing
+Version 2.0.1  (2004-11-15), ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for a HTML browser interface to help.
+Type 'q()' to quit R.
+
+> 
+>  library(aster)
+> 
+>  do.chisq.test <- function(x, mu, max.bin) {
++      stopifnot(all(x >= 0))
++      xx <- seq(1, max.bin)
++      yy <- dpois(xx, mu)
++      yy[length(yy)] <- ppois(max.bin - 1, mu, lower.tail = FALSE)
++      pp <- yy / sum(yy)
++      ecc <- length(x) * pp
++      if (any(ecc < 5.0))
++          warning("violates rule of thumb about > 5 expected in each cell")
++      cc <- tabulate(x, max.bin)
++      chisqstat <- sum((cc - ecc)^2 / ecc)
++      cat("chi squared statistic =", chisqstat, "\n")
++      cat("degrees of freedom =", length(ecc) - 1, "\n")
++      cat("p-value =", pchisq(chisqstat, length(ecc) - 1, lower.tail = FALSE),
++          "\n")
++      foo <- rbind(cc, ecc)
++      dimnames(foo) <- list(c("observed", "expected"), as.character(xx))
++      print(foo)
++  }
+> 
+>  set.seed(42)
+>  nsim <- 1e4
+> 
+>  mu <- 2.0
+>  x <- rnzp(nsim, mu)
+>  do.chisq.test(x, mu, 8)
+chi squared statistic = 2.593699 
+degrees of freedom = 7 
+p-value = 0.9198777 
+                1        2        3        4        5        6        7
+observed 3088.000 3130.000 2119.000 1056.000 408.0000 137.0000 43.00000
+expected 3130.353 3130.353 2086.902 1043.451 417.3804 139.1268 39.75051
+                8
+observed 16.00000
+expected 12.68375
+> 
+>  mu <- 1.0
+>  x <- rnzp(nsim, mu)
+>  do.chisq.test(x, mu, 5)
+chi squared statistic = 1.508611 
+degrees of freedom = 4 
+p-value = 0.825115 
+                1        2        3        4        5
+observed 5851.000 2872.000 970.0000 245.0000 51.00000
+expected 5819.767 2909.884 969.9612 242.4903 57.89792
+> 
+>  mu <- 0.5
+>  x <- rnzp(nsim, mu)
+>  do.chisq.test(x, mu, 4)
+chi squared statistic = 1.828864 
+degrees of freedom = 3 
+p-value = 0.6086739 
+               1        2        3        4
+observed 7661.00 1961.000 321.0000 51.00000
+expected 7707.47 1926.868 321.1446 44.51738
+> 
+>  nsim <- 1e6
+>  mu <- 0.05
+>  x <- rnzp(nsim, mu)
+>  do.chisq.test(x, mu, 4)
+chi squared statistic = 1.158501 
+degrees of freedom = 3 
+p-value = 0.7629738 
+                1        2        3        4
+observed 975182.0 24418.00 397.0000 3.000000
+expected 975208.3 24380.21 406.3368 5.130428
+> 
+>  # nsim <- 1e7
+>  # mu <- 0.005
+>  # x <- rnzp(nsim, mu)
+>  # do.chisq.test(x, mu, 3)
+> 
+>  mu <- 0.5
+>  xpred <- 0:10
+>  save.seed <- .Random.seed
+>  x <- rnzp(xpred, mu, xpred)
+>  .Random.seed <- save.seed
+>  my.x <- rep(0, length(xpred))
+>  for (i in seq(along = xpred))
++      if (xpred[i] > 0)
++          for (j in 1:xpred[i])
++              my.x[i] <- my.x[i] + rnzp(1, mu)
+>  all.equal(x, my.x)
+[1] TRUE
+> 
+> 
+> 

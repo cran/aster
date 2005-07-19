@@ -1,0 +1,240 @@
+
+R : Copyright 2004, The R Foundation for Statistical Computing
+Version 2.0.1  (2004-11-15), ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for a HTML browser interface to help.
+Type 'q()' to quit R.
+
+> 
+>  library(aster)
+> 
+>  set.seed(42)
+>  nind <- 25
+>  nnode <- 5
+>  ncoef <- nnode + 1
+> 
+>  famnam <- families()
+>  fam <- c(1, 1, 2, 3, 3)
+>  print(famnam[fam])
+[1] "bernoulli"        "bernoulli"        "poisson"          "non.zero.poisson"
+[5] "non.zero.poisson"
+> 
+>  pred <- c(0, 1, 1, 2, 3)
+>  print(pred)
+[1] 0 1 1 2 3
+> 
+>  modmat <- array(0, c(nind, nnode, ncoef))
+>  modmat[ , , 1] <- 1
+>  for (i in 2:nnode)
++      modmat[ , i, i] <- 1
+>  modmat[ , , ncoef] <- rnorm(nind * nnode)
+> 
+>  beta <- rnorm(ncoef) / 10
+> 
+>  phi <- matrix(modmat, ncol = ncoef) %*% beta
+>  phi <- matrix(phi, ncol = nnode)
+> 
+>  theta <- .C("aster_phi2theta",
++      nind = as.integer(nind),
++      nnode = as.integer(nnode),
++      pred = as.integer(pred),
++      fam = as.integer(fam),
++      phi = as.double(phi),
++      theta = matrix(as.double(0), nind, nnode))$theta
+> 
+>  root <- sample(1:3, nind * nnode, replace = TRUE)
+>  root <- matrix(root, nind, nnode)
+> 
+>  x <- raster(theta, pred, fam, root)
+>  
+>  out <- mlogl(beta, pred, fam, x, root, modmat, deriv = 2,
++      type = "unco")
+>  print(out)
+$value
+[1] 123.9680
+
+$gradient
+[1] 41.9553321  0.5679575 12.9399758 -1.4608417 28.3767383 27.9290757
+
+$hessian
+          [,1]      [,2]       [,3]      [,4]       [,5]       [,6]
+[1,] 618.58754 40.278506 173.359839 72.121848 305.696826  26.306053
+[2,]  40.27851 11.702546   3.353047 17.380877   5.231394  -2.212379
+[3,] 173.35984  3.353047  61.948882  4.980101  96.895585  10.514502
+[4,]  72.12185 17.380877   4.980101 38.114502   7.770363  -1.323664
+[5,] 305.69683  5.231394  96.895585  7.770363 186.157029  20.455780
+[6,]  26.30605 -2.212379  10.514502 -1.323664  20.455780 303.041693
+
+> 
+>  my.value <- 0
+>  for (j in 1:nnode) {
++      k <- pred[j]
++      if (k > 0)
++          xpred <- x[ , k]
++      else
++          xpred <- root[ , j]
++      for (i in 1:nind)
++          my.value <- my.value -
++              sum(x[i, j] * theta[i, j] -
++              xpred[i] * famfun(fam[j], 0, theta[i, j]))
++  }
+>  all.equal(out$value, my.value)
+[1] TRUE
+> 
+>  my.grad <- NaN * out$gradient
+>  epsilon <- 1e-9
+>  for (i in 1:ncoef) {
++      beta.eps <- beta
++      beta.eps[i] <- beta[i] + epsilon
++      out.eps <- mlogl(beta.eps, pred, fam, x, root, modmat, deriv = 0,
++          type = "unco")
++      my.grad[i] <- (out.eps$value - out$value) / epsilon
++  }
+> 
+>  all.equal(out$gradient, my.grad, tolerance = sqrt(epsilon))
+[1] TRUE
+> 
+>  ##########
+> 
+>  objfun <- function(beta) {
++      out <- mlogl(beta, pred, fam, x, root, modmat, deriv = 1,
++          type = "unco")
++      result <- out$value
++      attr(result, "gradient") <- out$gradient
++      return(result)
++  }
+>  nout <- nlm(objfun, beta, fscale = nind)
+Warning message: 
+NA/Inf replaced by maximum positive value 
+>  print(nout)
+$minimum
+[1] 119.1048
+
+$estimate
+[1] -0.06808120 -0.30707635  0.18622920  0.07756716 -0.37637382 -0.08436003
+
+$gradient
+[1]  9.348637e-06 -3.147490e-05 -6.786827e-06 -5.396298e-06  9.976263e-06
+[6] -5.169924e-06
+
+$code
+[1] 1
+
+$iterations
+[1] 34
+
+>  nout <- nlm(objfun, nout$estimate, fscale = nind)
+>  print(nout)
+$minimum
+[1] 119.1048
+
+$estimate
+[1] -0.06808120 -0.30707635  0.18622920  0.07756716 -0.37637382 -0.08436003
+
+$gradient
+[1]  9.348637e-06 -3.147490e-05 -6.786827e-06 -5.396298e-06  9.976263e-06
+[6] -5.169924e-06
+
+$code
+[1] 1
+
+$iterations
+[1] 0
+
+> 
+>  ##########
+> 
+>  my.hess <- matrix(NaN, ncoef, ncoef)
+>  for (i in 1:ncoef) {
++      beta.eps <- beta
++      beta.eps[i] <- beta[i] + epsilon
++      out.eps <- mlogl(beta.eps, pred, fam, x, root, modmat, deriv = 1,
++          type = "unco")
++      my.hess[ , i] <- (out.eps$gradient - out$gradient) / epsilon
++  }
+> 
+>  all.equal(out$hessian, my.hess, tolerance = sqrt(epsilon))
+[1] TRUE
+> 
+>  ##########
+> 
+>  objfun <- function(beta) {
++      out <- mlogl(beta, pred, fam, x, root, modmat, deriv = 2,
++          type = "unco")
++      result <- out$value
++      attr(result, "gradient") <- out$gradient
++      attr(result, "hessian") <- out$hessian
++      return(result)
++  }
+>  nout <- try(nlm(objfun, beta, fscale = nind))
+>  print(nout)
+$minimum
+[1] 119.1066
+
+$estimate
+[1] -0.08160559 -0.28811978  0.18178346  0.09066000 -0.34973178 -0.08345522
+
+$gradient
+[1] -0.027848502  0.008147191 -0.078372174  0.004814663  0.103718207
+[6]  0.050151163
+
+$code
+[1] 4
+
+$iterations
+[1] 100
+
+>  nout <- nlm(objfun, nout$estimate, fscale = nind, iterlim = 1000)
+>  print(nout)
+$minimum
+[1] 119.1048
+
+$estimate
+[1] -0.06817031 -0.30695488  0.18633158  0.07765277 -0.37628604 -0.08435880
+
+$gradient
+[1] -1.186776e-04  2.504829e-05  7.096491e-05  3.026954e-05  8.609203e-05
+[6]  6.620373e-05
+
+$code
+[1] 1
+
+$iterations
+[1] 920
+
+> 
+>  ##########
+> 
+>  objfun <- function(beta)
++      mlogl(beta, pred, fam, x, root, modmat, deriv = 0, type = "unco")$value
+>  gradfun <- function(beta)
++      mlogl(beta, pred, fam, x, root, modmat, deriv = 1, type = "unco")$gradient
+>  oout <- optim(beta, objfun, gradfun, method = "L-BFGS-B")
+>  print(oout)
+$par
+[1] -0.06830710 -0.30690581  0.18662418  0.07786878 -0.37623632 -0.08435202
+
+$value
+[1] 119.1048
+
+$counts
+function gradient 
+      38       38 
+
+$convergence
+[1] 0
+
+$message
+[1] "CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH"
+
+> 
+> 

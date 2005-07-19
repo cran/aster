@@ -1,0 +1,77 @@
+
+R : Copyright 2004, The R Foundation for Statistical Computing
+Version 2.0.1  (2004-11-15), ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for a HTML browser interface to help.
+Type 'q()' to quit R.
+
+> 
+>  library(aster)
+> 
+>  set.seed(42)
+> 
+>  m <- 10
+>  n <- 5
+>  a <- matrix(rnorm(m * n), nrow = m)
+>  b <- rnorm(n)
+> 
+>  out <- .C("aster_mat_vec_mult",
++      nrow = as.integer(m),
++      ncol = as.integer(n),
++      a = as.double(a),
++      b = as.double(b),
++      c = double(m))
+> 
+>  all.equal(out$c, as.numeric(a %*% b))
+[1] TRUE
+> 
+>  ##########
+> 
+>  b <- rnorm(m)
+> 
+>  out <- .C("aster_vec_mat_mult",
++      nrow = as.integer(m),
++      ncol = as.integer(n),
++      a = as.double(a),
++      b = as.double(b),
++      c = double(n))
+> 
+>  all.equal(out$c, as.numeric(b %*% a))
+[1] TRUE
+> 
+>  ##########
+> 
+>  out <- .C("aster_mat_vec_mat_mult",
++      nrow = as.integer(m),
++      ncol = as.integer(n),
++      a = as.double(a),
++      b = as.double(b),
++      c = matrix(as.double(0), n, n))
+> 
+>  all.equal(out$c, t(a) %*% diag(b) %*% a)
+[1] TRUE
+> 
+>  ##########
+> 
+>  b <- matrix(rnorm(n * n), n)
+> 
+>  out <- .C("aster_diag_mat_mat_mat_mult",
++      nrow = as.integer(m),
++      ncol = as.integer(n),
++      a = as.double(a),
++      b = as.double(b),
++      c = double(m))
+> 
+>  all.equal(out$c, diag(a %*% b %*% t(a)))
+[1] TRUE
+> 
+> 

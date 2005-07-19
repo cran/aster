@@ -1,0 +1,23 @@
+
+useDynLib(aster)
+
+export(families)
+export(famfun)
+export(rnzp)
+export(raster)
+export(mlogl)
+export(aster)
+export(summary.aster)
+export(anova.aster)
+export(anova.asterlist)
+export(predict.aster)
+
+S3method(anova, aster)
+S3method(anova, asterlist)
+S3method(aster, default)
+S3method(aster, formula)
+S3method(print, summary.aster)
+S3method(predict, aster)
+S3method(predict, aster.formula)
+S3method(summary, aster)
+
