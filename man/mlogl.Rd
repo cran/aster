@@ -2,7 +2,7 @@
 \alias{mlogl}
 \title{Minus Log Likelihood for Aster Models}
 \usage{
-mlogl <- function(parm, pred, fam, x, root, modmat, deriv = 0,
+mlogl(parm, pred, fam, x, root, modmat, deriv = 0,
     type = c("unconditional", "conditional"))
 }
 \description{

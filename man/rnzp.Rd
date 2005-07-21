@@ -7,7 +7,7 @@
   random variate is the sum of \code{xpred} such random variates.
 }
 \usage{
-function(n, mu, xpred = 1)
+rnzp(n, mu, xpred = 1)
 }
 \arguments{
   \item{n}{number of random values to return.  If \code{length(n) > 1},
