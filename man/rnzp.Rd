@@ -18,4 +18,7 @@ rnzp(n, mu, xpred = 1)
 \value{
   a vector of random deviates.
 }
+\examples{
+rnzp(10, 0.2)
+}
 \keyword{distribution}

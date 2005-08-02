@@ -7,7 +7,9 @@ mlogl(parm, pred, fam, x, root, modmat, deriv = 0,
 }
 \description{
 Minus the Log Likelihood for an Aster model, and its first and second
-derivative.
+derivative.  This function is called inside \code{\link{aster}}.
+Users should not need to call it themselves unless they are doing
+something the package is not designed to do.
 }
 \arguments{
   \item{parm}{parameter value (vector of regression coefficients)

@@ -1,0 +1,8 @@
+ 0.2    first version to CRAN
+ 0.2-1  fixed bugs in docs found by scripts on CRAN (R-devel check)
+ 0.3    added data/echinacea.txt
+              man/echinacea.Rd
+              test/tutor.R
+        added test in aster.R
+        added package vignette
+        added examples on all help pages to be used by users

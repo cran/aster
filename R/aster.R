@@ -28,8 +28,13 @@ aster.default <- function(x, root, pred, fam, modmat, parm,
     stopifnot(length(dim(modmat)) == 3)
     stopifnot(identical(dim(modmat)[1:2], dim(x)))
 
-    if (missing(parm))
+    if (missing(parm)) {
         parm <- rep(0, dim(modmat)[3])
+    } else {
+        parm <- as.double(parm)
+        if (length(parm) != dim(modmat)[3])
+            stop("parm wrong length, not dimension 3 of modmat")
+    }
 
     mtry <- matrix(as.numeric(modmat), nrow = nind * nnode)
     qtry <- qr(mtry)

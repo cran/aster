@@ -49,4 +49,11 @@ Currently implemented families are
   For \code{families} a vector of character strings, each a family name.
   For \code{famfun} a scalar double, the value.
 }
+\examples{
+families()
+### mean of poisson with mean 0.2 conditioned on being nonzero
+famfun(3, 1, log(0.2))
+### variance of poisson with mean 0.2 conditioned on being nonzero
+famfun(3, 2, log(0.2))
+}
 \keyword{misc}
