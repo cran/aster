@@ -1,6 +1,6 @@
 
-R : Copyright 2004, The R Foundation for Statistical Computing
-Version 2.0.1  (2004-11-15), ISBN 3-900051-07-0
+R : Copyright 2005, The R Foundation for Statistical Computing
+Version 2.1.1 Patched (2005-08-04), ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -154,8 +154,8 @@ $estimate
 [1] -0.3017688 -0.3691924 -0.4160757 -0.3519262  0.1824507  0.1868138
 
 $gradient
-[1] -1.704300e-05  5.650300e-06  4.206927e-05  1.844440e-06  1.731154e-05
-[6] -2.904894e-05
+[1] -1.704298e-05  5.650287e-06  4.206920e-05  1.844437e-06  1.731152e-05
+[6] -2.905022e-05
 
 $code
 [1] 1

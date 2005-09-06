@@ -1,4 +1,4 @@
-"hdct02" "hdct03" "hdct04" "site" "ewloc" "nsloc" "ld02" "fl02" "ld03" "fl03" "ld04" "fl04"
+"hdct02" "hdct03" "hdct04" "pop" "ewloc" "nsloc" "ld02" "fl02" "ld03" "fl03" "ld04" "fl04"
 0 0  0 "NWLF"  -8 -11 0 0 0 0 0 0
 0 0  0 "Eriley"  -8 -10 1 0 1 0 1 0
 0 0  0 "NWLF"  -8  -9 0 0 0 0 0 0

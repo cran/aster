@@ -26,7 +26,7 @@
 ###################################################
 ### chunk number 16: fit-4
 ###################################################
- aout4 <- aster(resp ~ varb + nsloc + ewloc + site * hdct - site,
+ aout4 <- aster(resp ~ varb + nsloc + ewloc + pop * hdct - pop,
      pred, fam, varb, id, root, data = redata)
  summary(aout4, show.graph = TRUE)
 
@@ -41,7 +41,7 @@
 ###################################################
 ### chunk number 22: predict-newdata
 ###################################################
- newdata <- data.frame(site = levels(echinacea$site))
+ newdata <- data.frame(pop = levels(echinacea$pop))
  for (v in vars)
      newdata[[v]] <- 1
  newdata$root <- 1

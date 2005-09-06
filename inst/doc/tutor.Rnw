@@ -3,6 +3,7 @@
 
 \usepackage{indentfirst}
 \usepackage{url}
+\usepackage[utf8]{inputenc}
 
 \RequirePackage{amsmath}
 \newcommand{\boldbeta}{{\boldsymbol{\beta}}}
@@ -21,26 +22,28 @@
 
 \begin{document}
 
-\title{The Aster Package Tutorial}
+<<foo,include=FALSE,echo=FALSE>>=
+options(keep.source = TRUE, width = 65)
+library(aster)
+foo <- packageDescription("aster")
+@
+
+\title{The Aster Package Tutorial (Version \Sexpr{foo$Version})}
 \author{Charles J. Geyer}
 \maketitle
 
-<<foo,include=FALSE,echo=FALSE>>=
-options(keep.source = TRUE, width = 65)
-@
-
 \section{Preliminaries}
 
-\subsection{Warning} \label{sec:warn}
-
-A redesign of the calling sequence of the functions
-\begin{verbatim}
-aster
-predict.aster
-predict.aster.formula
-\end{verbatim}
-is underway.  Some of the details of what follows is likely
-to change in a future version (real soon now).
+% \subsection{Warning} \label{sec:warn}
+%
+% A redesign of the calling sequence of the functions
+% \begin{verbatim}
+% aster
+% predict.aster
+% predict.aster.formula
+% \end{verbatim}
+% is underway.  Some of the details of what follows is likely
+% to change in a future version (real soon now).
 
 \subsection{Library and Data}
 
@@ -116,11 +119,12 @@ The variables without numbers are other predictors.
 \begin{itemize}
 \item
 The variables \verb@ewloc@ and \verb@nsloc@ are spatial, east-west
-and north-south location, respectively.  
+and north-south location, respectively.
 \item
-The variable \verb@site@ is the site of origin of the plant, so plants
-with different values of \verb@site@ may be more genetically diverse
-than those with the same values of \verb@site@.
+The variable \verb@pop@ is the remnant population of origin of the plant,
+so plants
+with different values of \verb@pop@ may be more genetically diverse
+than those with the same values of \verb@pop@.
 \end{itemize}
 
 The point of recording the data about flowers in two variables
@@ -146,7 +150,7 @@ plays two roles: $X_{i p(j)}$ is the sample size for $X_{i j}$) is a
 matrix.  If we are going to use any of the R apparatus for doing
 regression-like modeling, in particular if we are going to use the
 R formula mini-language that allows model specifications like
-\verb@y ~ x1 + x2@ then we need to make the response (the \verb@y@
+\verb@y ~ x1 + x2@, then we need to make the response (the \verb@y@
 in the formula) a vector.
 
 There is an R function \verb@reshape@ that does this
@@ -192,7 +196,7 @@ value \Sexpr{redata[42, "resp"]}.  This is the response for the
 (node of the graphical model)
 and for individual \Sexpr{redata[42, "id"]} found
 in row \Sexpr{redata[42, "id"]}
-of the original data frame \verb@echinacea@.  The other variables \verb@site@,
+of the original data frame \verb@echinacea@.  The other variables \verb@pop@,
 \verb@ewloc@, and \verb@nsloc@ are what they were in this row
 of \verb@echinacea@
 (for this original individual) and are duplicated as necessary in other
@@ -201,10 +205,10 @@ rows of \verb@redata@.
 \section{Unconditional Aster Models}
 
 Now we are ready to begin discussion of Aster models.
-First we load the package.
-<<library>>=
-library(aster)
-@
+% First we load the package.
+% <<library>>=
+% library(aster)
+% @
 
 \subsection{More Preliminaries}
 
@@ -257,16 +261,18 @@ The reason for using an index vector for \verb@pred@ is so the condition
 \eqref{eq:foo} makes sense.  The original variables must be related to
 their order in the data frame \verb@redata@ in any case.
 
-\paragraph{Warning}
 This may change in the future, but that's the way it is for now.
-In fact it is very likely to change in the future and in a
-non-backwards-compatible way (see the warning in Sec~\ref{sec:warn}).
+
+% \paragraph{Warning}
+% This may change in the future, but that's the way it is for now.
+% In fact it is very likely to change in the future and in a
+% non-backwards-compatible way (see the warning in Sec~\ref{sec:warn}).
 
 \subsection{Fitting a Model}
 
 We are finally ready to fit a model.
 <<fit-1>>=
-aout1 <- aster(resp ~ varb + nsloc + ewloc + site,
+aout1 <- aster(resp ~ varb + nsloc + ewloc + pop,
     pred, fam, varb, id, root, data = redata)
 summary(aout1, show.graph = TRUE)
 @
@@ -277,9 +283,9 @@ it tells you whether you have gotten it right.  But (unless you change
 Hence the default is to not print it.
 
 \paragraph{Interpretation.} From looking at the ``signif.\ stars''
-it looks like \verb@site@ is not significant.  But you're not supposed
+it looks like \verb@pop@ is not significant.  But you're not supposed
 to use ``signif.\ stars'' that way.  Any use of more than one
-``signif.\ stars'' per model fit is \emph{multiple testing without correction}
+``signif.\ star'' per model fit is \emph{multiple testing without correction}
 and may be \emph{highly misleading}.  Wise users put
 <<signif.stars>>=
 options(show.signif.stars = FALSE)
@@ -302,7 +308,7 @@ anova(aout2, aout1)
 @
 
 So much for making inferences from a bunch of signif.\ stars!
-Not one of the signif.\ stars for the \verb@site@ dummy variables
+Not one of the signif.\ stars for the \verb@pop@ dummy variables
 in the printout for \verb@aout1@ was anywhere near as significant
 as the likelihood ratio test $p$-value here.  See what we mean?
 
@@ -318,9 +324,9 @@ as the likelihood ratio test $p$-value here.  See what we mean?
 You're not likely to botch (1) or (4).  Just make sure you use the
 same data frame and the same \verb@pred@ and \verb@fam@.  If you're
 a little careful, you won't botch (3).  We haven't done conditional
-models yet (see Section~\ref{sec:conditional}), but if careful one
-should not botch that (conditional and unconditional models are like
-apples and oranges, they shouldn't be mixed).  The hard condition
+models yet (see Section~\ref{sec:conditional}), but when we do, those
+models shouldn't be mixed with unconditional models.  It's
+mixing apples and oranges.  The hard condition
 to always obey is (2).  One must be sure that the column space of
 the model matrix of the big model (\verb@aout1$modmat@) contains
 the column space of the model matrix of the small model (\verb@aout2$modmat@),
@@ -329,7 +335,7 @@ but that is much easier checked by the computer than by you.
 \paragraph{Comment} So perhaps the computer should check all this,
 despite none of the R \verb@anova@ functions doing so.  It would take
 time, enough for one linear regression per column of the model matrix
-of the small model.  But it would add safety.  But the R/C/Unix way
+of the small model, but it would add safety.  The R/C/Unix way
 (a.~k.~a., worse is better) is to not check and let the user worry
 about it.
 
@@ -345,10 +351,10 @@ we use to overcome the limitations of the R formula mini-language
 insisting that the ``response'' be a vector, rather than a matrix
 with heterogenous columns (like it really is).
 
-In this section we do more artifice.  The variables of interest,
-that are ``components of fitness'' in the evolutionary jargon
+In this section we use more artifice.  The variables of interest,
+the best surrogates of Darwinian fitness,
 are the \verb@hdct@ variables.  We want to look that the interaction
-of site with those variables.  So first we have to create the relevant
+of \verb@pop@ with those variables.  So first we have to create the relevant
 dummy variable.
 <<make-hdct>>=
 hdct <- grep("hdct", as.character(redata$varb))
@@ -358,9 +364,10 @@ names(redata)
 @
 This is tricky.  The variable \verb@redata$varb@ is a factor,
 which means it is really numeric (an index vector) under the hood,
-even though it prints as a character string.  To get the
-strings to work with we do \verb@as.character(redata$varb)@.
-Then the first statement returns the \emph{indices} of the elements
+even though it prints as a character string.
+The expression \verb@as.character(redata$varb)@ turns these numeric
+values into strings.
+Then the \verb@grep@ function returns the \emph{indices} of the elements
 of \verb@varb@ whose string forms contain \verb@"hdct"@.  The next
 statement converts these to \verb@TRUE@ or \verb@FALSE@.
 The third statement converts these to one and zero, and makes them
@@ -371,7 +378,7 @@ somehow.
 
 Now we can fit an interaction term.
 <<fit-3>>=
-aout3 <- aster(resp ~ varb + nsloc + ewloc + site * hdct,
+aout3 <- aster(resp ~ varb + nsloc + ewloc + pop * hdct,
     pred, fam, varb, id, root, data = redata)
 summary(aout3)
 @
@@ -385,12 +392,12 @@ and \verb@varbhdct04@, so the \verb@aster@ function drops it, but
 not silently (so the user is not surprised).
 
 It turns out this is not the model we wanted to fit.  We didn't want
-site main effects, \verb@siteEriley@ and so forth, \emph{in addition to}
-the site interaction effects \verb@siteEriley:hdct@ and so forth.  We
-only wanted \verb@site@ to have effects at the \verb@hdct@ level.
+population main effects, \verb@popEriley@ and so forth, \emph{in addition to}
+the population interaction effects \verb@popEriley:hdct@ and so forth.  We
+only wanted \verb@pop@ to have effects at the \verb@hdct@ level.
 Here's how we do that
 <<fit-4>>=
-aout4 <- aster(resp ~ varb + nsloc + ewloc + site * hdct - site,
+aout4 <- aster(resp ~ varb + nsloc + ewloc + pop * hdct - pop,
     pred, fam, varb, id, root, data = redata)
 summary(aout4)
 @
@@ -470,12 +477,12 @@ crit <- qnorm((1 + conf.level) / 2)
 <<beta-4-one>>=
 fred <- summary(aout4)
 dimnames(fred$coef)
-fred$coef["siteEriley:hdct", "Estimate"] +
-c(-1, 1) * crit * fred$coef["siteEriley:hdct", "Std. Error"]
+fred$coef["popEriley:hdct", "Estimate"] +
+c(-1, 1) * crit * fred$coef["popEriley:hdct", "Std. Error"]
 @
 This gives an asymptotic (large sample) \Sexpr{100 * conf.level}\% confidence
 interval for the unknown true regression coefficient for the dummy variable
-\verb@siteEriley:hdct@ (assuming this model is correct!)
+\verb@popEriley:hdct@ (assuming this model is correct!)
 
 \subsection{Using Fisher Information}
 
@@ -527,9 +534,9 @@ fixed, known matrix and $\boldzeta$ is the parameter we want to estimate
 \subsubsection{New Data}
 
 We construct new data for ``typical'' individuals
-(having zero-zero geometry) in each site.
+(having zero-zero geometry) in each population.
 <<predict-newdata>>=
-newdata <- data.frame(site = levels(echinacea$site))
+newdata <- data.frame(pop = levels(echinacea$pop))
 for (v in vars)
     newdata[[v]] <- 1
 newdata$root <- 1
@@ -564,7 +571,7 @@ names(renewdata)
 \subsubsection{Linear Functional Matrix}
 
 The functional of mean value parameters we want is \emph{total head count},
-since this has the biological interpretation of the component of fitness
+since this has the biological interpretation of the best surrogate of fitness
 measured in this data set.  A biologist (at least an evolutionary biologist)
 is interested in the ``predecessor variables'' of head count only insofar
 as they contribute to head count.  Two sets of parameter values that
@@ -584,6 +591,36 @@ $i$-th individual (in the new hypothetical data \verb@newdata@).  The
 linear functional is a simple sum because the elements of \verb@amat@
 are all zero or one.
 
+This is a little tricky, so let's take it one step at a time.  We are
+trying to form the linear functional $\boldA' \boldtau$, which written
+out in full is the vector with $k$-th component
+$$
+   \sum_{i \in I_{\text{new}}} \sum_{j \in J} a_{i j k} \tau_{i j}
+$$
+where $a_{i j k}$ are the elements of the array $\boldA$ and $\tau_{i j}$
+are the elements of the matrix of unconditional mean value
+parameters $\boldtau$ and where $I_{\text{new}}$ is the index set for
+the ``new hypothetical'' individuals in \verb@newdata@.  Since there
+is one such ``new hypothetical'' individual for each population,
+$I_{\text{new}}$ indexes populations \emph{in this particular example}.
+
+For such an individual, for an $i \in I_{\text{new}}$, we want the
+corresponding component of $\boldA' \boldtau$ to be that individual's
+total flower head count, the sum of the $\tau_{i j}$ such that $j$ is
+a head count variable.  Hence \emph{in this particular example} we want
+the dimension of $\boldA' \boldtau$ to be the same as the number of
+individuals (meaning $i$ and $k$ run over the same index set $I_{\text{new}}$).
+The way we make $\boldA' \boldtau$ be this sum is to set the components of
+$a_{i, \,\cdot\,, i}$ be one for the terms we want in the sum and zero
+for the terms we don't want in the sum, and that's exactly what the R
+code above does.
+
+Note, that in general $i$ and $k$ will run over different index sets
+and that in general there is no reason why the components $a_{i j k}$
+must be zero or one.  How one constructs $a_{i j k}$ varies a great deal
+from application to application.  This example only illustrates one very
+particular special case.
+
 \subsubsection{Prediction}
 
 So we are finally ready to make a ``prediction''
@@ -592,7 +629,7 @@ foo <- predict(aout4, varvar = varb, idvar = id, root = root,
     newdata = renewdata, se.fit = TRUE, amat = amat,
     parm.type = "canon")
 bar <- cbind(foo$fit, foo$se.fit)
-dimnames(bar) <- list(as.character(newdata$site), c("Estimate", "Std. Error"))
+dimnames(bar) <- list(as.character(newdata$pop), c("Estimate", "Std. Error"))
 print(bar)
 @
 Since the default \verb@model.type@ is \verb@"unconditional"@, these are
@@ -605,7 +642,7 @@ foo <- predict(aout4, varvar = varb, idvar = id, root = root,
     newdata = renewdata, se.fit = TRUE, amat = amat,
     parm.type = "canon", model.type = "cond")
 bar <- cbind(foo$fit, foo$se.fit)
-dimnames(bar) <- list(as.character(newdata$site), c("Estimate", "Std. Error"))
+dimnames(bar) <- list(as.character(newdata$pop), c("Estimate", "Std. Error"))
 print(bar)
 @
 These are
@@ -627,26 +664,26 @@ foo <- predict(aout4, varvar = varb, idvar = id, root = root,
     newdata = renewdata, se.fit = TRUE, amat = bmat,
     parm.type = "canon")
 bar <- cbind(foo$fit, foo$se.fit)
-dimnames(bar) <- list(as.character(newdata$site), c("Estimate", "Std. Error"))
+dimnames(bar) <- list(as.character(newdata$pop), c("Estimate", "Std. Error"))
 print(bar)
 foo <- predict(aout4, varvar = varb, idvar = id, root = root,
     newdata = renewdata, se.fit = TRUE, amat = bmat,
     parm.type = "canon", model.type = "cond")
 bar <- cbind(foo$fit, foo$se.fit)
-dimnames(bar) <- list(as.character(newdata$site), c("Estimate", "Std. Error"))
+dimnames(bar) <- list(as.character(newdata$pop), c("Estimate", "Std. Error"))
 print(bar)
 @
 
 Now quite different!  And we have another puzzle.  Why, according to
 aster model theory is it the right thing that all of the $\xi_{i j}$
 are the same where $j$ is for an \verb@"ld"@ node?  Just look at the
-model, we don't have an interaction of \verb@ld@ and \verb@site@.
+model: we don't have an interaction of \verb@ld@ and \verb@pop@.
 <<bmat-4-fish-fash>>=
 foo <- predict(aout3, varvar = varb, idvar = id, root = root,
     newdata = renewdata, se.fit = TRUE, amat = bmat,
     parm.type = "canon")
 bar <- cbind(foo$fit, foo$se.fit)
-dimnames(bar) <- list(as.character(newdata$site), c("Estimate", "Std. Error"))
+dimnames(bar) <- list(as.character(newdata$pop), c("Estimate", "Std. Error"))
 print(bar)
 @
 If instead we use the model \verb@aout3@, which does have such an interaction
@@ -680,10 +717,10 @@ pout4 <- predict(aout4, varvar = varb, idvar = id, root = root,
 Figure~\ref{fig:one} is produced by the
 following code
 <<label=fig1plot,include=FALSE>>=
-sitenames <- as.character(newdata$site)
+popnames <- as.character(newdata$pop)
 fit3 <- pout3$fit
 fit4 <- pout4$fit
-i <- seq(along = sitenames)
+i <- seq(along = popnames)
 foo <- 0.1
 y4top <- fit4 + crit * pout4$se.fit
 y4bot <- fit4 - crit * pout4$se.fit
@@ -702,8 +739,8 @@ segments(i + 2.5 * foo, y3top, i + 0.5 * foo, y3top)
 segments(i + 2.5 * foo, fit3, i + 0.5 * foo, fit3)
 axis(side = 2)
 title(ylab = "unconditional mean value parameter")
-axis(side = 1, at = i, labels = sitenames)
-title(xlab = "site")
+axis(side = 1, at = i, labels = popnames)
+title(xlab = "population")
 @
 and appears on p.~\pageref{fig:one}.
 \begin{figure}
@@ -714,7 +751,7 @@ and appears on p.~\pageref{fig:one}.
 \end{center}
 \caption{\Sexpr{100 * conf.level}\% confidence intervals for unconditional
 mean value parameter for fitness (sum of head count for all years) at each
-site for a ``typical'' individual having position zero-zero and having
+population for a ``typical'' individual having position zero-zero and having
 the parameterization of Model~4 (solid bar) or Model~3 (dashed bar).
 Tick marks in the middle of the bars are the center (the MLE).}
 \label{fig:one}
@@ -725,11 +762,13 @@ It's a little different because the spatial part of the model (involving
 \verb@ewloc@ and \verb@nsloc@ is simpler).
 
 These confidence intervals have real-world meaning.  The parameters predicted
-are ``components of fitness'' (expected flower head count over the course
-of the experiment) for ``typical'' individuals (``typical'' spatial location
+are expected flower head count over the course
+of the experiment for ``typical'' individuals (``typical'' spatial location
 smack dab in the middle because we centered the spatial coordinates to
-have median zero) at each of the sites.  (BTW I have no idea why \verb@axis@
-leaves off one of the site labels when there's plenty of room.  To get this
+have median zero) at each of the populations.
+(BTW I have no idea why \verb@axis@
+leaves off one of the population labels when there's plenty of room.
+To get this
 plot right for the paper I just edited the PostScript file and put in the
 missing label by hand.  If you ask me, it's a bug.  But the \verb@axis@
 maintainer would probably say it's a feature.)
@@ -751,7 +790,7 @@ or \verb@predict.aster@ are meaningful without change).
 
 Let's look at one example.
 <<make-cout>>=
-cout4 <- aster(resp ~ varb + nsloc + ewloc + site * hdct - site,
+cout4 <- aster(resp ~ varb + nsloc + ewloc + pop * hdct - pop,
     pred, fam, varb, id, root, data = redata, type = "cond")
 pcout4 <- predict(cout4, varvar = varb, idvar = id, root = root,
     newdata = renewdata, se.fit = TRUE, amat = amat)
@@ -765,10 +804,10 @@ as in \verb@pout4@.
 Figure~\ref{fig:two} compares these two ``predictions'' and is produced by the
 following code
 <<label=fig2plot,include=FALSE>>=
-sitenames <- as.character(newdata$site)
+popnames <- as.character(newdata$pop)
 fit3 <- pcout4$fit
 fit4 <- pout4$fit
-i <- seq(along = sitenames)
+i <- seq(along = popnames)
 foo <- 0.1
 y4top <- fit4 + crit * pout4$se.fit
 y4bot <- fit4 - crit * pout4$se.fit
@@ -787,8 +826,8 @@ segments(i + 2.5 * foo, y3top, i + 0.5 * foo, y3top)
 segments(i + 2.5 * foo, fit3, i + 0.5 * foo, fit3)
 axis(side = 2)
 title(ylab = "unconditional mean value parameter")
-axis(side = 1, at = i, labels = sitenames)
-title(xlab = "site")
+axis(side = 1, at = i, labels = popnames)
+title(xlab = "population")
 @
 and appears on p.~\pageref{fig:two}.
 \begin{figure}
@@ -799,7 +838,7 @@ and appears on p.~\pageref{fig:two}.
 \end{center}
 \caption{\Sexpr{100 * conf.level}\% confidence intervals for unconditional
 mean value parameter for fitness (sum of head count for all years) at each
-site for a ``typical'' individual having position zero-zero and having
+population for a ``typical'' individual having position zero-zero and having
 the parameterization of Model~4, either an unconditional model (solid bar)
 or conditional model (dashed bar).
 Tick marks in the middle of the bars are the center (the MLE).}
@@ -813,7 +852,7 @@ and the other with $\boldtheta = \boldM \boldbeta$,
 are radically different.  There is no reason for the two types of predictions
 (of exactly the same thing) based on two radically different models should
 be similar.  And they aren't.  So we are only seeing what we should expect
-to see, an this doesn't prove anything about anything (except for the
+to see, and this doesn't prove anything about anything (except for the
 trivial fact that FEF and CEF aster models are different).
 
 \paragraph{Comment} We haven't really done justice to conditional models.

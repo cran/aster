@@ -20,8 +20,8 @@
     \item{hdct02}{Count of number of flower heads in 2002.}
     \item{hdct03}{Ditto for 2003.}
     \item{hdct04}{Ditto for 2004.}
-    \item{site}{the site of origin of the wild ancestors of the plant
-       (all plants were grown together, \code{site} encodes ancestry).}
+    \item{pop}{the remnant population of origin of the plant
+       (all plants were grown together, \code{pop} encodes ancestry).}
     \item{ewloc}{east-west location in plot.}
     \item{nsloc}{north-south location in plot.}
   }

@@ -228,9 +228,9 @@ fam <- c(1, 1, 1, 1, 1, 1, 3, 3, 3)
 hdct <- grep("hdct", as.character(redata$varb))
 hdct <- is.element(seq(along = redata$varb), hdct)
 redata <- data.frame(redata, hdct = as.integer(hdct))
-aout4 <- aster(resp ~ varb + nsloc + ewloc + site * hdct - site,
+aout4 <- aster(resp ~ varb + nsloc + ewloc + pop * hdct - pop,
     pred, fam, varb, id, root, data = redata)
-newdata <- data.frame(site = levels(echinacea$site))
+newdata <- data.frame(pop = levels(echinacea$pop))
 for (v in vars)
     newdata[[v]] <- 1
 newdata$root <- 1
@@ -250,7 +250,7 @@ for (i in 1:nind)
 foo <- predict(aout4, varvar = varb, idvar = id, root = root,
     newdata = renewdata, se.fit = TRUE, amat = amat)
 bar <- cbind(foo$fit, foo$se.fit)
-dimnames(bar) <- list(as.character(newdata$site), c("Estimate", "Std. Error"))
+dimnames(bar) <- list(as.character(newdata$pop), c("Estimate", "Std. Error"))
 print(bar)
 }
 \keyword{models}

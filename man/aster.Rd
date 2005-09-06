@@ -232,7 +232,7 @@ fam <- c(1, 1, 1, 1, 1, 1, 3, 3, 3)
 hdct <- grep("hdct", as.character(redata$varb))
 hdct <- is.element(seq(along = redata$varb), hdct)
 redata <- data.frame(redata, hdct = as.integer(hdct))
-aout4 <- aster(resp ~ varb + nsloc + ewloc + site * hdct - site,
+aout4 <- aster(resp ~ varb + nsloc + ewloc + pop * hdct - pop,
     pred, fam, varb, id, root, data = redata)
 summary(aout4, show.graph = TRUE)
 }

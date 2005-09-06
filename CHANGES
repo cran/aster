@@ -6,3 +6,7 @@
         added test in aster.R
         added package vignette
         added examples on all help pages to be used by users
+ 0.3-1  changed variable "site" to "pop" in echinacea.txt
+        corresponding changes in many other files
+        \usepackage[utf8]{inputenc} in tutor.Rnw
+        many small changes in wording in tutor.Rnw
