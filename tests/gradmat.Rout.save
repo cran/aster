@@ -1,6 +1,7 @@
 
-R : Copyright 2004, The R Foundation for Statistical Computing
-Version 2.0.1  (2004-11-15), ISBN 3-900051-07-0
+R : Copyright 2005, The R Foundation for Statistical Computing
+Version 2.2.0 beta (2005-09-26 r35681)
+ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -16,6 +17,7 @@ Type 'q()' to quit R.
 
 > 
 >  library(aster)
+Loading required package: trust
 > 
 >  set.seed(42)
 > 
@@ -101,17 +103,17 @@ varbl3      -1.80743    1.19680  -1.510    0.131
 Call:
 NULL
 
-              Estimate Std. Error   z value Pr(>|z|)
-(Intercept)  8.173e-01  6.865e-01     1.191    0.234
-foo          1.167e-01  2.630e-01     0.444    0.657
-siteB       -2.681e-01  6.180e-01    -0.434    0.664
-siteC       -9.232e-01  5.999e-01    -1.539    0.124
-siteD       -1.326e+00  8.440e-01    -1.571    0.116
-varbf3       4.307e-01  9.032e-01     0.477    0.634
-varbh2      -1.350e+00  9.006e-01    -1.499    0.134
-varbh3      -2.720e-01  7.136e-01    -0.381    0.703
-varbl2       5.227e-01  6.754e-01     0.774    0.439
-varbl3      -1.028e-12  7.319e-01 -1.41e-12    1.000
+              Estimate Std. Error  z value Pr(>|z|)
+(Intercept)  8.173e-01  6.865e-01    1.191    0.234
+foo          1.167e-01  2.630e-01    0.444    0.657
+siteB       -2.681e-01  6.180e-01   -0.434    0.664
+siteC       -9.232e-01  5.999e-01   -1.539    0.124
+siteD       -1.326e+00  8.440e-01   -1.571    0.116
+varbf3       4.307e-01  9.032e-01    0.477    0.634
+varbh2      -1.350e+00  9.006e-01   -1.499    0.134
+varbh3      -2.720e-01  7.136e-01   -0.381    0.703
+varbl2       5.227e-01  6.754e-01    0.774    0.439
+varbl3       5.547e-16  7.319e-01 7.58e-16    1.000
 > 
 >  foo <- match(sort(unique(site)), site)
 >  modmat.pred <- out$modmat[foo, , ]

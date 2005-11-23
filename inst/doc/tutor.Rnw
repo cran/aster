@@ -22,33 +22,17 @@
 
 \begin{document}
 
-<<foo,include=FALSE,echo=FALSE>>=
-options(keep.source = TRUE, width = 65)
-library(aster)
-foo <- packageDescription("aster")
-@
-
-\title{The Aster Package Tutorial (Version \Sexpr{foo$Version})}
+\title{The Aster Package Tutorial}
 \author{Charles J. Geyer}
 \maketitle
 
 \section{Preliminaries}
 
-% \subsection{Warning} \label{sec:warn}
-%
-% A redesign of the calling sequence of the functions
-% \begin{verbatim}
-% aster
-% predict.aster
-% predict.aster.formula
-% \end{verbatim}
-% is underway.  Some of the details of what follows is likely
-% to change in a future version (real soon now).
-
 \subsection{Library and Data}
 
 <<setup>>=
 library(aster)
+packageDescription("aster")$Version
 data(echinacea)
 @
 That's our package and the dataset for our examples.
@@ -205,10 +189,6 @@ rows of \verb@redata@.
 \section{Unconditional Aster Models}
 
 Now we are ready to begin discussion of Aster models.
-% First we load the package.
-% <<library>>=
-% library(aster)
-% @
 
 \subsection{More Preliminaries}
 
@@ -262,11 +242,6 @@ The reason for using an index vector for \verb@pred@ is so the condition
 their order in the data frame \verb@redata@ in any case.
 
 This may change in the future, but that's the way it is for now.
-
-% \paragraph{Warning}
-% This may change in the future, but that's the way it is for now.
-% In fact it is very likely to change in the future and in a
-% non-backwards-compatible way (see the warning in Sec~\ref{sec:warn}).
 
 \subsection{Fitting a Model}
 
@@ -911,8 +886,7 @@ nboot <- 100
 cover <- matrix(0, nboot, length(fit.hat))
 for (iboot in 1:nboot) {
     xstar <- raster(theta.hat, pred, fam, root)
-    aout4star <- aster(xstar, root, pred, fam, modmat, beta.hat,
-        check.analyticals = FALSE)
+    aout4star <- aster(xstar, root, pred, fam, modmat, beta.hat)
     pout4star <- predict(aout4star, x.pred, root.pred, modmat.pred,
         amat, se.fit = TRUE)
     upper <- pout4star$fit + crit * pout4star$se.fit
@@ -927,18 +901,20 @@ cbind(pboot, pboot.se)
 Not bad for the small \verb@nboot@.  We won't try a serious simulation
 because it would make this tutorial run too long.
 
-\paragraph{Comment} The \verb@check.analyticals = FALSE@ argument
-is passed to \verb@nlm@ which actually does the optimization.  (The
-code we wrote only calculates the log likelihood and its derivatives.)
+\paragraph{Comment}
+
 Other optimization options (calling \verb@optim@ are available), but
-we haven't done extensive testing to see which is better (Hmmmm.  Well
-on this job, using \verb@method = "L-BFGS-B"@ takes about four times
-longer than the default and \verb@method = "CG"@ takes about eight times
-longer.  So whatever problems \verb@optim@ is good for, it doesn't appear
-to be strictly convex objective functions like aster models have.)
+are slower.  See \url{http://www.stat.umn.edu/geyer/trust/time.pdf}.
+Using \verb@method = "nlm"@ instead of the default \verb@method = "trust"@
+takes 3--4 times as long, and using either method that calls \verb@optim@
+(either \verb@method = "L-BFGS-B"@ or \verb@method = "CG"@) takes about
+16 times as long.
+So whatever problems \verb@nlm@ and \verb@optim@ is good for,
+they don't appear to include strictly convex objective functions
+like aster models have.
 The starting parameter value \verb@beta.hat@ is supposed to speed things
-up, giving the optimization a good starting point (the simulation truth),
-but \verb@nlm@ still takes 150 iterations or so (not shown).
+up, giving the optimization a good starting point (the simulation truth).
+We haven't investigated whether it does or not.
 
 \end{document}
 

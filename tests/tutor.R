@@ -124,7 +124,7 @@
  for (iboot in 1:nboot) {
      xstar <- raster(theta.hat, pred.orig, fam.orig, root.orig)
      aout4star <- aster(xstar, root.orig, pred.orig, fam.orig,
-         modmat.orig, beta.hat, check.analyticals = FALSE)
+         modmat.orig, beta.hat)
      pout4star <- predict(aout4star, x.pred, root.pred, modmat.pred,
          amat.orig, se.fit = TRUE)
      upper <- pout4star$fit + crit.orig * pout4star$se.fit
@@ -134,7 +134,6 @@
  pboot <- apply(cover, 2, mean)
  pboot.se <- sqrt(pboot * (1 - pboot) / nboot)
  print(cbind(pboot, pboot.se))
-
 
 ###################################################
 ### chunk number 38: doit (again)
@@ -157,7 +156,6 @@
  pboot.se <- sqrt(pboot * (1 - pboot) / nboot)
  print(cbind(pboot, pboot.se))
 
-
 ###################################################
 ### chunk number 38: doit (yet again)
 ###################################################
@@ -169,6 +167,27 @@
      xstar <- raster(theta.hat, pred.orig, fam.orig, root.orig)
      aout4star <- aster(xstar, root.orig, pred.orig, fam.orig,
          modmat.orig, beta.hat, method = "L-B")
+     pout4star <- predict(aout4star, x.pred, root.pred, modmat.pred,
+         amat.orig, se.fit = TRUE)
+     upper <- pout4star$fit + crit.orig * pout4star$se.fit
+     lower <- pout4star$fit - crit.orig * pout4star$se.fit
+     cover[iboot, ] <- as.numeric(lower <= fit.hat & fit.hat <= upper)
+ }
+ pboot <- apply(cover, 2, mean)
+ pboot.se <- sqrt(pboot * (1 - pboot) / nboot)
+ print(cbind(pboot, pboot.se))
+
+###################################################
+### chunk number 38: doit (one mo time)
+###################################################
+
+ set.seed(42)
+ nboot <- 5
+ cover <- matrix(0, nboot, length(fit.hat))
+ for (iboot in 1:nboot) {
+     xstar <- raster(theta.hat, pred.orig, fam.orig, root.orig)
+     aout4star <- aster(xstar, root.orig, pred.orig, fam.orig,
+         modmat.orig, beta.hat, method = "nlm", check.analyticals = FALSE)
      pout4star <- predict(aout4star, x.pred, root.pred, modmat.pred,
          amat.orig, se.fit = TRUE)
      upper <- pout4star$fit + crit.orig * pout4star$se.fit

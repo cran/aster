@@ -10,3 +10,5 @@
         corresponding changes in many other files
         \usepackage[utf8]{inputenc} in tutor.Rnw
         many small changes in wording in tutor.Rnw
+ 0.4    made trust the default optimizer
+ 0.4-1  removed the timing.pdf vignette, fixed xrefs to trust in Rd files

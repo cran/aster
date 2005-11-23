@@ -14,13 +14,13 @@ aster(x, \dots)
 
 \method{aster}{default}(x, root, pred, fam, modmat, parm,
     type = c("unconditional", "conditional"),
-    method = c("nlm", "CG", "L-BFGS-B"), fscale, maxiter = 1000,
-    nowarn = TRUE, newton = TRUE, coef.names, \dots)
+    method = c("trust", "nlm", "CG", "L-BFGS-B"), fscale, maxiter = 1000,
+    nowarn = TRUE, newton = TRUE, optout = FALSE, coef.names, \dots)
 
 \method{aster}{formula}(formula, pred, fam, varvar, idvar, root,
     data, parm, type = c("unconditional", "conditional"),
-    method = c("nlm", "CG", "L-BFGS-B"), fscale, maxiter = 1000,
-    nowarn = TRUE, newton = TRUE, \dots)
+    method = c("trust", "nlm", "CG", "L-BFGS-B"), fscale, maxiter = 1000,
+    nowarn = TRUE, newton = TRUE, optout = FALSE, \dots)
 }
 \arguments{
 
@@ -64,7 +64,8 @@ aster(x, \dots)
   \item{type}{type of model.
     The value of this argument can be abbreviated.}
 
-  \item{method}{optimization method.  If \code{"nlm"} then the
+  \item{method}{optimization method.  If \code{"trust"} then the
+    \code{\link[trust]{trust}} function is used.  If \code{"nlm"} then the
     \code{\link{nlm}} function is used.  Otherwise the
     \code{\link{optim}} function is used with the specified \code{method}
     supplied to it.
@@ -79,7 +80,14 @@ aster(x, \dots)
     the optimization routine.}
 
   \item{newton}{if \code{TRUE} (the default), do one Newton iteration
-    on the result produced by the optimization routine.}
+    on the result produced by the optimization routine, except when
+    \verb@method == "trust"@ when no such Newton iteration is done,
+    regardless of the value of \verb@newton@, because \code{\link[trust]{trust}}
+    always terminates with a Newton iteration when it converges.}
+
+  \item{optout}{if \code{TRUE}, save the entire result of the optimization
+    routine (\code{link[trust]{trust}}, \code{link{nlm}}, or \code{link{optim}},
+    as the case may be).}
 
   \item{coef.names}{names of the regression coefficients.  If missing,
     \code{dimnames(modmat)[[3]]} is used.  In \verb@aster.formula@ these
@@ -204,6 +212,9 @@ things in the right order and creates \code{varvar} and \code{idvar}.
       \code{type == "unconditional"}.}
   \item{fisher}{Expected Fisher information at the fitted \code{coefficients}
       vector.}
+  \item{optout}{The object returned by the optimization routine
+    (\code{link[trust]{trust}}, \code{link{nlm}}, or \code{link{optim}}).
+    Only returned when the argument \code{optout} is \code{TRUE}.}
 
   Calls to \code{aster.formula} return a list also containing:
 

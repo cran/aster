@@ -1,6 +1,7 @@
 
 R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.1.1 Patched (2005-08-04), ISBN 3-900051-07-0
+Version 2.2.0 beta (2005-09-26 r35681)
+ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -16,6 +17,7 @@ Type 'q()' to quit R.
 
 > 
 >  library(aster)
+Loading required package: trust
 > 
 >  data(echinacea)
 >  names(echinacea)
@@ -196,7 +198,7 @@ Original predictor variables dropped (aliased)
 >  for (iboot in 1:nboot) {
 +      xstar <- raster(theta.hat, pred.orig, fam.orig, root.orig)
 +      aout4star <- aster(xstar, root.orig, pred.orig, fam.orig,
-+          modmat.orig, beta.hat, check.analyticals = FALSE)
++          modmat.orig, beta.hat)
 +      pout4star <- predict(aout4star, x.pred, root.pred, modmat.pred,
 +          amat.orig, se.fit = TRUE)
 +      upper <- pout4star$fit + crit.orig * pout4star$se.fit
@@ -214,7 +216,6 @@ Original predictor variables dropped (aliased)
 [5,]   1.0 0.0000000
 [6,]   1.0 0.0000000
 [7,]   1.0 0.0000000
-> 
 > 
 > ###################################################
 > ### chunk number 38: doit (again)
@@ -245,7 +246,6 @@ Original predictor variables dropped (aliased)
 [6,]   1.0 0.0000000
 [7,]   1.0 0.0000000
 > 
-> 
 > ###################################################
 > ### chunk number 38: doit (yet again)
 > ###################################################
@@ -257,6 +257,35 @@ Original predictor variables dropped (aliased)
 +      xstar <- raster(theta.hat, pred.orig, fam.orig, root.orig)
 +      aout4star <- aster(xstar, root.orig, pred.orig, fam.orig,
 +          modmat.orig, beta.hat, method = "L-B")
++      pout4star <- predict(aout4star, x.pred, root.pred, modmat.pred,
++          amat.orig, se.fit = TRUE)
++      upper <- pout4star$fit + crit.orig * pout4star$se.fit
++      lower <- pout4star$fit - crit.orig * pout4star$se.fit
++      cover[iboot, ] <- as.numeric(lower <= fit.hat & fit.hat <= upper)
++  }
+>  pboot <- apply(cover, 2, mean)
+>  pboot.se <- sqrt(pboot * (1 - pboot) / nboot)
+>  print(cbind(pboot, pboot.se))
+     pboot  pboot.se
+[1,]   0.8 0.1788854
+[2,]   0.8 0.1788854
+[3,]   1.0 0.0000000
+[4,]   0.8 0.1788854
+[5,]   1.0 0.0000000
+[6,]   1.0 0.0000000
+[7,]   1.0 0.0000000
+> 
+> ###################################################
+> ### chunk number 38: doit (one mo time)
+> ###################################################
+> 
+>  set.seed(42)
+>  nboot <- 5
+>  cover <- matrix(0, nboot, length(fit.hat))
+>  for (iboot in 1:nboot) {
++      xstar <- raster(theta.hat, pred.orig, fam.orig, root.orig)
++      aout4star <- aster(xstar, root.orig, pred.orig, fam.orig,
++          modmat.orig, beta.hat, method = "nlm", check.analyticals = FALSE)
 +      pout4star <- predict(aout4star, x.pred, root.pred, modmat.pred,
 +          amat.orig, se.fit = TRUE)
 +      upper <- pout4star$fit + crit.orig * pout4star$se.fit

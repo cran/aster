@@ -4,8 +4,8 @@ aster <- function(x, ...)
 
 aster.default <- function(x, root, pred, fam, modmat, parm,
     type = c("unconditional", "conditional"),
-    method = c("nlm", "CG", "L-BFGS-B"), fscale, maxiter = 1000,
-    nowarn = TRUE, newton = TRUE, coef.names, ...)
+    method = c("trust", "nlm", "CG", "L-BFGS-B"), fscale, maxiter = 1000,
+    nowarn = TRUE, newton = TRUE, optout = FALSE, coef.names, ...)
 {
     type <- match.arg(type)
     method <- match.arg(method)
@@ -54,6 +54,26 @@ aster.default <- function(x, root, pred, fam, modmat, parm,
     if (missing(coef.names))
         coef.names <- dimnames(modmat)[[3]]
 
+    if (method == "trust") {
+        objfun <- function(beta) {
+            mlogl(beta, pred, fam, x, root, modmat, deriv = 2,
+                type = type)
+        }
+        otherargs <- list(...)
+        rinit <- otherargs$rinit
+        rmax <- otherargs$rmax
+        if (is.null(rinit)) rinit <- 1
+        if (is.null(rmax)) rmax <- 10
+        if (nowarn) {
+            suppressWarnings(oout <- trust(objfun, parm, rinit, rmax,
+                iterlim = maxiter, ...))
+        } else {
+            oout <- trust(objfun, parm, rinit, rmax,
+                iterlim = maxiter, ...)
+        }
+        aout <- list(coefficients = oout$argument,
+            iter = oout$iterations, converged = oout$converged)
+    }
     if (method == "nlm") {
         objfun <- function(beta) {
             out <- mlogl(beta, pred, fam, x, root, modmat, deriv = 1,
@@ -72,7 +92,8 @@ aster.default <- function(x, root, pred, fam, modmat, parm,
         aout <- list(coefficients = oout$estimate,
             iter = oout$iterations, code = oout$code,
             converged = oout$code <= 2)
-    } else {
+    }
+    if (method == "CG" || method == "L-BFGS-B") {
         objfun <- function(beta)
             mlogl(beta, pred, fam, x, root, modmat, deriv = 0,
                 type = type)$value
@@ -100,9 +121,11 @@ aster.default <- function(x, root, pred, fam, modmat, parm,
         if (method == "L-BFGS-B")
             aout$message <- oout$message
     }
+    if (optout)
+        aout$optout <- oout
     mout <- mlogl(aout$coefficients, pred, fam, x, root, modmat, deriv = 2,
         type = type)
-    if (newton) {
+    if (newton && method != "trust") {
         qux <- qr(mout$hessian)
         if (qux$rank < dim(mout$hessian)[1]) {
             warning("rank deficient hessian, Newton step skipped")
@@ -152,8 +175,8 @@ aster.default <- function(x, root, pred, fam, modmat, parm,
 
 aster.formula <- function(formula, pred, fam, varvar, idvar, root,
     data, parm, type = c("unconditional", "conditional"),
-    method = c("nlm", "CG", "L-BFGS-B"), fscale, maxiter = 1000,
-    nowarn = TRUE, newton = TRUE, ...)
+    method = c("trust", "nlm", "CG", "L-BFGS-B"), fscale, maxiter = 1000,
+    nowarn = TRUE, newton = TRUE, optout = FALSE, ...)
 {
     type <- match.arg(type)
     method <- match.arg(method)
@@ -231,7 +254,7 @@ aster.formula <- function(formula, pred, fam, varvar, idvar, root,
         fscale <- nind
 
     out <- aster(x, root, pred, fam, modmat, parm, type, method,
-        fscale, maxiter, nowarn, newton, ...)
+        fscale, maxiter, nowarn, newton, optout, ...)
 
     class(out) <- c("aster.formula", "aster")
     out$call <- call

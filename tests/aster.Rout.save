@@ -1,6 +1,7 @@
 
 R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.1.1 Patched (2005-08-04), ISBN 3-900051-07-0
+Version 2.2.0 beta (2005-09-26 r35681)
+ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -16,6 +17,7 @@ Type 'q()' to quit R.
 
 > 
 >  library(aster)
+Loading required package: trust
 > 
 >  set.seed(42)
 >  nind <- 25
@@ -56,32 +58,38 @@ Type 'q()' to quit R.
 > 
 >  x <- raster(theta, pred, fam, root)
 >  
+>  out0 <- aster(x, root, pred, fam, modmat, type = "unco", method = "trust")
 >  out1 <- aster(x, root, pred, fam, modmat, type = "unco", method = "nlm")
 >  out2 <- aster(x, root, pred, fam, modmat, type = "unco", method = "CG")
 >  out3 <- aster(x, root, pred, fam, modmat, type = "unco", method = "L-B")
 > 
+>  all.equal(out0$coefficients, out1$coefficients)
+[1] TRUE
 >  all.equal(out1$coefficients, out2$coefficients)
 [1] TRUE
 >  all.equal(out2$coefficients, out3$coefficients)
 [1] "Mean relative  difference: 4.052881e-08"
->  all.equal(out3$coefficients, out1$coefficients)
-[1] "Mean relative  difference: 4.059093e-08"
+>  all.equal(out3$coefficients, out0$coefficients)
+[1] "Mean relative  difference: 4.060586e-08"
 > 
->  print(out1$coefficients)
+>  print(out0$coefficients)
 [1] -0.06809277 -0.30705441  0.18624357  0.07757573 -0.37636339 -0.08435995
 > 
+>  out0 <- aster(x, root, pred, fam, modmat, type = "cond", method = "trust")
 >  out1 <- aster(x, root, pred, fam, modmat, type = "cond", method = "nlm")
 >  out2 <- aster(x, root, pred, fam, modmat, type = "cond", method = "CG")
 >  out3 <- aster(x, root, pred, fam, modmat, type = "cond", method = "L-B")
 > 
+>  all.equal(out0$coefficients, out1$coefficients)
+[1] TRUE
 >  all.equal(out1$coefficients, out2$coefficients)
 [1] TRUE
 >  all.equal(out2$coefficients, out3$coefficients)
 [1] TRUE
->  all.equal(out3$coefficients, out1$coefficients)
+>  all.equal(out3$coefficients, out0$coefficients)
 [1] TRUE
 > 
->  print(out1$coefficients)
+>  print(out0$coefficients)
 [1]  1.74295791 -1.54997014 -1.71291553 -1.72922986 -2.16895832 -0.02625205
 > 
 > 
