@@ -12,3 +12,22 @@
         many small changes in wording in tutor.Rnw
  0.4    made trust the default optimizer
  0.4-1  removed the timing.pdf vignette, fixed xrefs to trust in Rd files
+ 0.4-2  added import(trust) to NAMESPACE
+ 0.5    added 4-th family "two.trunc.poisson"
+        actually implemented code for k-truncated Poisson
+        put document describing k-truncated Poisson in inst/doc
+        new R function rktp that simulates k-truncated Poisson
+        cannot implement k-truncated Poisson for arbitrary family
+              until families get (non-exponential family) parameters,
+              such as k for k-truncated Poisson, r for negative binomial,
+              offset for Poisson, n for binomial(n, p), sigma for
+              normal-location.  All of that goes on the to-do list,
+              along with multivariate families (as per revised version of
+              the paper), especially multinomial and normal-location-scale.
+        fixed (?!) or at least worked around nasty validation bug in
+              predict.aster
+ 0.5-1  fixed bug in tests/tutor.R caused by bug fix in R.  optim was ignoring
+            its maxit argument when method == "CG".  When it stopped ignoring
+            it, it failed to converge, because it takes more than 1000
+            iterations.
+ 0.5-2  fixed bug in inst/doc/trunc.Rnw -- must be vignette to pass R CMD check

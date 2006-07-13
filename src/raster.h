@@ -21,7 +21,13 @@ double my_rbinom(double n, double p);
 
 double my_rpois(double mu);
 
+double my_ppois(double x, double lambda, int lower_tail, int log_p);
+
+double my_dpois(double x, double lambda, int give_log);
+
 double my_rnzp(double mu);
+
+double my_rktp(int k, double mu);
 
 void my_GetRNGstate(void);
 

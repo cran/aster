@@ -61,6 +61,13 @@ static R_NativePrimitiveArgType ast_rnzp_types[6] =
 static R_NativeArgStyle ast_rnzp_styles[6] =
     {R_ARG_IN, R_ARG_IN, R_ARG_IN, R_ARG_IN, R_ARG_IN, R_ARG_OUT};
 
+static R_NativePrimitiveArgType ast_rktp_types[8] =
+    {INTSXP, INTSXP, INTSXP, INTSXP, REALSXP, REALSXP, INTSXP, REALSXP};
+
+static R_NativeArgStyle ast_rktp_styles[8] =
+    {R_ARG_IN, R_ARG_IN, R_ARG_IN, R_ARG_IN, R_ARG_IN, R_ARG_IN, R_ARG_IN,
+    R_ARG_OUT};
+
 static R_NativePrimitiveArgType ast_mlogl_types[13] =
     {INTSXP, INTSXP, INTSXP, INTSXP, INTSXP, INTSXP, REALSXP, REALSXP,
     REALSXP, REALSXP, REALSXP, REALSXP, REALSXP};
@@ -121,6 +128,8 @@ static R_CMethodDef cMethods[] = {
         9, ast_tt2var_types, ast_tt2var_styles},
     {"aster_rnzp", (DL_FUNC) &aster_rnzp,
         6, ast_rnzp_types, ast_rnzp_styles},
+    {"aster_rktp", (DL_FUNC) &aster_rktp,
+        8, ast_rktp_types, ast_rktp_styles},
     {"aster_simulate_data", (DL_FUNC) &aster_simulate_data,
         7, ast_xpred_types, ast_xpred_styles},
     {"aster_mlogl_cond", (DL_FUNC) &aster_mlogl_cond,

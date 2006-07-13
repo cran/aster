@@ -121,10 +121,15 @@
  set.seed(42)
  nboot <- 5
  cover <- matrix(0, nboot, length(fit.hat))
+ niter <- NULL
+ cpu <- proc.time()[1]
+ beta.star <- matrix(NA, nboot, length(beta.hat))
  for (iboot in 1:nboot) {
      xstar <- raster(theta.hat, pred.orig, fam.orig, root.orig)
      aout4star <- aster(xstar, root.orig, pred.orig, fam.orig,
          modmat.orig, beta.hat)
+     niter <- rbind(niter, aout4star$iter)
+     beta.star[iboot, ] <- aout4star$coefficients
      pout4star <- predict(aout4star, x.pred, root.pred, modmat.pred,
          amat.orig, se.fit = TRUE)
      upper <- pout4star$fit + crit.orig * pout4star$se.fit
@@ -134,6 +139,9 @@
  pboot <- apply(cover, 2, mean)
  pboot.se <- sqrt(pboot * (1 - pboot) / nboot)
  print(cbind(pboot, pboot.se))
+ niter.save <- cbind(niter)
+ cpu.save <- proc.time()[1] - cpu
+ beta.star.trust <- beta.star
 
 ###################################################
 ### chunk number 38: doit (again)
@@ -142,10 +150,14 @@
  set.seed(42)
  nboot <- 5
  cover <- matrix(0, nboot, length(fit.hat))
+ niter <- NULL
+ cpu <- proc.time()[1]
  for (iboot in 1:nboot) {
      xstar <- raster(theta.hat, pred.orig, fam.orig, root.orig)
      aout4star <- aster(xstar, root.orig, pred.orig, fam.orig,
-         modmat.orig, beta.hat, method = "CG")
+         modmat.orig, beta.hat, method = "CG", maxiter = 1e4)
+     niter <- rbind(niter, aout4star$iter)
+     beta.star[iboot, ] <- aout4star$coefficients
      pout4star <- predict(aout4star, x.pred, root.pred, modmat.pred,
          amat.orig, se.fit = TRUE)
      upper <- pout4star$fit + crit.orig * pout4star$se.fit
@@ -155,6 +167,9 @@
  pboot <- apply(cover, 2, mean)
  pboot.se <- sqrt(pboot * (1 - pboot) / nboot)
  print(cbind(pboot, pboot.se))
+ niter.save <- cbind(niter.save, niter)
+ cpu.save <- c(cpu.save, proc.time()[1] - cpu)
+ all.equal(beta.star.trust, beta.star)
 
 ###################################################
 ### chunk number 38: doit (yet again)
@@ -163,10 +178,14 @@
  set.seed(42)
  nboot <- 5
  cover <- matrix(0, nboot, length(fit.hat))
+ niter <- NULL
+ cpu <- proc.time()[1]
  for (iboot in 1:nboot) {
      xstar <- raster(theta.hat, pred.orig, fam.orig, root.orig)
      aout4star <- aster(xstar, root.orig, pred.orig, fam.orig,
          modmat.orig, beta.hat, method = "L-B")
+     niter <- rbind(niter, aout4star$iter)
+     beta.star[iboot, ] <- aout4star$coefficients
      pout4star <- predict(aout4star, x.pred, root.pred, modmat.pred,
          amat.orig, se.fit = TRUE)
      upper <- pout4star$fit + crit.orig * pout4star$se.fit
@@ -176,6 +195,9 @@
  pboot <- apply(cover, 2, mean)
  pboot.se <- sqrt(pboot * (1 - pboot) / nboot)
  print(cbind(pboot, pboot.se))
+ niter.save <- cbind(niter.save, niter)
+ cpu.save <- c(cpu.save, proc.time()[1] - cpu)
+ all.equal(beta.star.trust, beta.star)
 
 ###################################################
 ### chunk number 38: doit (one mo time)
@@ -184,10 +206,14 @@
  set.seed(42)
  nboot <- 5
  cover <- matrix(0, nboot, length(fit.hat))
+ niter <- NULL
+ cpu <- proc.time()[1]
  for (iboot in 1:nboot) {
      xstar <- raster(theta.hat, pred.orig, fam.orig, root.orig)
      aout4star <- aster(xstar, root.orig, pred.orig, fam.orig,
          modmat.orig, beta.hat, method = "nlm", check.analyticals = FALSE)
+     niter <- rbind(niter, aout4star$iter)
+     beta.star[iboot, ] <- aout4star$coefficients
      pout4star <- predict(aout4star, x.pred, root.pred, modmat.pred,
          amat.orig, se.fit = TRUE)
      upper <- pout4star$fit + crit.orig * pout4star$se.fit
@@ -197,5 +223,12 @@
  pboot <- apply(cover, 2, mean)
  pboot.se <- sqrt(pboot * (1 - pboot) / nboot)
  print(cbind(pboot, pboot.se))
+ niter.save <- cbind(niter.save, niter)
+ cpu.save <- c(cpu.save, proc.time()[1] - cpu)
+ all.equal(beta.star.trust, beta.star)
 
+ # dimnames(niter.save) <- list(NULL, c("trust", "CG", "L-BFGS-B", "nlm"))
+ niter.save
+ cpu.save
+ length(beta.hat)
 

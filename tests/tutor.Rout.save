@@ -1,6 +1,6 @@
 
-R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.2.0 beta (2005-09-26 r35681)
+R : Copyright 2006, The R Foundation for Statistical Computing
+Version 2.3.1 (2006-06-01)
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -12,7 +12,7 @@ Type 'contributors()' for more information and
 'citation()' on how to cite R or R packages in publications.
 
 Type 'demo()' for some demos, 'help()' for on-line help, or
-'help.start()' for a HTML browser interface to help.
+'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
 > 
@@ -195,10 +195,15 @@ Original predictor variables dropped (aliased)
 >  set.seed(42)
 >  nboot <- 5
 >  cover <- matrix(0, nboot, length(fit.hat))
+>  niter <- NULL
+>  cpu <- proc.time()[1]
+>  beta.star <- matrix(NA, nboot, length(beta.hat))
 >  for (iboot in 1:nboot) {
 +      xstar <- raster(theta.hat, pred.orig, fam.orig, root.orig)
 +      aout4star <- aster(xstar, root.orig, pred.orig, fam.orig,
 +          modmat.orig, beta.hat)
++      niter <- rbind(niter, aout4star$iter)
++      beta.star[iboot, ] <- aout4star$coefficients
 +      pout4star <- predict(aout4star, x.pred, root.pred, modmat.pred,
 +          amat.orig, se.fit = TRUE)
 +      upper <- pout4star$fit + crit.orig * pout4star$se.fit
@@ -216,6 +221,9 @@ Original predictor variables dropped (aliased)
 [5,]   1.0 0.0000000
 [6,]   1.0 0.0000000
 [7,]   1.0 0.0000000
+>  niter.save <- cbind(niter)
+>  cpu.save <- proc.time()[1] - cpu
+>  beta.star.trust <- beta.star
 > 
 > ###################################################
 > ### chunk number 38: doit (again)
@@ -224,10 +232,14 @@ Original predictor variables dropped (aliased)
 >  set.seed(42)
 >  nboot <- 5
 >  cover <- matrix(0, nboot, length(fit.hat))
+>  niter <- NULL
+>  cpu <- proc.time()[1]
 >  for (iboot in 1:nboot) {
 +      xstar <- raster(theta.hat, pred.orig, fam.orig, root.orig)
 +      aout4star <- aster(xstar, root.orig, pred.orig, fam.orig,
-+          modmat.orig, beta.hat, method = "CG")
++          modmat.orig, beta.hat, method = "CG", maxiter = 1e4)
++      niter <- rbind(niter, aout4star$iter)
++      beta.star[iboot, ] <- aout4star$coefficients
 +      pout4star <- predict(aout4star, x.pred, root.pred, modmat.pred,
 +          amat.orig, se.fit = TRUE)
 +      upper <- pout4star$fit + crit.orig * pout4star$se.fit
@@ -245,6 +257,10 @@ Original predictor variables dropped (aliased)
 [5,]   1.0 0.0000000
 [6,]   1.0 0.0000000
 [7,]   1.0 0.0000000
+>  niter.save <- cbind(niter.save, niter)
+>  cpu.save <- c(cpu.save, proc.time()[1] - cpu)
+>  all.equal(beta.star.trust, beta.star)
+[1] TRUE
 > 
 > ###################################################
 > ### chunk number 38: doit (yet again)
@@ -253,10 +269,14 @@ Original predictor variables dropped (aliased)
 >  set.seed(42)
 >  nboot <- 5
 >  cover <- matrix(0, nboot, length(fit.hat))
+>  niter <- NULL
+>  cpu <- proc.time()[1]
 >  for (iboot in 1:nboot) {
 +      xstar <- raster(theta.hat, pred.orig, fam.orig, root.orig)
 +      aout4star <- aster(xstar, root.orig, pred.orig, fam.orig,
 +          modmat.orig, beta.hat, method = "L-B")
++      niter <- rbind(niter, aout4star$iter)
++      beta.star[iboot, ] <- aout4star$coefficients
 +      pout4star <- predict(aout4star, x.pred, root.pred, modmat.pred,
 +          amat.orig, se.fit = TRUE)
 +      upper <- pout4star$fit + crit.orig * pout4star$se.fit
@@ -274,6 +294,10 @@ Original predictor variables dropped (aliased)
 [5,]   1.0 0.0000000
 [6,]   1.0 0.0000000
 [7,]   1.0 0.0000000
+>  niter.save <- cbind(niter.save, niter)
+>  cpu.save <- c(cpu.save, proc.time()[1] - cpu)
+>  all.equal(beta.star.trust, beta.star)
+[1] "Mean relative  difference: 3.730259e-06"
 > 
 > ###################################################
 > ### chunk number 38: doit (one mo time)
@@ -282,10 +306,14 @@ Original predictor variables dropped (aliased)
 >  set.seed(42)
 >  nboot <- 5
 >  cover <- matrix(0, nboot, length(fit.hat))
+>  niter <- NULL
+>  cpu <- proc.time()[1]
 >  for (iboot in 1:nboot) {
 +      xstar <- raster(theta.hat, pred.orig, fam.orig, root.orig)
 +      aout4star <- aster(xstar, root.orig, pred.orig, fam.orig,
 +          modmat.orig, beta.hat, method = "nlm", check.analyticals = FALSE)
++      niter <- rbind(niter, aout4star$iter)
++      beta.star[iboot, ] <- aout4star$coefficients
 +      pout4star <- predict(aout4star, x.pred, root.pred, modmat.pred,
 +          amat.orig, se.fit = TRUE)
 +      upper <- pout4star$fit + crit.orig * pout4star$se.fit
@@ -303,6 +331,22 @@ Original predictor variables dropped (aliased)
 [5,]   1.0 0.0000000
 [6,]   1.0 0.0000000
 [7,]   1.0 0.0000000
+>  niter.save <- cbind(niter.save, niter)
+>  cpu.save <- c(cpu.save, proc.time()[1] - cpu)
+>  all.equal(beta.star.trust, beta.star)
+[1] TRUE
 > 
+>  # dimnames(niter.save) <- list(NULL, c("trust", "CG", "L-BFGS-B", "nlm"))
+>  niter.save
+       function gradient function gradient    
+[1,] 4    11710     4602      529      529 168
+[2,] 5    10042     3945      547      547 172
+[3,] 4    10412     4097      553      553 171
+[4,] 4     7361     2893      459      459 172
+[5,] 5    10608     4176      605      605 174
+>  cpu.save
+[1]   2.228 452.228  36.730   7.145
+>  length(beta.hat)
+[1] 17
 > 
 > 

@@ -1,6 +1,6 @@
 
-R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.2.0 beta (2005-09-26 r35681)
+R : Copyright 2006, The R Foundation for Statistical Computing
+Version 2.3.1 (2006-06-01)
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -12,7 +12,7 @@ Type 'contributors()' for more information and
 'citation()' on how to cite R or R packages in publications.
 
 Type 'demo()' for some demos, 'help()' for on-line help, or
-'help.start()' for a HTML browser interface to help.
+'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
 > 
@@ -169,7 +169,7 @@ varbf3       4.307e-01  9.032e-01    0.477    0.634
 varbh2      -1.350e+00  9.006e-01   -1.499    0.134
 varbh3      -2.720e-01  7.136e-01   -0.381    0.703
 varbl2       5.227e-01  6.754e-01    0.774    0.439
-varbl3       5.547e-16  7.319e-01 7.58e-16    1.000
+varbl3       6.023e-16  7.319e-01 8.23e-16    1.000
 > 
 >  fred <- predict(out3, modmat = modmat.pred, parm.type = "canon",
 +      se.fit = TRUE)

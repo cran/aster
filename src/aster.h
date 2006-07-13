@@ -51,6 +51,9 @@ void aster_id_delsqpsi_m(int *nindin, int *nnodein, int *ncoefin, int *pred,
 void aster_rnzp(int *nin, int *len_xpred_in, int *len_mu_in,
     double *xpred, double *mu, double *result);
 
+void aster_rktp(int *nin, int *len_xpred_in, int *len_mu_in, int *len_k_in,
+    double *xpred_in, double *mu_in, int *k_in, double *result);
+
 void aster_simulate_data(int *nindin, int *nnodein, int *pred, int *fam,
     double *theta, double *root, double *x);
 

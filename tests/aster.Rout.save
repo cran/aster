@@ -1,6 +1,6 @@
 
-R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.2.0 beta (2005-09-26 r35681)
+R : Copyright 2006, The R Foundation for Statistical Computing
+Version 2.3.1 (2006-06-01)
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -12,7 +12,7 @@ Type 'contributors()' for more information and
 'citation()' on how to cite R or R packages in publications.
 
 Type 'demo()' for some demos, 'help()' for on-line help, or
-'help.start()' for a HTML browser interface to help.
+'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
 > 
@@ -68,7 +68,7 @@ Loading required package: trust
 >  all.equal(out1$coefficients, out2$coefficients)
 [1] TRUE
 >  all.equal(out2$coefficients, out3$coefficients)
-[1] "Mean relative  difference: 4.052881e-08"
+[1] "Mean relative  difference: 4.024604e-08"
 >  all.equal(out3$coefficients, out0$coefficients)
 [1] "Mean relative  difference: 4.060586e-08"
 > 

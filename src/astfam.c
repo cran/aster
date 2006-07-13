@@ -121,6 +121,66 @@ static double non_zero_poisson_simulate(double xpred, double theta)
     return result;
 }
 
+static int two_trunc_poisson_validate(double x, double xpred)
+{
+    int foo = 1;
+    foo = foo && (xpred == my_round(xpred));
+    foo = foo && (x == my_round(x));
+    foo = foo && (xpred >= 0.0);
+    foo = foo && (x >= 0.0);
+    foo = foo && (xpred > 0.0 || x == 0.0);
+    foo = foo && (xpred == 0.0 || x > 2.0);
+    return foo;
+}
+
+static double two_trunc_poisson(int deriv, double theta)
+{
+    int k = 2;
+    double mu = exp(theta);
+    double foo, bar, baz, qux, alpha;
+
+    switch (deriv) {
+    case 0:
+        return mu + my_ppois(k, mu, 0, 1);
+    case 1:
+        foo = my_ppois(k + 1, mu, 0, 0);
+        if (foo == 0.0) {
+            return mu + k + 1;
+        } else {
+            bar = my_dpois(k + 1, mu, 0);
+            return mu + (k + 1) / (1.0 + foo / bar);
+        }
+    case 2:
+        foo = my_ppois(k + 1, mu, 0, 0);
+        if (foo == 0.0) {
+            qux = 0.0;
+        } else {
+            bar = my_dpois(k + 1, mu, 0);
+            qux = foo / bar;
+        }
+        alpha = (k + 1) / (1.0 + qux);
+        if (qux < 1.0) {
+            baz = qux / (1.0 + qux);
+        } else {
+            baz = 1.0 / (1.0 / qux + 1.0);
+        }
+        return mu * (1.0 - alpha * (1.0 - (k + 1) * baz / mu));
+    default:
+        die("deriv %d not valid", deriv);
+    }
+}
+
+static double two_trunc_poisson_simulate(double xpred, double theta)
+{
+    double mu = exp(theta);
+    double result = 0.0;
+    int i;
+
+    for (i = 0; i < xpred; ++i)
+        result += my_rktp(2, mu);
+    return result;
+}
+
 typedef double (*famfun_ptr)(int deriv, double theta);
 typedef int (*famval_ptr)(double x, double xpred);
 typedef double (*famsim_ptr)(double xpred, double theta);
@@ -138,6 +198,8 @@ static struct funtab myfuntab[] =
     {"poisson", poisson, poisson_validate, poisson_simulate},
     {"non.zero.poisson", non_zero_poisson, non_zero_poisson_validate,
         non_zero_poisson_simulate},
+    {"two.trunc.poisson", two_trunc_poisson, two_trunc_poisson_validate,
+        two_trunc_poisson_simulate},
     {NULL, NULL, NULL, NULL},
 };
 

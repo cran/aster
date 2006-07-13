@@ -71,6 +71,16 @@ double my_rpois(double mu)
     return rpois(mu);
 }
 
+double my_ppois(double x, double lambda, int lower_tail, int log_p)
+{
+    return ppois(x, lambda, lower_tail, log_p);
+}
+
+double my_dpois(double x, double lambda, int give_log)
+{
+    return dpois(x, lambda, give_log);
+}
+
 double my_rnzp(double mu)
 {
     if (mu <= 0.0)
@@ -117,6 +127,58 @@ void aster_rnzp(int *nin, int *len_xpred_in, int *len_mu_in,
     PutRNGstate();
 }
 
+double my_rktp(int k, double mu)
+{
+    int m;
+    double mdoub;
+
+    if (mu <= 0.0)
+        die("non-positive mu in k-truncated-poisson simulator\n");
+    if (k <= 0)
+        die("negative k in k-truncated-poisson simulator\n");
+
+    mdoub = k + 1 - mu;
+    if (mdoub < 0.0)
+        mdoub = 0.0;
+    m = mdoub;
+    if (m < mdoub)
+        m = m + 1;
+    /* since mu > 0.0 we have 0.0 <= mdoub < k + 1 hence 0 <= m <= k + 1 */
+
+    for (;;) {
+        double x = rpois(mu) + m;
+        double u = unif_rand();
+        double a = 1.0;
+        int j;
+        for (j = 0; j < m; ++j)
+            a *= (k + 1 - j) / (x - j);
+        if (u < a && x > k)
+            return x;
+    }
+}
+
+void aster_rktp(int *nin, int *len_xpred_in, int *len_mu_in, int *len_k_in,
+    double *xpred_in, double *mu_in, int *k_in, double *result)
+{
+    int n = nin[0];
+    int len_xpred = len_xpred_in[0];
+    int len_mu = len_mu_in[0];
+    int len_k = len_k_in[0];
+    int i, j;
+
+    GetRNGstate();
+    for (i = 0; i < n; ++i) {
+        double xpred = xpred_in[i % len_xpred];
+        double mu = mu_in[i % len_mu];
+        int k = k_in[i % len_k];
+        double foo = 0.0;
+        for (j = 0; j < xpred; ++j)
+            foo += my_rktp(k, mu);
+        result[i] = foo;
+    }
+    PutRNGstate();
+}
+
 void my_GetRNGstate(void)
 {
     GetRNGstate();
@@ -139,3 +201,4 @@ void my_free(void *ptr)
 {
     free(ptr);
 }
+

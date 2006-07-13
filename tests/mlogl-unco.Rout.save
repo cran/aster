@@ -1,6 +1,7 @@
 
 R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.1.1 Patched (2005-08-04), ISBN 3-900051-07-0
+Version 2.2.1  (2005-12-20 r36812)
+ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -11,11 +12,12 @@ Type 'contributors()' for more information and
 'citation()' on how to cite R or R packages in publications.
 
 Type 'demo()' for some demos, 'help()' for on-line help, or
-'help.start()' for a HTML browser interface to help.
+'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
 > 
 >  library(aster)
+Loading required package: trust
 > 
 >  set.seed(42)
 >  nind <- 25
@@ -202,8 +204,8 @@ $estimate
 [1] -0.06817031 -0.30695488  0.18633158  0.07765277 -0.37628604 -0.08435880
 
 $gradient
-[1] -1.186810e-04  2.504815e-05  7.096403e-05  3.026907e-05  8.608913e-05
-[6]  6.624982e-05
+[1] -1.186798e-04  2.504822e-05  7.096439e-05  3.026925e-05  8.609023e-05
+[6]  6.623324e-05
 
 $code
 [1] 1

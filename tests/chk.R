@@ -31,5 +31,5 @@
      nind = as.integer(42),
      nnode = as.integer(4),
      pred = as.integer(c(0, 1, 2, 3)),
-     fam = as.integer(c(1, 1, 2, 4)))
+     fam = as.integer(c(1, 1, 2, 25)))
 
