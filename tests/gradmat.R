@@ -11,9 +11,6 @@
  length(pred) == length(fam)
  nnode <- length(pred)
 
- famnam <- families()
- print(famnam[fam])
-
  theta <- matrix(0, nind, nnode)
  root <- matrix(1, nind, nnode)
  x <- raster(theta, pred, fam, root)
@@ -52,6 +49,8 @@
  nind <- dim(modmat.pred)[1]
  nnode <- dim(modmat.pred)[2]
  ncoef <- dim(modmat.pred)[3]
+
+ aster:::setfam(fam.default())
 
  phi.hat <- .C("aster_theta2phi",
      nind = as.integer(nind),
@@ -173,7 +172,6 @@
          nnode = as.integer(nnode),
          pred = as.integer(pred),
          fam = as.integer(fam),
-         x = as.double(root.pred),
          root = as.double(root.pred),
          ctau = as.double(ctau),
          tau = double(nind * nnode))$tau
@@ -191,6 +189,7 @@
      fam = as.integer(fam),
      beta = as.double(beta.hat),
      root = as.double(root.pred),
+     origin = rep(as.double(0), nind * nnode),
      modmat = as.double(modmat.pred),
      gradmat = gradmat)$gradmat
 
@@ -226,7 +225,6 @@
          nnode = as.integer(nnode),
          pred = as.integer(pred),
          fam = as.integer(fam),
-         x = as.double(root.pred),
          root = as.double(root.pred),
          ctau = as.double(ctau),
          tau = double(nind * nnode))$tau

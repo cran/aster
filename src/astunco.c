@@ -4,6 +4,7 @@
 
 void aster_mlogl_unco(int *nindin, int *nnodein, int *ncoefin, int *pred,
     int *fam, int *derivin, double *beta, double *root, double *x,
+    double *origin,
     double *modmat, double *value, double *gradient, double *hessian)
 {
     int nind = nindin[0];
@@ -25,6 +26,8 @@ void aster_mlogl_unco(int *nindin, int *nnodein, int *ncoefin, int *pred,
     psi = (double *) my_malloc(ndata * sizeof(double));
 
     aster_mat_vec_mult(&ndata, &ncoef, modmat, beta, phi);
+    for (i = 0; i < ndata; ++i)
+        phi[i] += origin[i];
     aster_phi2theta(&nind, &nnode, pred, fam, phi, theta);
     aster_xpred(&nind, &nnode, pred, fam, x, root, xpred);
     aster_theta2whatsis(&nind, &nnode, pred, fam, &zero, theta, psi);
@@ -33,12 +36,17 @@ void aster_mlogl_unco(int *nindin, int *nnodein, int *ncoefin, int *pred,
     for (i = 0; i < ndata; ++i)
         value[0] -= x[i] * theta[i] - xpred[i] * psi[i];
 
-    if (deriv >= 1) {
+    if (my_is_na_or_nan(value[0]))
+        value[0] = my_posinf();
+    if (value[0] == my_neginf())
+        die("calculated log likelihood + infinity, impossible");
+
+    if (deriv >= 1 && value[0] < my_posinf()) {
         psi_prime = (double *) my_malloc(ndata * sizeof(double));
         tau = (double *) my_malloc(ndata * sizeof(double));
         gfull = (double *) my_malloc(ndata * sizeof(double));
         aster_theta2whatsis(&nind, &nnode, pred, fam, &one, theta, psi_prime);
-        aster_ctau2tau(&nind, &nnode, pred, fam, x, root, psi_prime, tau);
+        aster_ctau2tau(&nind, &nnode, pred, fam, root, psi_prime, tau);
         for (i = 0; i < ndata; ++i)
             gfull[i] = - (x[i] - tau[i]);
         aster_vec_mat_mult(&ndata, &ncoef, modmat, gfull, gradient);

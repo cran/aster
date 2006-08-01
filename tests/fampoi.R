@@ -1,11 +1,7 @@
 
  library(aster)
 
- famnam <- families()
-
- ifam <- seq(along = famnam)[famnam == "poisson"]
-
- print(ifam)
+ ifam <- fam.poisson()
 
  mu <- seq(0.1, 3.0, 0.2)
  theta <- log(mu)

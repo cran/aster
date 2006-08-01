@@ -1,11 +1,7 @@
 
  library(aster)
 
- famnam <- families()
-
- ifam <- seq(along = famnam)[famnam == "non.zero.poisson"]
-
- print(ifam)
+ ifam <- fam.truncated.poisson(truncation = 0)
 
  mu <- seq(0.1, 3.0, 0.2)
  theta <- log(mu)

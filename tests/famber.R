@@ -1,11 +1,7 @@
 
  library(aster)
 
- famnam <- families()
-
- ifam <- seq(along = famnam)[famnam == "bernoulli"]
-
- print(ifam)
+ ifam <- fam.bernoulli()
 
  p <- seq(0.1, 0.9, 0.1)
  theta <- log(p) - log(1 - p)

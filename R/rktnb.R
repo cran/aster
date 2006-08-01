@@ -1,5 +1,5 @@
 
-rnzp <- function(n, mu, xpred = 1) {
+rktnb <- function(n, size, k, mu, xpred = 1) {
 
     if (length(n) > 1)
         n <- length(n)
@@ -14,12 +14,24 @@ rnzp <- function(n, mu, xpred = 1) {
     stopifnot(length(mu) > 0)
     stopifnot(all(mu > 0))
 
-    .C("aster_rnzp",
+    stopifnot(is.numeric(k))
+    stopifnot(length(k) >= 0)
+    stopifnot(all(k == as.integer(k)))
+
+    stopifnot(is.numeric(size))
+    stopifnot(length(size) >= 0)
+    stopifnot(all(size > 0))
+
+    .C("aster_rktnb",
         n = as.integer(n),
         lenxp = length(xpred),
         lenmu = length(mu),
+        lenk = length(k),
+        lenalpha = length(size),
         xpred = as.double(xpred),
         mu = as.double(mu),
+        k = as.integer(k),
+        alpha = as.double(size),
         result = double(n), PACKAGE = "aster")$result
 }
 

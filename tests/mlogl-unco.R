@@ -6,12 +6,9 @@
  nnode <- 5
  ncoef <- nnode + 1
 
- famnam <- families()
+ famlist <- fam.default()
  fam <- c(1, 1, 2, 3, 3)
- print(famnam[fam])
-
  pred <- c(0, 1, 1, 2, 3)
- print(pred)
 
  modmat <- array(0, c(nind, nnode, ncoef))
  modmat[ , , 1] <- 1
@@ -23,6 +20,8 @@
 
  phi <- matrix(modmat, ncol = ncoef) %*% beta
  phi <- matrix(phi, ncol = nnode)
+
+ aster:::setfam(fam.default())
 
  theta <- .C("aster_phi2theta",
      nind = as.integer(nind),
@@ -37,12 +36,37 @@
 
  x <- raster(theta, pred, fam, root)
  
+ zip <- rep(0, nind * nnode)
+
  out <- mlogl(beta, pred, fam, x, root, modmat, deriv = 2,
-     type = "unco")
+     type = "unco", origin = zip)
  print(out)
+
+ aster:::setfam(fam.default())
+
+ a <- .C("aster_theta2phi",
+     nind = as.integer(nind),
+     nnode = as.integer(nnode),
+     pred = as.integer(pred),
+     fam = as.integer(fam),
+     theta = as.double(zip),
+     phi = matrix(as.double(0), nind, nnode),
+     PACKAGE = "aster")$phi
+
+ M <- matrix(modmat, ncol = ncoef)
+
+ alpha <- as.numeric(lm(as.numeric(a) ~ 0 + M)$coefficients)
+ 
+ out.too <- mlogl(beta - alpha, pred, fam, x, root, modmat, deriv = 2,
+     type = "unco")
+ all.equal(out, out.too)
+
+ beta.old <- beta
+ beta <- beta - alpha
 
  my.value <- 0
  for (j in 1:nnode) {
+     ifam <- fam[j]
      k <- pred[j]
      if (k > 0)
          xpred <- x[ , k]
@@ -51,7 +75,7 @@
      for (i in 1:nind)
          my.value <- my.value -
              sum(x[i, j] * theta[i, j] -
-             xpred[i] * famfun(fam[j], 0, theta[i, j]))
+             xpred[i] * famfun(famlist[[ifam]], 0, theta[i, j]))
  }
  all.equal(out$value, my.value)
 
@@ -81,6 +105,14 @@
  nout <- nlm(objfun, nout$estimate, fscale = nind)
  print(nout)
 
+ beta.mle.new <- nout$estimate
+ beta.mle.old <- beta.mle.new + alpha
+ mout.new <- mlogl(beta.mle.new, pred, fam, x, root, modmat, deriv = 1,
+         type = "unco")
+ mout.old <- mlogl(beta.mle.old, pred, fam, x, root, modmat, deriv = 1,
+         type = "unco", origin = zip)
+ all.equal(mout.new, mout.old)
+
  ##########
 
  my.hess <- matrix(NaN, ncoef, ncoef)
@@ -109,12 +141,16 @@
  nout <- nlm(objfun, nout$estimate, fscale = nind, iterlim = 1000)
  print(nout)
 
- ##########
-
- objfun <- function(beta)
-     mlogl(beta, pred, fam, x, root, modmat, deriv = 0, type = "unco")$value
- gradfun <- function(beta)
-     mlogl(beta, pred, fam, x, root, modmat, deriv = 1, type = "unco")$gradient
- oout <- optim(beta, objfun, gradfun, method = "L-BFGS-B")
- print(oout)
+ objfun.old <- function(beta) {
+     out <- mlogl(beta, pred, fam, x, root, modmat, deriv = 2,
+         type = "unco", origin = zip)
+     result <- out$value
+     attr(result, "gradient") <- out$gradient
+     attr(result, "hessian") <- out$hessian
+     return(result)
+ }
+ nout.old <- nlm(objfun.old, beta.mle.old, fscale = nind, iterlim = 1000)
+ print(nout.old)
+ all.equal(nout$minimum, nout.old$minimum)
+ all.equal(nout$estimate, nout.old$estimate - alpha)
 

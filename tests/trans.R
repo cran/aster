@@ -4,9 +4,8 @@
  set.seed(42)
 
  pred <- c(0, 1, 1, 2)
- fam <- c("ber", "ber", "non", "poi")
- fam <- pmatch(fam, families(), duplicates.ok = TRUE)
- print(fam)
+ fam <- c(1, 1, 3, 2)
+ famlist <- fam.default()
 
  nnode <- length(pred)
  nind <- 7
@@ -27,6 +26,8 @@
  theta <- rnorm(nind * nnode, 0, .33)
  theta <- matrix(theta, nind, nnode)
  storage.mode(theta) <- "double"
+
+ aster:::setfam(fam.default())
 
  out <- .C("aster_theta2phi",
      nind = as.integer(nind),
@@ -102,7 +103,6 @@
      nnode = as.integer(nnode),
      pred = as.integer(pred),
      fam = as.integer(fam),
-     x = x,
      root = root,
      ctau = cout$ctau,
      tau = matrix(as.double(0), nind, nnode))
@@ -128,12 +128,16 @@
 
  my.what <- NaN * wout$result
  for (i in 1:nind)
-     for (j in 1:nnode)
-         my.what[i, j] <- famfun(fam[j], 0, theta[i, j])
+     for (j in 1:nnode) {
+         ifam <- fam[j]
+         my.what[i, j] <- famfun(famlist[[ifam]], 0, theta[i, j])
+     }
 
  all.equal(wout$result, my.what)
 
  ##########
+
+ aster:::setfam(fam.default())
 
  wout <- .C("aster_theta2whatsis",
      nind = as.integer(nind),
@@ -146,12 +150,15 @@
 
  my.what <- NaN * wout$result
  for (i in 1:nind)
-     for (j in 1:nnode)
-         my.what[i, j] <- famfun(fam[j], 1, theta[i, j])
-
+     for (j in 1:nnode) {
+         ifam <- fam[j]
+         my.what[i, j] <- famfun(famlist[[ifam]], 1, theta[i, j])
+     }
  all.equal(wout$result, my.what)
 
  ##########
+
+ aster:::setfam(fam.default())
 
  wout <- .C("aster_theta2whatsis",
      nind = as.integer(nind),
@@ -164,12 +171,16 @@
 
  my.what <- NaN * wout$result
  for (i in 1:nind)
-     for (j in 1:nnode)
-         my.what[i, j] <- famfun(fam[j], 2, theta[i, j])
+     for (j in 1:nnode) {
+         ifam <- fam[j]
+         my.what[i, j] <- famfun(famlist[[ifam]], 2, theta[i, j])
+     }
 
  all.equal(wout$result, my.what)
 
  ##########
+
+ aster:::setfam(fam.default())
 
  vout <- .C("aster_tt2var",
      nind = as.integer(nind),
@@ -185,12 +196,14 @@
  my.var <- NaN * vout$var
  for (i in 1:nind)
      for (j in 1:nnode) {
+         ifam <- fam[j]
+         thefam <- famlist[[ifam]]
          k <- pred[j]
          if (k > 0) {
-             my.var[i, j] <- famfun(fam[j], 2, theta[i, j]) * tout$tau[i, k] +
-                 famfun(fam[j], 1, theta[i, j])^2 * my.var[i, k]
+             my.var[i, j] <- famfun(thefam, 2, theta[i, j]) * tout$tau[i, k] +
+                 famfun(thefam, 1, theta[i, j])^2 * my.var[i, k]
          } else {
-             my.var[i, j] <- famfun(fam[j], 2, theta[i, j]) * xout$xpred[i, j]
+             my.var[i, j] <- famfun(thefam, 2, theta[i, j]) * xout$xpred[i, j]
          }
      }
  all.equal(vout$var, my.var)

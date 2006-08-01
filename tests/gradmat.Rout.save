@@ -30,11 +30,6 @@ Loading required package: trust
 [1] TRUE
 >  nnode <- length(pred)
 > 
->  famnam <- families()
->  print(famnam[fam])
-[1] "bernoulli"        "bernoulli"        "bernoulli"        "bernoulli"       
-[5] "non.zero.poisson" "non.zero.poisson"
-> 
 >  theta <- matrix(0, nind, nnode)
 >  root <- matrix(1, nind, nnode)
 >  x <- raster(theta, pred, fam, root)
@@ -59,25 +54,27 @@ aster.formula(formula = resp ~ foo + site + varb, pred = pred,
 
 
 Graphical Model:
- variable predecessor family          
- l2       root        bernoulli       
- l3       l2          bernoulli       
- f2       l2          bernoulli       
- f3       l3          bernoulli       
- h2       f2          non.zero.poisson
- h3       f3          non.zero.poisson
+ variable predecessor family                           
+ l2       root        bernoulli                        
+ l3       l2          bernoulli                        
+ f2       l2          bernoulli                        
+ f3       l3          bernoulli                        
+ h2       f2          truncated.poisson(truncation = 0)
+ h3       f3          truncated.poisson(truncation = 0)
 
-            Estimate Std. Error z value Pr(>|z|)
-(Intercept)  1.10940    0.99528   1.115    0.265
-foo          0.07857    0.10960   0.717    0.473
-siteB        0.14573    0.26619   0.547    0.584
-siteC       -0.25967    0.24569  -1.057    0.291
-siteD       -0.35936    0.35182  -1.021    0.307
-varbf3      -0.96858    1.43012  -0.677    0.498
-varbh2      -1.95067    1.60196  -1.218    0.223
-varbh3      -0.99839    1.09216  -0.914    0.361
-varbl2      -1.87307    1.24891  -1.500    0.134
-varbl3      -1.80743    1.19680  -1.510    0.131
+            Estimate Std. Error z value Pr(>|z|)  
+(Intercept)  1.65073    0.99528   1.659   0.0972 .
+foo          0.07857    0.10960   0.717   0.4735  
+siteB        0.14573    0.26619   0.547   0.5841  
+siteC       -0.25967    0.24569  -1.057   0.2906  
+siteD       -0.35936    0.35182  -1.021   0.3070  
+varbf3      -0.96858    1.43012  -0.677   0.4982  
+varbh2      -2.49200    1.60196  -1.556   0.1198  
+varbh3      -1.53971    1.09216  -1.410   0.1586  
+varbl2      -1.02810    1.24891  -0.823   0.4104  
+varbl3      -1.65561    1.19680  -1.383   0.1666  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
 > 
 >  out2 <- aster(x, root, pred, fam, modmat = out$modmat)
 >  summary(out2)
@@ -85,17 +82,19 @@ varbl3      -1.80743    1.19680  -1.510    0.131
 Call:
 NULL
 
-            Estimate Std. Error z value Pr(>|z|)
-(Intercept)  1.10940    0.99528   1.115    0.265
-foo          0.07857    0.10960   0.717    0.473
-siteB        0.14573    0.26619   0.547    0.584
-siteC       -0.25967    0.24569  -1.057    0.291
-siteD       -0.35936    0.35182  -1.021    0.307
-varbf3      -0.96858    1.43012  -0.677    0.498
-varbh2      -1.95067    1.60196  -1.218    0.223
-varbh3      -0.99839    1.09216  -0.914    0.361
-varbl2      -1.87307    1.24891  -1.500    0.134
-varbl3      -1.80743    1.19680  -1.510    0.131
+            Estimate Std. Error z value Pr(>|z|)  
+(Intercept)  1.65073    0.99528   1.659   0.0972 .
+foo          0.07857    0.10960   0.717   0.4735  
+siteB        0.14573    0.26619   0.547   0.5841  
+siteC       -0.25967    0.24569  -1.057   0.2906  
+siteD       -0.35936    0.35182  -1.021   0.3070  
+varbf3      -0.96858    1.43012  -0.677   0.4982  
+varbh2      -2.49200    1.60196  -1.556   0.1198  
+varbh3      -1.53971    1.09216  -1.410   0.1586  
+varbl2      -1.02810    1.24891  -0.823   0.4104  
+varbl3      -1.65561    1.19680  -1.383   0.1666  
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
 > 
 >  out3 <- aster(x, root, pred, fam, modmat = out$modmat, type = "cond")
 >  summary(out3)
@@ -113,7 +112,7 @@ varbf3       4.307e-01  9.032e-01    0.477    0.634
 varbh2      -1.350e+00  9.006e-01   -1.499    0.134
 varbh3      -2.720e-01  7.136e-01   -0.381    0.703
 varbl2       5.227e-01  6.754e-01    0.774    0.439
-varbl3       6.023e-16  7.319e-01 8.23e-16    1.000
+varbl3       6.260e-16  7.319e-01 8.55e-16    1.000
 > 
 >  foo <- match(sort(unique(site)), site)
 >  modmat.pred <- out$modmat[foo, , ]
@@ -129,6 +128,8 @@ varbl3       6.023e-16  7.319e-01 8.23e-16    1.000
 >  nind <- dim(modmat.pred)[1]
 >  nnode <- dim(modmat.pred)[2]
 >  ncoef <- dim(modmat.pred)[3]
+> 
+>  aster:::setfam(fam.default())
 > 
 >  phi.hat <- .C("aster_theta2phi",
 +      nind = as.integer(nind),
@@ -253,7 +254,6 @@ varbl3       6.023e-16  7.319e-01 8.23e-16    1.000
 +          nnode = as.integer(nnode),
 +          pred = as.integer(pred),
 +          fam = as.integer(fam),
-+          x = as.double(root.pred),
 +          root = as.double(root.pred),
 +          ctau = as.double(ctau),
 +          tau = double(nind * nnode))$tau
@@ -271,6 +271,7 @@ varbl3       6.023e-16  7.319e-01 8.23e-16    1.000
 +      fam = as.integer(fam),
 +      beta = as.double(beta.hat),
 +      root = as.double(root.pred),
++      origin = rep(as.double(0), nind * nnode),
 +      modmat = as.double(modmat.pred),
 +      gradmat = gradmat)$gradmat
 > 
@@ -307,7 +308,6 @@ varbl3       6.023e-16  7.319e-01 8.23e-16    1.000
 +          nnode = as.integer(nnode),
 +          pred = as.integer(pred),
 +          fam = as.integer(fam),
-+          x = as.double(root.pred),
 +          root = as.double(root.pred),
 +          ctau = as.double(ctau),
 +          tau = double(nind * nnode))$tau

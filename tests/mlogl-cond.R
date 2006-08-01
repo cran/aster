@@ -6,9 +6,8 @@
  nnode <- 5
  ncoef <- nnode + 1
 
- famnam <- families()
+ famlist <- fam.default()
  fam <- c(1, 1, 2, 3, 3)
- print(famnam[fam])
 
  pred <- c(0, 1, 1, 2, 3)
  print(pred)
@@ -35,6 +34,7 @@
 
  my.value <- 0
  for (j in 1:nnode) {
+     ifam <- fam[j] 
      k <- pred[j]
      if (k > 0)
          xpred <- x[ , k]
@@ -43,7 +43,7 @@
      for (i in 1:nind)
          my.value <- my.value -
              sum(x[i, j] * theta[i, j] -
-             xpred[i] * famfun(fam[j], 0, theta[i, j]))
+             xpred[i] * famfun(famlist[[ifam]], 0, theta[i, j]))
  }
  all.equal(out$value, my.value)
 
@@ -97,6 +97,8 @@
 
  ########## expected Fisher information ##########
 
+ aster:::setfam(fam.default())
+
  fout <- .C("aster_fish_cond",
      nind = as.integer(nind),
      nnode = as.integer(nnode),
@@ -109,8 +111,10 @@
      modmat = as.double(modmat),
      fish = matrix(as.double(0), ncoef, ncoef))
 
- mout <- mlogl(out$estimate, pred, fam, x, root, modmat, deriv = 2,
-     type = "conditional")
+ mout <- mlogl(out$estimate, pred, fam, x, root, modmat,
+     deriv = 2, type = "conditional")
+
+ aster:::setfam(fam.default())
 
  theta <- .C("aster_mat_vec_mult",
     nrow = as.integer(nind * nnode),
@@ -130,7 +134,6 @@
      nnode = as.integer(nnode),
      pred = as.integer(pred),
      fam = as.integer(fam),
-     x = as.double(x),
      root = as.double(root),
      ctau = as.double(ctau),
      tau = matrix(as.double(0), nind, nnode))$tau

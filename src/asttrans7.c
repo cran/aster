@@ -2,14 +2,14 @@
 #include "aster.h"
 
 void aster_ctau2tau(int *nindin, int *nnodein, int *pred, int *fam,
-    double *x, double *root, double *ctau, double *tau)
+    double *root, double *ctau, double *tau)
 {
     int nind = nindin[0];
     int nnode = nnodein[0];
 
     int i, j, k, jfam, jbase, kbase;
 
-    aster_check_model_data(nindin, nnodein, pred, fam, x, root);
+    aster_check_model_root(nindin, nnodein, pred, fam, root);
 
     /* j and k are 1-origin indexing */
     for (j = 1; j <= nnode; ++j) {

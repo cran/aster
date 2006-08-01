@@ -64,27 +64,27 @@ aster.formula(formula = resp ~ varb + nsloc + ewloc + pop * hdct -
 
 
 Graphical Model:
- variable predecessor family          
- ld02     root        bernoulli       
- ld03     ld02        bernoulli       
- ld04     ld03        bernoulli       
- fl02     ld02        bernoulli       
- fl03     ld03        bernoulli       
- fl04     ld04        bernoulli       
- hdct02   fl02        non.zero.poisson
- hdct03   fl03        non.zero.poisson
- hdct04   fl04        non.zero.poisson
+ variable predecessor family                           
+ ld02     root        bernoulli                        
+ ld03     ld02        bernoulli                        
+ ld04     ld03        bernoulli                        
+ fl02     ld02        bernoulli                        
+ fl03     ld03        bernoulli                        
+ fl04     ld04        bernoulli                        
+ hdct02   fl02        truncated.poisson(truncation = 0)
+ hdct03   fl03        truncated.poisson(truncation = 0)
+ hdct04   fl04        truncated.poisson(truncation = 0)
 
                  Estimate Std. Error z value Pr(>|z|)    
-(Intercept)     -1.463638   0.178183  -8.214  < 2e-16 ***
+(Intercept)     -0.922313   0.178183  -5.176 2.26e-07 ***
 varbfl03        -0.328488   0.265142  -1.239 0.215377    
 varbfl04        -0.349519   0.240775  -1.452 0.146601    
-varbhdct02       1.808447   0.258014   7.009 2.40e-12 ***
-varbhdct03       1.825590   0.210824   8.659  < 2e-16 ***
-varbhdct04       2.338955   0.197099  11.867  < 2e-16 ***
-varbld02        -0.989146   0.311742  -3.173 0.001509 ** 
-varbld03         0.776572   0.392815   1.977 0.048049 *  
-varbld04         3.918323   0.330729  11.848  < 2e-16 ***
+varbhdct02       1.267123   0.258014   4.911 9.06e-07 ***
+varbhdct03       1.284265   0.210824   6.092 1.12e-09 ***
+varbhdct04       1.797630   0.197099   9.120  < 2e-16 ***
+varbld02        -0.144176   0.311742  -0.462 0.643733    
+varbld03         1.621541   0.392815   4.128 3.66e-05 ***
+varbld04         4.070145   0.330729  12.307  < 2e-16 ***
 nsloc            0.013600   0.001729   7.867 3.64e-15 ***
 ewloc            0.006473   0.001725   3.753 0.000174 ***
 popEriley:hdct  -0.173902   0.089753  -1.938 0.052676 .  
@@ -237,7 +237,7 @@ Original predictor variables dropped (aliased)
 >  for (iboot in 1:nboot) {
 +      xstar <- raster(theta.hat, pred.orig, fam.orig, root.orig)
 +      aout4star <- aster(xstar, root.orig, pred.orig, fam.orig,
-+          modmat.orig, beta.hat, method = "CG", maxiter = 1e4)
++          modmat.orig, beta.hat, method = "CG", maxiter = 1e5)
 +      niter <- rbind(niter, aout4star$iter)
 +      beta.star[iboot, ] <- aout4star$coefficients
 +      pout4star <- predict(aout4star, x.pred, root.pred, modmat.pred,
@@ -297,7 +297,7 @@ Original predictor variables dropped (aliased)
 >  niter.save <- cbind(niter.save, niter)
 >  cpu.save <- c(cpu.save, proc.time()[1] - cpu)
 >  all.equal(beta.star.trust, beta.star)
-[1] "Mean relative  difference: 3.730259e-06"
+[1] "Mean relative  difference: 1.066699e-05"
 > 
 > ###################################################
 > ### chunk number 38: doit (one mo time)
@@ -339,13 +339,13 @@ Original predictor variables dropped (aliased)
 >  # dimnames(niter.save) <- list(NULL, c("trust", "CG", "L-BFGS-B", "nlm"))
 >  niter.save
        function gradient function gradient    
-[1,] 4    11710     4602      529      529 168
-[2,] 5    10042     3945      547      547 172
-[3,] 4    10412     4097      553      553 171
-[4,] 4     7361     2893      459      459 172
-[5,] 5    10608     4176      605      605 174
+[1,] 4     9187     3607      564      564 168
+[2,] 5    11801     4645      607      607 168
+[3,] 4    11548     4542      486      486 171
+[4,] 4     6924     2723      337      337 172
+[5,] 5     6660     2615      448      448 174
 >  cpu.save
-[1]   2.228 452.228  36.730   7.145
+[1]   2.344 489.882  40.207   8.888
 >  length(beta.hat)
 [1] 17
 > 

@@ -26,7 +26,7 @@ void aster_fish_cond(int *nindin, int *nnodein, int *ncoefin, int *pred,
 
     aster_mat_vec_mult(&ndata, &ncoef, modmat, beta, theta);
     aster_theta2ctau(&nind, &nnode, pred, fam, theta, ctau);
-    aster_ctau2tau(&nind, &nnode, pred, fam, x, root, ctau, tau);
+    aster_ctau2tau(&nind, &nnode, pred, fam, root, ctau, tau);
     aster_xpred(&nind, &nnode, pred, fam, tau, root, taupred);
     aster_theta2whatsis(&nind, &nnode, pred, fam, &two, theta,
         psi_prime_prime);

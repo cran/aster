@@ -1,6 +1,8 @@
 
  library(aster)
 
+ aster:::setfam(fam.default())
+
  .C("aster_check_model",
      nind = as.integer(42),
      nnode = as.integer(4),

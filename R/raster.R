@@ -1,5 +1,5 @@
 
-raster <- function(theta, pred, fam, root)
+raster <- function(theta, pred, fam, root, famlist = fam.default())
 {
     stopifnot(is.matrix(theta))
     stopifnot(is.numeric(theta))
@@ -15,7 +15,7 @@ raster <- function(theta, pred, fam, root)
     stopifnot(is.numeric(fam))
     stopifnot(length(fam) == nnode)
     stopifnot(all(fam == as.integer(fam)))
-    stopifnot(is.element(fam, seq(along = families())))
+    stopifnot(is.element(fam, seq(along = famlist)))
 
     stopifnot(is.matrix(root))
     stopifnot(is.numeric(root))
@@ -23,7 +23,9 @@ raster <- function(theta, pred, fam, root)
     stopifnot(nnode == ncol(root))
     storage.mode(root) <- "double"
 
-    .C("aster_simulate_data",
+    setfam(famlist)
+
+    result <- .C("aster_simulate_data",
         nind = as.integer(nind),
         nnode = as.integer(nnode),
         pred = as.integer(pred),
@@ -32,5 +34,8 @@ raster <- function(theta, pred, fam, root)
         root = root,
         x = matrix(as.double(0), nind, nnode),
         PACKAGE = "aster")$x
+
+    clearfam()
+    return(result)
 }
 

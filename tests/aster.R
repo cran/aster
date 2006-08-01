@@ -6,12 +6,8 @@
  nnode <- 5
  ncoef <- nnode + 1
 
- famnam <- families()
  fam <- c(1, 1, 2, 3, 3)
- print(famnam[fam])
-
  pred <- c(0, 1, 1, 2, 3)
- print(pred)
 
  modmat <- array(0, c(nind, nnode, ncoef))
  modmat[ , , 1] <- 1
@@ -23,6 +19,19 @@
 
  phi <- matrix(modmat, ncol = ncoef) %*% beta
  phi <- matrix(phi, ncol = nnode)
+
+ theta.origin <- matrix(as.double(0), nind, nnode)
+
+ aster:::setfam(fam.default())
+
+ phi.origin <- .C("aster_theta2phi",
+     nind = as.integer(nind),
+     nnode = as.integer(nnode),
+     pred = as.integer(pred),
+     fam = as.integer(fam),
+     theta = as.double(theta.origin),
+     phi = matrix(as.double(0), nind, nnode),
+     PACKAGE = "aster")$phi
 
  theta <- .C("aster_phi2theta",
      nind = as.integer(nind),
@@ -47,7 +56,17 @@
  all.equal(out2$coefficients, out3$coefficients)
  all.equal(out3$coefficients, out0$coefficients)
 
+ out4 <- aster(x, root, pred, fam, modmat, type = "unco",
+     method = "trust", origin = theta.origin)
+ print(out4$coefficients)
  print(out0$coefficients)
+
+ foo <- as.numeric(out0$origin) +
+     matrix(out0$modmat, ncol = ncoef) %*% out0$coefficients
+ bar <- as.numeric(out4$origin) +
+     matrix(out4$modmat, ncol = ncoef) %*% out4$coefficients
+ all.equal(foo, bar)
+ all.equal(phi.origin, out0$origin)
 
  out0 <- aster(x, root, pred, fam, modmat, type = "cond", method = "trust")
  out1 <- aster(x, root, pred, fam, modmat, type = "cond", method = "nlm")

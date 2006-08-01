@@ -24,15 +24,8 @@ Loading required package: trust
 >  nnode <- 5
 >  ncoef <- nnode + 1
 > 
->  famnam <- families()
 >  fam <- c(1, 1, 2, 3, 3)
->  print(famnam[fam])
-[1] "bernoulli"        "bernoulli"        "poisson"          "non.zero.poisson"
-[5] "non.zero.poisson"
-> 
 >  pred <- c(0, 1, 1, 2, 3)
->  print(pred)
-[1] 0 1 1 2 3
 > 
 >  modmat <- array(0, c(nind, nnode, ncoef))
 >  modmat[ , , 1] <- 1
@@ -44,6 +37,19 @@ Loading required package: trust
 > 
 >  phi <- matrix(modmat, ncol = ncoef) %*% beta
 >  phi <- matrix(phi, ncol = nnode)
+> 
+>  theta.origin <- matrix(as.double(0), nind, nnode)
+> 
+>  aster:::setfam(fam.default())
+> 
+>  phi.origin <- .C("aster_theta2phi",
++      nind = as.integer(nind),
++      nnode = as.integer(nnode),
++      pred = as.integer(pred),
++      fam = as.integer(fam),
++      theta = as.double(theta.origin),
++      phi = matrix(as.double(0), nind, nnode),
++      PACKAGE = "aster")$phi
 > 
 >  theta <- .C("aster_phi2theta",
 +      nind = as.integer(nind),
@@ -68,12 +74,25 @@ Loading required package: trust
 >  all.equal(out1$coefficients, out2$coefficients)
 [1] TRUE
 >  all.equal(out2$coefficients, out3$coefficients)
-[1] "Mean relative  difference: 4.024604e-08"
+[1] "Mean relative  difference: 2.127142e-08"
 >  all.equal(out3$coefficients, out0$coefficients)
-[1] "Mean relative  difference: 4.060586e-08"
+[1] "Mean relative  difference: 1.970140e-08"
 > 
->  print(out0$coefficients)
+>  out4 <- aster(x, root, pred, fam, modmat, type = "unco",
++      method = "trust", origin = theta.origin)
+>  print(out4$coefficients)
 [1] -0.06809277 -0.30705441  0.18624357  0.07757573 -0.37636339 -0.08435995
+>  print(out0$coefficients)
+[1]  1.62505441 -1.45887674 -0.96557875 -1.61557145 -2.06951057 -0.08435995
+> 
+>  foo <- as.numeric(out0$origin) +
++      matrix(out0$modmat, ncol = ncoef) %*% out0$coefficients
+>  bar <- as.numeric(out4$origin) +
++      matrix(out4$modmat, ncol = ncoef) %*% out4$coefficients
+>  all.equal(foo, bar)
+[1] TRUE
+>  all.equal(phi.origin, out0$origin)
+[1] TRUE
 > 
 >  out0 <- aster(x, root, pred, fam, modmat, type = "cond", method = "trust")
 >  out1 <- aster(x, root, pred, fam, modmat, type = "cond", method = "nlm")

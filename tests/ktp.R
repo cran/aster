@@ -3,6 +3,7 @@
 
  do.chisq.test <- function(x, k, mu, max.bin) {
      stopifnot(all(x > k))
+     stopifnot(k + 1 < max.bin)
      xx <- seq(k + 1, max.bin)
      yy <- dpois(xx, mu)
      yy[length(yy)] <- ppois(max.bin - 1, mu, lower.tail = FALSE)
@@ -12,6 +13,7 @@
          warning("violates rule of thumb about > 5 expected in each cell")
      cc <- tabulate(x, max.bin)
      cc <- cc[xx]
+     cc[length(cc)] <- nsim - sum(cc[- length(cc)])
      chisqstat <- sum((cc - ecc)^2 / ecc)
      cat("chi squared statistic =", chisqstat, "\n")
      cat("degrees of freedom =", length(ecc) - 1, "\n")
@@ -105,7 +107,6 @@
 
  pred <- 0
  fam <- 4
- print(families()[fam])
 
  theta <- 4 / 3
  mu <- exp(theta)

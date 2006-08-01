@@ -1,6 +1,6 @@
 
-R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.2.1  (2005-12-20 r36812)
+R : Copyright 2006, The R Foundation for Statistical Computing
+Version 2.3.1 (2006-06-01)
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -24,11 +24,8 @@ Loading required package: trust
 >  nnode <- 5
 >  ncoef <- nnode + 1
 > 
->  famnam <- families()
+>  famlist <- fam.default()
 >  fam <- c(1, 1, 2, 3, 3)
->  print(famnam[fam])
-[1] "bernoulli"        "bernoulli"        "poisson"          "non.zero.poisson"
-[5] "non.zero.poisson"
 > 
 >  pred <- c(0, 1, 1, 2, 3)
 >  print(pred)
@@ -71,6 +68,7 @@ $hessian
 > 
 >  my.value <- 0
 >  for (j in 1:nnode) {
++      ifam <- fam[j] 
 +      k <- pred[j]
 +      if (k > 0)
 +          xpred <- x[ , k]
@@ -79,7 +77,7 @@ $hessian
 +      for (i in 1:nind)
 +          my.value <- my.value -
 +              sum(x[i, j] * theta[i, j] -
-+              xpred[i] * famfun(fam[j], 0, theta[i, j]))
++              xpred[i] * famfun(famlist[[ifam]], 0, theta[i, j]))
 +  }
 >  all.equal(out$value, my.value)
 [1] TRUE
@@ -156,8 +154,8 @@ $estimate
 [1] -0.3017688 -0.3691924 -0.4160757 -0.3519262  0.1824507  0.1868138
 
 $gradient
-[1] -1.704298e-05  5.650286e-06  4.206920e-05  1.844437e-06  1.731152e-05
-[6] -2.905057e-05
+[1] -1.704300e-05  5.650298e-06  4.206926e-05  1.844440e-06  1.731154e-05
+[6] -2.904922e-05
 
 $code
 [1] 1
@@ -167,6 +165,8 @@ $iterations
 
 > 
 >  ########## expected Fisher information ##########
+> 
+>  aster:::setfam(fam.default())
 > 
 >  fout <- .C("aster_fish_cond",
 +      nind = as.integer(nind),
@@ -180,8 +180,10 @@ $iterations
 +      modmat = as.double(modmat),
 +      fish = matrix(as.double(0), ncoef, ncoef))
 > 
->  mout <- mlogl(out$estimate, pred, fam, x, root, modmat, deriv = 2,
-+      type = "conditional")
+>  mout <- mlogl(out$estimate, pred, fam, x, root, modmat,
++      deriv = 2, type = "conditional")
+> 
+>  aster:::setfam(fam.default())
 > 
 >  theta <- .C("aster_mat_vec_mult",
 +     nrow = as.integer(nind * nnode),
@@ -201,7 +203,6 @@ $iterations
 +      nnode = as.integer(nnode),
 +      pred = as.integer(pred),
 +      fam = as.integer(fam),
-+      x = as.double(x),
 +      root = as.double(root),
 +      ctau = as.double(ctau),
 +      tau = matrix(as.double(0), nind, nnode))$tau

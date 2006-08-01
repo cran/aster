@@ -13,12 +13,15 @@
 aster(x, \dots)
 
 \method{aster}{default}(x, root, pred, fam, modmat, parm,
-    type = c("unconditional", "conditional"),
+    type = c("unconditional", "conditional"), famlist = fam.default(),
+    origin, origin.type = c("model.type", "unconditional", "conditional"),
     method = c("trust", "nlm", "CG", "L-BFGS-B"), fscale, maxiter = 1000,
     nowarn = TRUE, newton = TRUE, optout = FALSE, coef.names, \dots)
 
 \method{aster}{formula}(formula, pred, fam, varvar, idvar, root,
     data, parm, type = c("unconditional", "conditional"),
+    famlist = fam.default(),
+    origin, origin.type = c("model.type", "unconditional", "conditional"),
     method = c("trust", "nlm", "CG", "L-BFGS-B"), fscale, maxiter = 1000,
     nowarn = TRUE, newton = TRUE, optout = FALSE, \dots)
 }
@@ -45,11 +48,9 @@ aster(x, \dots)
     further requirements.}
 
   \item{fam}{an integer vector of length \code{nnode} determining
-    the exponential family structure of the aster model.
-    \code{fam} is an index into the vector of family names returned by
-    \code{\link{families}}, so \code{families()[fam]} gives the
-    one-parameter exponential families associated with each node
-    of the graph.}
+    the exponential family structure of the aster model.  Each element
+    is an index into the vector of family specifications given by
+    the argument \code{famlist}.}
 
   \item{modmat}{an \code{nind} by \code{nnode} by \code{ncoef}
     three-dimensional array, the model matrix.
@@ -62,6 +63,20 @@ aster(x, \dots)
     giving a starting point for the optimization.}
 
   \item{type}{type of model.
+    The value of this argument can be abbreviated.}
+
+  \item{famlist}{a list of family specifications (see \code{\link{families}}).}
+
+  \item{origin}{Distinguished point in parameter space.  May be missing,
+    in which case an unspecified default is provided.  See details below
+    for further explanation.}
+
+  \item{origin.type}{Parameter space in which specified distinguished point
+    is located.  If \code{"conditional"} then argument \code{"origin"} is
+    a conditional canonical parameter value.
+    If \code{"unconditional"} then argument \code{"origin"} is
+    an unconditional canonical parameter value.
+    If \code{"model.type"} then the type is taken from argument \code{"type"}.
     The value of this argument can be abbreviated.}
 
   \item{method}{optimization method.  If \code{"trust"} then the
@@ -86,7 +101,7 @@ aster(x, \dots)
     always terminates with a Newton iteration when it converges.}
 
   \item{optout}{if \code{TRUE}, save the entire result of the optimization
-    routine (\code{link[trust]{trust}}, \code{link{nlm}}, or \code{link{optim}},
+    routine (\code{\link[trust]{trust}}, \code{\link{nlm}}, or \code{\link{optim}},
     as the case may be).}
 
   \item{coef.names}{names of the regression coefficients.  If missing,
@@ -139,17 +154,18 @@ this one-parameter exponential family distribution).
 
 For \code{type == "conditional"} the canonical parameter vector
 \eqn{\theta_{i j}}{theta[i, j]} is modeled in GLM fashion as
-\eqn{\theta = M \beta}{theta = M beta} where \eqn{M} is the model
-matrix \code{modmat}.  Since the \dQuote{vector} \eqn{\theta}{theta} is
+\eqn{\theta = a + M \beta}{theta = a + M beta} where \eqn{M} is the model
+matrix \code{modmat} and \eqn{a} is the distinguished point \code{origin}.
+Since the \dQuote{vector} \eqn{\theta}{theta} is
 actually a matrix, the \dQuote{matrix} \eqn{M} must correspondingly
-be a three-dimensional array.  So \eqn{\theta = M \beta}{theta = M beta}
+be a three-dimensional array.  So \eqn{\theta = a + M \beta}{theta = a + M beta}
 written out in full is
-\deqn{\theta_{i j} = \sum_{k \in K} m_{i j k} \beta_k}{theta[i, j] = sum[k] m[i, j, k] beta[k]}
+\deqn{\theta_{i j} = a_{i j} + \sum_{k \in K} m_{i j k} \beta_k}{theta[i, j] = a[i, j] + sum[k] m[i, j, k] beta[k]}
 This specifies the log likelihood.
 
 For \code{type == "unconditional"} the canonical parameter vector
 for an unconditional model is modeled in GLM fashion as
-\eqn{\varphi = M \beta}{phi = M beta} (where the notation is as above).
+\eqn{\varphi = a + M \beta}{phi = a + M beta} (where the notation is as above).
 The unconditional canonical parameters are then specified in terms of
 the conditional ones by
 \deqn{\varphi_{i j} = \theta_{i j} - \sum_{k \in S(j)} \psi_k(\theta_{i k})}{phi[i, j] = theta[i, j] - sum[k in S(j)] psi[k](theta[i, k])}
@@ -161,6 +177,23 @@ and makes \eqn{\varphi}{phi}
 the canonical parameter and \eqn{x} the canonical statistic of a full
 flat unconditional exponential family.
 Again, this specifies the log likelihood.
+
+In versions of aster prior to version 0.6 there was no \eqn{a} in the model
+specification, which is the same as specifying \eqn{a = 0} in the current
+specification.  If \eqn{a} is in the column space of the model matrix, that
+is, if there exists an \eqn{\alpha}{alpha}
+such that \eqn{a = M \alpha}{a = M alpha}, then there is no difference
+in the model specified with \eqn{a} and the one with \eqn{a = 0}.
+The maximum likelihood regression coefficients \eqn{\hat{\beta}}{beta}
+will be different, but the maximum likelihood estimates of all other
+parameters (conditional and unconditional, canonical and mean value)
+will be the same.  This is the usual case and explains why \dQuote{linear}
+models (with \eqn{a = 0}) as opposed to \dQuote{affine} models
+(with general \eqn{a})
+are popular.  In the unusual case where \eqn{a} is not in the column space
+of the design matrix, then affine models are a generalization of linear
+models: the two are not equivalent, their maximum likelihood estimates are
+not the same in any parameterization.
 
 In order to use the R model formula mini-language we must flatten
 the dimensionality, making the model matrix \code{modmat} two-dimensional
@@ -213,7 +246,7 @@ things in the right order and creates \code{varvar} and \code{idvar}.
   \item{fisher}{Expected Fisher information at the fitted \code{coefficients}
       vector.}
   \item{optout}{The object returned by the optimization routine
-    (\code{link[trust]{trust}}, \code{link{nlm}}, or \code{link{optim}}).
+    (\code{\link[trust]{trust}}, \code{\link{nlm}}, or \code{\link{optim}}).
     Only returned when the argument \code{optout} is \code{TRUE}.}
 
   Calls to \code{aster.formula} return a list also containing:

@@ -15,7 +15,9 @@ double my_expm1(double x);
 
 double my_log1p(double x);
 
+#ifdef ASTER_OLD_STUFF
 double my_round(double x);
+#endif /* ASTER_OLD_STUFF */
 
 double my_rbinom(double n, double p);
 
@@ -25,9 +27,27 @@ double my_ppois(double x, double lambda, int lower_tail, int log_p);
 
 double my_dpois(double x, double lambda, int give_log);
 
+double my_rnbinom(double n /* size */, double p /* prob */);
+
+double my_pnbinom(double x, double n, double p, int lower_tail, int log_p);
+
+double my_dnbinom(double x, double n, double p, int give_log);
+
+double my_nan(void);
+
+double my_is_na_or_nan(double foo);
+
+double my_posinf(void);
+
+double my_neginf(void);
+
+#ifdef ASTER_OLD_STUFF
 double my_rnzp(double mu);
+#endif /* ASTER_OLD_STUFF */
 
 double my_rktp(int k, double mu);
+
+double my_rktnb(double alpha, int k, double mu);
 
 void my_GetRNGstate(void);
 

@@ -23,6 +23,7 @@ void die(const char *format, ...)
     exit(1); /* never get here, just to shut up gcc -Wall -W */
 }
 
+#ifdef ASTER_OLD_STUFF
 SEXP aster_families(void)
 {
     SEXP result;
@@ -45,6 +46,7 @@ SEXP aster_families(void)
     UNPROTECT(1);
     return result;
 }
+#endif /* ASTER_OLD_STUFF */
 
 double my_expm1(double x)
 {
@@ -56,10 +58,12 @@ double my_log1p(double x)
     return log1p(x);
 }
 
+#ifdef ASTER_OLD_STUFF
 double my_round(double x)
 {
     return rint(x);
 }
+#endif /* ASTER_OLD_STUFF */
 
 double my_rbinom(double n, double p)
 {
@@ -81,6 +85,42 @@ double my_dpois(double x, double lambda, int give_log)
     return dpois(x, lambda, give_log);
 }
 
+double my_rnbinom(double n /* size */, double p /* prob */)
+{
+    return rnbinom(n, p);
+}
+
+double my_pnbinom(double x, double n, double p, int lower_tail, int log_p)
+{
+    return pnbinom(x, n, p, lower_tail, log_p);
+}
+
+double my_dnbinom(double x, double n, double p, int give_log)
+{
+    return dnbinom(x, n, p, give_log);
+}
+
+double my_nan(void)
+{
+    return R_NaN;
+}
+
+double my_is_na_or_nan(double foo)
+{
+    return R_IsNA(foo) || R_IsNaN(foo);
+}
+
+double my_posinf(void)
+{
+    return R_PosInf;
+}
+
+double my_neginf(void)
+{
+    return R_NegInf;
+}
+
+#ifdef ASTER_OLD_STUFF
 double my_rnzp(double mu)
 {
     if (mu <= 0.0)
@@ -126,6 +166,7 @@ void aster_rnzp(int *nin, int *len_xpred_in, int *len_mu_in,
     }
     PutRNGstate();
 }
+#endif /* ASTER_OLD_STUFF */
 
 double my_rktp(int k, double mu)
 {
@@ -134,7 +175,7 @@ double my_rktp(int k, double mu)
 
     if (mu <= 0.0)
         die("non-positive mu in k-truncated-poisson simulator\n");
-    if (k <= 0)
+    if (k < 0)
         die("negative k in k-truncated-poisson simulator\n");
 
     mdoub = k + 1 - mu;
@@ -147,13 +188,18 @@ double my_rktp(int k, double mu)
 
     for (;;) {
         double x = rpois(mu) + m;
-        double u = unif_rand();
-        double a = 1.0;
-        int j;
-        for (j = 0; j < m; ++j)
-            a *= (k + 1 - j) / (x - j);
-        if (u < a && x > k)
-            return x;
+        if (m > 0) {
+            double a = 1.0;
+            int j;
+            double u = unif_rand();
+            for (j = 0; j < m; ++j)
+                a *= (k + 1 - j) / (x - j);
+            if (u < a && x > k)
+                return x;
+        } else {
+            if (x > k)
+                return x;
+        }
     }
 }
 
@@ -174,6 +220,71 @@ void aster_rktp(int *nin, int *len_xpred_in, int *len_mu_in, int *len_k_in,
         double foo = 0.0;
         for (j = 0; j < xpred; ++j)
             foo += my_rktp(k, mu);
+        result[i] = foo;
+    }
+    PutRNGstate();
+}
+
+double my_rktnb(double alpha, int k, double mu)
+{
+    int m;
+    double mdoub;
+    double p = alpha / (mu + alpha);
+    double q = mu / (mu + alpha);
+
+    if (alpha <= 0.0)
+        die("non-positive size in k-truncated-neg-bin simulator\n");
+    if (mu <= 0.0)
+        die("non-positive mu in k-truncated-neg-bin simulator\n");
+    if (k < 0)
+        die("negative k in k-truncated-neg-bin simulator\n");
+
+    mdoub = (k + 1.0) * p - alpha * q;
+    if (mdoub < 0.0)
+        mdoub = 0.0;
+    m = mdoub;
+    if (m < mdoub)
+        m = m + 1;
+    /* since p < 1.0 and q > 0.0 we have 0.0 <= mdoub < k + 1
+       hence 0 <= m <= k + 1 */
+
+    for (;;) {
+        double x = rnbinom(alpha + m, p) + m;
+        if (m > 0) {
+            double a = 1.0;
+            int j;
+            double u = unif_rand();
+            for (j = 0; j < m; ++j)
+                a *= (k + 1 - j) / (x - j);
+            if (u < a && x > k)
+                return x;
+        } else {
+            if (x > k)
+                return x;
+        }
+    }
+}
+
+void aster_rktnb(int *nin, int *len_xpred_in, int *len_mu_in, int *len_k_in,
+    int *len_alpha_in, double *xpred_in, double *mu_in, int *k_in,
+    double *alpha_in, double *result)
+{
+    int n = nin[0];
+    int len_xpred = len_xpred_in[0];
+    int len_mu = len_mu_in[0];
+    int len_k = len_k_in[0];
+    int len_alpha = len_alpha_in[0];
+    int i, j;
+
+    GetRNGstate();
+    for (i = 0; i < n; ++i) {
+        double xpred = xpred_in[i % len_xpred];
+        double mu = mu_in[i % len_mu];
+        int k = k_in[i % len_k];
+        double alpha = alpha_in[i % len_alpha];
+        double foo = 0.0;
+        for (j = 0; j < xpred; ++j)
+            foo += my_rktnb(alpha, k, mu);
         result[i] = foo;
     }
     PutRNGstate();

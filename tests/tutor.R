@@ -155,7 +155,7 @@
  for (iboot in 1:nboot) {
      xstar <- raster(theta.hat, pred.orig, fam.orig, root.orig)
      aout4star <- aster(xstar, root.orig, pred.orig, fam.orig,
-         modmat.orig, beta.hat, method = "CG", maxiter = 1e4)
+         modmat.orig, beta.hat, method = "CG", maxiter = 1e5)
      niter <- rbind(niter, aout4star$iter)
      beta.star[iboot, ] <- aout4star$coefficients
      pout4star <- predict(aout4star, x.pred, root.pred, modmat.pred,

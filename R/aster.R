@@ -3,11 +3,13 @@ aster <- function(x, ...)
     UseMethod("aster")
 
 aster.default <- function(x, root, pred, fam, modmat, parm,
-    type = c("unconditional", "conditional"),
+    type = c("unconditional", "conditional"), famlist = fam.default(),
+    origin, origin.type = c("model.type", "unconditional", "conditional"),
     method = c("trust", "nlm", "CG", "L-BFGS-B"), fscale, maxiter = 1000,
     nowarn = TRUE, newton = TRUE, optout = FALSE, coef.names, ...)
 {
     type <- match.arg(type)
+    origin.type <- match.arg(origin.type)
     method <- match.arg(method)
 
     stopifnot(is.numeric(x))
@@ -22,7 +24,7 @@ aster.default <- function(x, root, pred, fam, modmat, parm,
     stopifnot(all(pred < seq(along = pred)))
     stopifnot(length(fam) == ncol(x))
     stopifnot(all(fam == as.integer(fam)))
-    stopifnot(all(is.element(fam, seq(along = families()))))
+    stopifnot(all(is.element(fam, seq(along = famlist))))
     stopifnot(is.numeric(modmat))
     stopifnot(is.array(modmat))
     stopifnot(length(dim(modmat)) == 3)
@@ -35,6 +37,63 @@ aster.default <- function(x, root, pred, fam, modmat, parm,
         if (length(parm) != dim(modmat)[3])
             stop("parm wrong length, not dimension 3 of modmat")
     }
+
+    setfam(famlist)
+
+    if (missing(origin)) {
+        origin <- .C("aster_default_origin",
+            nind = as.integer(nind),
+            nnode = as.integer(nnode),
+            fam = as.integer(fam),
+            theta = matrix(as.double(0), nind, nnode),
+            PACKAGE = "aster")$theta
+        if (type == "unconditional")
+            origin <- .C("aster_theta2phi",
+                nind = as.integer(nind),
+                nnode = as.integer(nnode),
+                pred = as.integer(pred),
+                fam = as.integer(fam),
+                theta = origin,
+                phi = matrix(as.double(0), nind, nnode),
+                PACKAGE = "aster")$phi
+    } else {
+        stopifnot(is.numeric(origin))
+        storage.mode(origin) <- "double"
+        stopifnot(length(origin) == nind * nnode)
+        stopifnot(all(is.finite(origin)))
+        if (is.matrix(origin)) {
+            stopifnot(nrow(origin) == nind)
+            stopifnot(ncol(origin) == nnode)
+        } else {
+            origin <- matrix(origin, nind, nnode)
+        }
+        if (origin.type == "model.type")
+            origin.type <- type
+        if (type == "unconditional" && origin.type == "conditional")
+            origin <- .C("aster_theta2phi",
+                nind = as.integer(nind),
+                nnode = as.integer(nnode),
+                pred = as.integer(pred),
+                fam = as.integer(fam),
+                theta = origin,
+                phi = matrix(as.double(0), nind, nnode),
+                PACKAGE = "aster")$phi
+        if (type == "conditional" && origin.type == "unconditional")
+            origin <- .C("aster_phi2theta",
+                nind = as.integer(nind),
+                nnode = as.integer(nnode),
+                pred = as.integer(pred),
+                fam = as.integer(fam),
+                phi = origin,
+                theta = matrix(as.double(0), nind, nnode),
+                PACKAGE = "aster")$theta
+    }
+
+    ##### try starting parm and origin
+    mout <- mloglhelper(parm, pred, fam, x, root, modmat, origin,
+                deriv = 0, type = type)
+    if (! is.finite(mout$value))
+        stop("initial \"origin\", \"modmat\", and \"parm\" invalid")
 
     mtry <- matrix(as.numeric(modmat), nrow = nind * nnode)
     qtry <- qr(mtry)
@@ -56,8 +115,8 @@ aster.default <- function(x, root, pred, fam, modmat, parm,
 
     if (method == "trust") {
         objfun <- function(beta) {
-            mlogl(beta, pred, fam, x, root, modmat, deriv = 2,
-                type = type)
+            mloglhelper(beta, pred, fam, x, root, modmat, origin,
+                deriv = 2, type = type)
         }
         otherargs <- list(...)
         rinit <- otherargs$rinit
@@ -76,8 +135,8 @@ aster.default <- function(x, root, pred, fam, modmat, parm,
     }
     if (method == "nlm") {
         objfun <- function(beta) {
-            out <- mlogl(beta, pred, fam, x, root, modmat, deriv = 1,
-                type = type)
+            out <- mloglhelper(beta, pred, fam, x, root, modmat, origin,
+                deriv = 1, type = type)
             result <- out$value
             attr(result, "gradient") <- out$gradient
             return(result)
@@ -95,11 +154,11 @@ aster.default <- function(x, root, pred, fam, modmat, parm,
     }
     if (method == "CG" || method == "L-BFGS-B") {
         objfun <- function(beta)
-            mlogl(beta, pred, fam, x, root, modmat, deriv = 0,
-                type = type)$value
+            mloglhelper(beta, pred, fam, x, root, modmat, origin,
+                deriv = 0, type = type)$value
         grdfun <- function(beta)
-            mlogl(beta, pred, fam, x, root, modmat, deriv = 1,
-                type = type)$gradient
+            mloglhelper(beta, pred, fam, x, root, modmat, origin,
+                deriv = 1, type = type)$gradient
         have.control <- is.element("control", names(list(...)))
         if (have.control) {
             stopifnot(is.list(control))
@@ -123,16 +182,16 @@ aster.default <- function(x, root, pred, fam, modmat, parm,
     }
     if (optout)
         aout$optout <- oout
-    mout <- mlogl(aout$coefficients, pred, fam, x, root, modmat, deriv = 2,
-        type = type)
+    mout <- mloglhelper(aout$coefficients, pred, fam, x, root, modmat,
+        origin, deriv = 2, type = type)
     if (newton && method != "trust") {
         qux <- qr(mout$hessian)
         if (qux$rank < dim(mout$hessian)[1]) {
             warning("rank deficient hessian, Newton step skipped")
         } else {
             beta <- aout$coefficients - solve(qux, mout$gradient)
-            mout <- mlogl(beta, pred, fam, x, root, modmat, deriv = 2,
-                type = type)
+            mout <- mloglhelper(beta, pred, fam, x, root, modmat, origin,
+                deriv = 2, type = type)
             aout$coefficients <- beta
         }
     }
@@ -147,6 +206,7 @@ aster.default <- function(x, root, pred, fam, modmat, parm,
     aout$fam <- fam
     aout$modmat <- modmat
     aout$type <- type
+    aout$famlist <- famlist
     names(aout$coefficients) <- coef.names
     if (type == "conditional") {
         fout <- .C("aster_fish_cond",
@@ -170,15 +230,20 @@ aster.default <- function(x, root, pred, fam, modmat, parm,
         warning("Algorithm did not converge")
     if (length(outies) > 0)
         aout$dropped <- outies
+    aout$origin <- origin
+    clearfam()
     return(aout)
 }
 
 aster.formula <- function(formula, pred, fam, varvar, idvar, root,
     data, parm, type = c("unconditional", "conditional"),
+    famlist = fam.default(),
+    origin, origin.type = c("model.type", "unconditional", "conditional"),
     method = c("trust", "nlm", "CG", "L-BFGS-B"), fscale, maxiter = 1000,
     nowarn = TRUE, newton = TRUE, optout = FALSE, ...)
 {
     type <- match.arg(type)
+    origin.type <- match.arg(origin.type)
     method <- match.arg(method)
 
     ##### stuff copied from glm.R and not understood #####
@@ -253,8 +318,8 @@ aster.formula <- function(formula, pred, fam, varvar, idvar, root,
     if (missing(fscale))
         fscale <- nind
 
-    out <- aster(x, root, pred, fam, modmat, parm, type, method,
-        fscale, maxiter, nowarn, newton, optout, ...)
+    out <- aster(x, root, pred, fam, modmat, parm, type, famlist, origin,
+        origin.type, method, fscale, maxiter, nowarn, newton, optout, ...)
 
     class(out) <- c("aster.formula", "aster")
     out$call <- call
@@ -297,7 +362,8 @@ summary.aster <- function(object, info = c("expected", "observed"),
     if (show.graph) {
         foo <- dimnames(object$x)[[2]]
         foo <- cbind(foo, c("root", foo)[object$pred + 1])
-        foo <- cbind(foo, families()[object$fam])
+        bar <- object$famlist[object$fam]
+        foo <- cbind(foo, sapply(bar, as.character))
         dimnames(foo) <- list(rep("", nrow(foo)),
             c("variable", "predecessor", "family"))
         object$graph <- foo

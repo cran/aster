@@ -11,9 +11,6 @@
  length(pred) == length(fam)
  nnode <- length(pred)
 
- famnam <- families()
- print(famnam[fam])
-
  theta <- matrix(0, nind, nnode)
  root <- matrix(1, nind, nnode)
  x <- raster(theta, pred, fam, root)
@@ -34,4 +31,20 @@
  out <- aster(resp ~ foo + site + varb, pred, fam, varb, id, root,
      data = redata)
  summary(out)
+ out0 <- aster(resp ~ foo + site + varb, pred, fam, varb, id, root,
+     origin = rep(0, nind * nnode), data = redata)
+ summary(out0)
+
+ ncoef <- length(out$coefficients)
+ foo <- as.numeric(out0$origin) +
+     matrix(out0$modmat, ncol = ncoef) %*% out0$coefficients
+ bar <- as.numeric(out$origin) +
+     matrix(out$modmat, ncol = ncoef) %*% out$coefficients
+ all.equal(foo, bar)
+
+ all.equal(out$fisher, out0$fisher)
+ identical(out$modmat, out0$modmat)
+
+ all.equal(summary(out)$coefficients[ , "Std. Error"],
+     summary(out0)$coefficients[ , "Std. Error"])
 

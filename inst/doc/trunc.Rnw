@@ -973,7 +973,8 @@ parameter values and accept only $Y$ satisfying $Y > k$.
 Although this works well when $\mu = E_{\alpha, \theta}(Y)$ is large,
 it works poorly when $\mu / (k + 1)$ is small.
 
-A more general proposal simulates $Y$ from some distribution for which
+A more general proposal simulates $Y$ from some nonnegative integer valued
+distribution for which
 simulation code exists.  We then define $X = Y + m$ for some integer $m$
 and accept $X$ satisfying $X > k$ with some probability $a(x)$ determined
 by the rejection sampling algorithm.

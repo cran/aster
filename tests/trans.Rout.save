@@ -1,6 +1,7 @@
 
-R : Copyright 2004, The R Foundation for Statistical Computing
-Version 2.0.1  (2004-11-15), ISBN 3-900051-07-0
+R : Copyright 2006, The R Foundation for Statistical Computing
+Version 2.3.1 (2006-06-01)
+ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -11,19 +12,18 @@ Type 'contributors()' for more information and
 'citation()' on how to cite R or R packages in publications.
 
 Type 'demo()' for some demos, 'help()' for on-line help, or
-'help.start()' for a HTML browser interface to help.
+'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
 > 
 >  library(aster)
+Loading required package: trust
 > 
 >  set.seed(42)
 > 
 >  pred <- c(0, 1, 1, 2)
->  fam <- c("ber", "ber", "non", "poi")
->  fam <- pmatch(fam, families(), duplicates.ok = TRUE)
->  print(fam)
-[1] 1 1 3 2
+>  fam <- c(1, 1, 3, 2)
+>  famlist <- fam.default()
 > 
 >  nnode <- length(pred)
 >  nind <- 7
@@ -46,6 +46,8 @@ Type 'q()' to quit R.
 >  theta <- rnorm(nind * nnode, 0, .33)
 >  theta <- matrix(theta, nind, nnode)
 >  storage.mode(theta) <- "double"
+> 
+>  aster:::setfam(fam.default())
 > 
 >  out <- .C("aster_theta2phi",
 +      nind = as.integer(nind),
@@ -125,7 +127,6 @@ Type 'q()' to quit R.
 +      nnode = as.integer(nnode),
 +      pred = as.integer(pred),
 +      fam = as.integer(fam),
-+      x = x,
 +      root = root,
 +      ctau = cout$ctau,
 +      tau = matrix(as.double(0), nind, nnode))
@@ -152,13 +153,17 @@ Type 'q()' to quit R.
 > 
 >  my.what <- NaN * wout$result
 >  for (i in 1:nind)
-+      for (j in 1:nnode)
-+          my.what[i, j] <- famfun(fam[j], 0, theta[i, j])
++      for (j in 1:nnode) {
++          ifam <- fam[j]
++          my.what[i, j] <- famfun(famlist[[ifam]], 0, theta[i, j])
++      }
 > 
 >  all.equal(wout$result, my.what)
 [1] TRUE
 > 
 >  ##########
+> 
+>  aster:::setfam(fam.default())
 > 
 >  wout <- .C("aster_theta2whatsis",
 +      nind = as.integer(nind),
@@ -171,13 +176,16 @@ Type 'q()' to quit R.
 > 
 >  my.what <- NaN * wout$result
 >  for (i in 1:nind)
-+      for (j in 1:nnode)
-+          my.what[i, j] <- famfun(fam[j], 1, theta[i, j])
-> 
++      for (j in 1:nnode) {
++          ifam <- fam[j]
++          my.what[i, j] <- famfun(famlist[[ifam]], 1, theta[i, j])
++      }
 >  all.equal(wout$result, my.what)
 [1] TRUE
 > 
 >  ##########
+> 
+>  aster:::setfam(fam.default())
 > 
 >  wout <- .C("aster_theta2whatsis",
 +      nind = as.integer(nind),
@@ -190,13 +198,17 @@ Type 'q()' to quit R.
 > 
 >  my.what <- NaN * wout$result
 >  for (i in 1:nind)
-+      for (j in 1:nnode)
-+          my.what[i, j] <- famfun(fam[j], 2, theta[i, j])
++      for (j in 1:nnode) {
++          ifam <- fam[j]
++          my.what[i, j] <- famfun(famlist[[ifam]], 2, theta[i, j])
++      }
 > 
 >  all.equal(wout$result, my.what)
 [1] TRUE
 > 
 >  ##########
+> 
+>  aster:::setfam(fam.default())
 > 
 >  vout <- .C("aster_tt2var",
 +      nind = as.integer(nind),
@@ -212,12 +224,14 @@ Type 'q()' to quit R.
 >  my.var <- NaN * vout$var
 >  for (i in 1:nind)
 +      for (j in 1:nnode) {
++          ifam <- fam[j]
++          thefam <- famlist[[ifam]]
 +          k <- pred[j]
 +          if (k > 0) {
-+              my.var[i, j] <- famfun(fam[j], 2, theta[i, j]) * tout$tau[i, k] +
-+                  famfun(fam[j], 1, theta[i, j])^2 * my.var[i, k]
++              my.var[i, j] <- famfun(thefam, 2, theta[i, j]) * tout$tau[i, k] +
++                  famfun(thefam, 1, theta[i, j])^2 * my.var[i, k]
 +          } else {
-+              my.var[i, j] <- famfun(fam[j], 2, theta[i, j]) * xout$xpred[i, j]
++              my.var[i, j] <- famfun(thefam, 2, theta[i, j]) * xout$xpred[i, j]
 +          }
 +      }
 >  all.equal(vout$var, my.var)

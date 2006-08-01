@@ -11,12 +11,9 @@
  root <- sample(1:3, nind * nnode, replace = TRUE)
  root <- matrix(root, nind, nnode)
 
- famnam <- families()
  fam <- c(1, 1, 2, 3, 3)
- print(famnam[fam])
-
  pred <- c(0, 1, 1, 2, 3)
- print(pred)
+ famnam <- sapply(fam.default(), as.character)
 
  save.seed <- .Random.seed
  x <- raster(theta, pred, fam, root)
@@ -45,7 +42,7 @@
         xi[ii] <- rpois(sum(ii), xpred[ii] * mu[ii])
         my.x[ , i] <- xi
     }
-    if (famnam[fam[i]] == "non.zero.poisson") {
+    if (famnam[fam[i]] == "truncated.poisson(truncation = 0)") {
         mu <- exp(theta[ , i])
         my.x[ , i] <- rnzp(nind, mu, xpred)
     }

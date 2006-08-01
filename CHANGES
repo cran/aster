@@ -31,3 +31,17 @@
             it, it failed to converge, because it takes more than 1000
             iterations.
  0.5-2  fixed bug in inst/doc/trunc.Rnw -- must be vignette to pass R CMD check
+ 0.6    new superfamily system: exponential families with non-exponential
+            family hyperparameters
+        canonical affine models
+ 0.6-1  negative binomial distribution
+ 0.6-2  truncated negative binomial distribution
+        fixed bug in 0.6 and 0.6-1 that made them useless with models
+            that did not have unrestricted canonical parameter space:
+            mlogl could return NaN rather than Inf (which is what it
+            is supposed to do) when evaluating at point outside the
+            canonical space.  Now hopefully fixed with new code
+            in astunco.c and astcond.c.  (TODO: need more tests with
+            restricted parameter space.  foobar.R is not enough.  Note
+            0.6 and 0.6-1 were not made public, so no one bug CJG saw
+            this bug.  Still it does show the tests directory is deficient.)

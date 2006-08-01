@@ -149,7 +149,8 @@ the \dQuote{data} should satisfy \code{all(x == 1)} and \code{all(root == 1)},
 so that the mean value parameters
 are \dQuote{per unit of predecessor variable}, that is we \dQuote{predict}
 \eqn{\psi''(\theta_{i j})}{psi''(theta[i, j])} rather than this multiplied
-by \eqn{X_{i p(j)}}{x[i, p(j)]}.
+by \eqn{X_{i p(j)}}{x[i, p(j)]}, where \eqn{p(j)} is the mathematical
+function defined by the R expression \code{pred[j]}.
 
 Similarly, if \code{object$type == "conditional"}, then the conditional
 canonical parameters are a linear function of the regression coefficients

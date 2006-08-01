@@ -27,7 +27,7 @@ void aster_D_beta2theta2tau(int *nindin, int *nnodein, int *ncoefin, int *pred,
 
     aster_mat_vec_mult(&ndata, &ncoef, modmat, beta, theta);
     aster_theta2whatsis(&nind, &nnode, pred, fam, &one, theta, psi_prime);
-    aster_ctau2tau(&nind, &nnode, pred, fam, root, root, psi_prime, tau);
+    aster_ctau2tau(&nind, &nnode, pred, fam, root, psi_prime, tau);
     aster_theta2whatsis(&nind, &nnode, pred, fam, &two, theta,
             psi_prime_prime);
 

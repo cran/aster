@@ -11,9 +11,6 @@
  length(pred) == length(fam)
  nnode <- length(pred)
 
- famnam <- families()
- print(famnam[fam])
-
  theta <- matrix(0, nind, nnode)
  root <- matrix(1, nind, nnode)
  x <- raster(theta, pred, fam, root)
@@ -39,6 +36,7 @@
 
  foo <- match(sort(unique(site)), site)
  modmat.pred <- out$modmat[foo, , ]
+ origin.pred <- out$origin[foo, ]
 
  predict(out2, modmat = modmat.pred, parm.type = "canon")
 
@@ -54,7 +52,7 @@
 
  all.equal(fred$gradient, sally)
 
- all.equal(fred$fit, as.numeric(sally %*% out$coef))
+ all.equal(fred$fit, as.numeric(origin.pred) + as.numeric(sally %*% out$coef))
 
  ##### case 1a: same but with amat
 
@@ -90,6 +88,8 @@
  nind <- dim(modmat.pred)[1]
  nnode <- dim(modmat.pred)[2]
  ncoef <- dim(modmat.pred)[3]
+
+ aster:::setfam(fam.default())
 
  beta.hat <- out3$coef
  theta.hat <- as.numeric(sally %*% beta.hat)
@@ -139,8 +139,10 @@
  fred <- predict(out2, modmat = modmat.pred, parm.type = "canon",
      model.type = "cond", se.fit = TRUE)
 
+ aster:::setfam(fam.default())
+
  beta.hat <- out2$coef
- phi.hat <- as.numeric(sally %*% beta.hat)
+ phi.hat <- as.numeric(origin.pred) + as.numeric(sally %*% beta.hat)
  theta.hat <- .C("aster_phi2theta",
      nind = as.integer(nind),
      nnode = as.integer(nnode),
@@ -159,7 +161,7 @@
  for (k in 1:ncoef) {
      beta.epsilon <- beta.hat
      beta.epsilon[k] <- beta.hat[k] + epsilon
-     phi.epsilon <- as.numeric(sally %*% beta.epsilon)
+     phi.epsilon <- as.numeric(origin.pred) + as.numeric(sally %*% beta.epsilon)
      theta.epsilon <- .C("aster_phi2theta",
          nind = as.integer(nind),
          nnode = as.integer(nnode),
@@ -189,6 +191,8 @@
  fred <- predict(out3, modmat = modmat.pred, parm.type = "mean",
      model.type = "cond", root = root.pred, x = root.pred)
 
+ aster:::setfam(fam.default())
+
  beta.hat <- out3$coef
  theta.hat <- as.numeric(sally %*% beta.hat)
  xi.hat <- .C("aster_theta2ctau",
@@ -208,6 +212,8 @@
 
  all.equal(fred$se.fit, sqrt(diag(fred$gradient %*% solve(out3$fisher) %*%
      t(fred$gradient))))
+
+ aster:::setfam(fam.default())
 
  my.gradient <- 0 * fred$gradient
  epsilon <- 1e-9
@@ -236,7 +242,7 @@
 
  beta2tau <- function(beta) {
 
-     phi <- matrix(sally %*% beta, nrow = nind)
+     phi <- origin.pred + matrix(sally %*% beta, nrow = nind)
 
      theta <- .C("aster_phi2theta",
          nind = as.integer(nind),
@@ -259,13 +265,14 @@
          nnode = as.integer(nnode),
          pred = as.integer(pred),
          fam = as.integer(fam),
-         x = as.double(root.pred),
          root = as.double(root.pred),
          ctau = as.double(ctau),
          tau = double(nind * nnode))$tau
 
      return(tau)
  }
+
+ aster:::setfam(fam.default())
 
  tau.hat <- beta2tau(beta.hat)
 
@@ -279,8 +286,10 @@
  all.equal(fred$se.fit, sqrt(diag(fred$gradient %*% solve(out2$fisher) %*%
      t(fred$gradient))))
 
+ aster:::setfam(fam.default())
+
  my.gradient <- 0 * fred$gradient
- for (k in 1:ncoef) {
+ for (k in 1:length(beta.hat)) {
      beta.epsilon <- beta.hat
      beta.epsilon[k] <- beta.hat[k] + epsilon
      tau.epsilon <- beta2tau(beta.epsilon)
@@ -298,7 +307,7 @@
 
  beta2xi <- function(beta) {
 
-     phi <- matrix(sally %*% beta, nrow = nind)
+     phi <- origin.pred + matrix(sally %*% beta, nrow = nind)
 
      theta <- .C("aster_phi2theta",
          nind = as.integer(nind),
@@ -319,6 +328,8 @@
      return(ctau)
  }
 
+ aster:::setfam(fam.default())
+
  xi.hat <- beta2xi(beta.hat)
 
  all.equal(fred, xi.hat)
@@ -330,6 +341,8 @@
 
  all.equal(fred$se.fit, sqrt(diag(fred$gradient %*% solve(out2$fisher) %*%
      t(fred$gradient))))
+
+ aster:::setfam(fam.default())
 
  my.gradient <- 0 * fred$gradient
  for (k in 1:ncoef) {
@@ -364,13 +377,14 @@
          nnode = as.integer(nnode),
          pred = as.integer(pred),
          fam = as.integer(fam),
-         x = as.double(root.pred),
          root = as.double(root.pred),
          ctau = as.double(ctau),
          tau = double(nind * nnode))$tau
 
      return(tau)
  }
+
+ aster:::setfam(fam.default())
 
  tau.hat <- beta2tau(beta.hat)
 
@@ -382,6 +396,8 @@
 
  all.equal(fred$se.fit, sqrt(diag(fred$gradient %*% solve(out3$fisher) %*%
      t(fred$gradient))))
+
+ aster:::setfam(fam.default())
 
  my.gradient <- 0 * fred$gradient
  for (k in 1:ncoef) {
@@ -423,11 +439,12 @@
 
  ##### test for global variables #####
 
- save(out, renewdata, out2, modmat.pred, root.pred, louise, fred,
-     file = "blurfle.RData")
- rm(list = ls(all.names = TRUE))
- load("blurfle.RData")
- unlink("blurfle.RData")
+ saves <- c("out", "renewdata", "out2", "modmat.pred", "root.pred", "louise",
+     "fred")
+ blurfle <- ls()
+ blurfle <- ls()
+ rm(list = blurfle[! is.element(blurfle, saves)])
+ ls()
 
  louise.too <- predict(out, newdata = renewdata, varvar = varb, idvar = id,
      root = root, se.fit = TRUE)

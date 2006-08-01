@@ -29,3 +29,5 @@ rktp <- function(n, k, mu, xpred = 1) {
         result = double(n), PACKAGE = "aster")$result
 }
 
+rnzp <- function(n, mu, xpred = 1) rktp(n, 0, mu, xpred)
+

@@ -1,6 +1,6 @@
 
-R : Copyright 2005, The R Foundation for Statistical Computing
-Version 2.2.1  (2005-12-20 r36812)
+R : Copyright 2006, The R Foundation for Statistical Computing
+Version 2.3.1 (2006-06-01)
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -24,15 +24,9 @@ Loading required package: trust
 >  nnode <- 5
 >  ncoef <- nnode + 1
 > 
->  famnam <- families()
+>  famlist <- fam.default()
 >  fam <- c(1, 1, 2, 3, 3)
->  print(famnam[fam])
-[1] "bernoulli"        "bernoulli"        "poisson"          "non.zero.poisson"
-[5] "non.zero.poisson"
-> 
 >  pred <- c(0, 1, 1, 2, 3)
->  print(pred)
-[1] 0 1 1 2 3
 > 
 >  modmat <- array(0, c(nind, nnode, ncoef))
 >  modmat[ , , 1] <- 1
@@ -44,6 +38,8 @@ Loading required package: trust
 > 
 >  phi <- matrix(modmat, ncol = ncoef) %*% beta
 >  phi <- matrix(phi, ncol = nnode)
+> 
+>  aster:::setfam(fam.default())
 > 
 >  theta <- .C("aster_phi2theta",
 +      nind = as.integer(nind),
@@ -58,8 +54,10 @@ Loading required package: trust
 > 
 >  x <- raster(theta, pred, fam, root)
 >  
+>  zip <- rep(0, nind * nnode)
+> 
 >  out <- mlogl(beta, pred, fam, x, root, modmat, deriv = 2,
-+      type = "unco")
++      type = "unco", origin = zip)
 >  print(out)
 $value
 [1] 123.9680
@@ -77,8 +75,32 @@ $hessian
 [6,]  26.30605 -2.212379  10.514502 -1.323664  20.455780 303.041693
 
 > 
+>  aster:::setfam(fam.default())
+> 
+>  a <- .C("aster_theta2phi",
++      nind = as.integer(nind),
++      nnode = as.integer(nnode),
++      pred = as.integer(pred),
++      fam = as.integer(fam),
++      theta = as.double(zip),
++      phi = matrix(as.double(0), nind, nnode),
++      PACKAGE = "aster")$phi
+> 
+>  M <- matrix(modmat, ncol = ncoef)
+> 
+>  alpha <- as.numeric(lm(as.numeric(a) ~ 0 + M)$coefficients)
+>  
+>  out.too <- mlogl(beta - alpha, pred, fam, x, root, modmat, deriv = 2,
++      type = "unco")
+>  all.equal(out, out.too)
+[1] TRUE
+> 
+>  beta.old <- beta
+>  beta <- beta - alpha
+> 
 >  my.value <- 0
 >  for (j in 1:nnode) {
++      ifam <- fam[j]
 +      k <- pred[j]
 +      if (k > 0)
 +          xpred <- x[ , k]
@@ -87,7 +109,7 @@ $hessian
 +      for (i in 1:nind)
 +          my.value <- my.value -
 +              sum(x[i, j] * theta[i, j] -
-+              xpred[i] * famfun(fam[j], 0, theta[i, j]))
++              xpred[i] * famfun(famlist[[ifam]], 0, theta[i, j]))
 +  }
 >  all.equal(out$value, my.value)
 [1] TRUE
@@ -115,18 +137,16 @@ $hessian
 +      return(result)
 +  }
 >  nout <- nlm(objfun, beta, fscale = nind)
-Warning message:
-NA/Inf replaced by maximum positive value 
 >  print(nout)
 $minimum
 [1] 119.1048
 
 $estimate
-[1] -0.06808120 -0.30707635  0.18622920  0.07756716 -0.37637382 -0.08436003
+[1]  1.62506234 -1.45889278 -0.96558882 -1.61557689 -2.06951752 -0.08435998
 
 $gradient
-[1]  9.348637e-06 -3.147490e-05 -6.786827e-06 -5.396298e-06  9.976263e-06
-[6] -5.169924e-06
+[1]  8.452131e-06 -2.515249e-05 -3.569333e-06 -2.927416e-06  1.135145e-05
+[6] -6.876573e-07
 
 $code
 [1] 1
@@ -140,11 +160,11 @@ $minimum
 [1] 119.1048
 
 $estimate
-[1] -0.06808120 -0.30707635  0.18622920  0.07756716 -0.37637382 -0.08436003
+[1]  1.62506234 -1.45889278 -0.96558882 -1.61557689 -2.06951752 -0.08435998
 
 $gradient
-[1]  9.348637e-06 -3.147490e-05 -6.786827e-06 -5.396298e-06  9.976263e-06
-[6] -5.169924e-06
+[1]  8.452131e-06 -2.515249e-05 -3.569333e-06 -2.927416e-06  1.135145e-05
+[6] -6.876573e-07
 
 $code
 [1] 1
@@ -152,6 +172,15 @@ $code
 $iterations
 [1] 0
 
+> 
+>  beta.mle.new <- nout$estimate
+>  beta.mle.old <- beta.mle.new + alpha
+>  mout.new <- mlogl(beta.mle.new, pred, fam, x, root, modmat, deriv = 1,
++          type = "unco")
+>  mout.old <- mlogl(beta.mle.old, pred, fam, x, root, modmat, deriv = 1,
++          type = "unco", origin = zip)
+>  all.equal(mout.new, mout.old)
+[1] "Component 2: Mean relative  difference: 3.221245e-08"
 > 
 >  ##########
 > 
@@ -183,7 +212,7 @@ $minimum
 [1] 119.1066
 
 $estimate
-[1] -0.08160559 -0.28811978  0.18178346  0.09066000 -0.34973178 -0.08345522
+[1]  1.61154159 -1.43994211 -0.97003887 -1.60248718 -2.04287896 -0.08345522
 
 $gradient
 [1] -0.027848502  0.008147191 -0.078372174  0.004814663  0.103718207
@@ -201,42 +230,48 @@ $minimum
 [1] 119.1048
 
 $estimate
-[1] -0.06817031 -0.30695488  0.18633158  0.07765277 -0.37628604 -0.08435880
+[1]  1.62499634 -1.45880221 -0.96551285 -1.61551376 -2.06945265 -0.08435909
 
 $gradient
-[1] -1.186798e-04  2.504822e-05  7.096439e-05  3.026925e-05  8.609023e-05
-[6]  6.623324e-05
+[1] -8.888587e-05  1.875676e-05  5.313826e-05  2.266534e-05  6.445778e-05
+[6]  4.977037e-05
+
+$code
+[1] 2
+
+$iterations
+[1] 972
+
+> 
+>  objfun.old <- function(beta) {
++      out <- mlogl(beta, pred, fam, x, root, modmat, deriv = 2,
++          type = "unco", origin = zip)
++      result <- out$value
++      attr(result, "gradient") <- out$gradient
++      attr(result, "hessian") <- out$hessian
++      return(result)
++  }
+>  nout.old <- nlm(objfun.old, beta.mle.old, fscale = nind, iterlim = 1000)
+>  print(nout.old)
+$minimum
+[1] 119.1048
+
+$estimate
+[1] -0.06808484 -0.30707046  0.18623351  0.07757029 -0.37637034 -0.08435998
+
+$gradient
+[1]  8.452130e-06 -2.515249e-05 -3.569333e-06 -2.927416e-06  1.135145e-05
+[6] -6.876573e-07
 
 $code
 [1] 1
 
 $iterations
-[1] 920
-
-> 
->  ##########
-> 
->  objfun <- function(beta)
-+      mlogl(beta, pred, fam, x, root, modmat, deriv = 0, type = "unco")$value
->  gradfun <- function(beta)
-+      mlogl(beta, pred, fam, x, root, modmat, deriv = 1, type = "unco")$gradient
->  oout <- optim(beta, objfun, gradfun, method = "L-BFGS-B")
->  print(oout)
-$par
-[1] -0.06830710 -0.30690581  0.18662418  0.07786878 -0.37623632 -0.08435202
-
-$value
-[1] 119.1048
-
-$counts
-function gradient 
-      38       38 
-
-$convergence
 [1] 0
 
-$message
-[1] "CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH"
-
+>  all.equal(nout$minimum, nout.old$minimum)
+[1] TRUE
+>  all.equal(nout$estimate, nout.old$estimate - alpha)
+[1] "Mean relative  difference: 4.622505e-05"
 > 
 > 

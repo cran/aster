@@ -19,6 +19,8 @@ predict.aster <- function(object, x, root, modmat, amat,
         root <- object$root
     }
 
+    setfam(object$famlist)
+
     stopifnot(all(dim(modmat)[2:3] == dim(object$modmat)[2:3]))
     stopifnot(all(dimnames(modmat)[[2]] == dimnames(object$modmat)[[2]]))
     stopifnot(all(dimnames(modmat)[[3]] == dimnames(object$modmat)[[3]]))
@@ -85,6 +87,15 @@ predict.aster <- function(object, x, root, modmat, amat,
         b = as.double(beta),
         c = matrix(as.double(0), nind, nnode),
         PACKAGE = "aster")$c
+
+    origin <- object$origin
+    stopifnot(is.numeric(origin))
+    stopifnot(all(is.finite(origin)))
+    stopifnot(is.matrix(origin))
+    stopifnot(ncol(origin) == nnode)
+    origin.row <- origin[1, ]
+    origin <- matrix(origin.row, nrow = nind, ncol = nnode, byrow = TRUE)
+    eta <- eta + origin
 
     ##### now we do 8 cases #####
 
@@ -194,43 +205,11 @@ predict.aster <- function(object, x, root, modmat, amat,
                 theta = as.double(theta),
                 ctau = matrix(as.double(0), nind, nnode),
                 PACKAGE = "aster")$ctau
-            #####
-            ##### BUG !!!!!
-            #####
-            ##### used to say "x = as.double(root)"
-            ##### this is odd, because x DOES NOT MATTER
-            ##### if we look inside aster_ctau2tau it turns out that
-            ##### x is ONLY CHECKED FOR VALIDITY not used in the computation
-            ##### which is good because mean value parameters DON'T depend
-            ##### on random data only ROOT data.
-            #####
-            ##### So the check is obviously goofy, done only because we
-            ##### canna be bothered to do the Right Thing.
-            #####
-            ##### When the only models were Bernoulli, Poisson,
-            ##### and zero-truncated Poisson, x = xpred was always valid.
-            ##### Now with two-truncated Poisson x = xpred = 1 is invalid.
-            ##### Oops!
-            #####
-            ##### On further investigation the bug is architectural, broken
-            ##### as designed.  The family stuff has a function
-            ##### aster_family_validate which validates a (family, x, xpred)
-            ##### triple -- no thought was given to sometimes we just want
-            ##### to validate (family, xpred), like RIGHT HERE.
-            #####
-            ##### Kludge a fix for now.  But a permanent fix is (of course)
-            ##### the RIGHT THING (don't check x here).
-            #####
-            xfoo <- root
-            xfoo[ , fam == 4] <- 3
-            xfoo[root == 0] <- 0
-            #####
             zeta <- .C("aster_ctau2tau",
                 nind = as.integer(nind),
                 nnode = as.integer(nnode),
                 pred = as.integer(pred),
                 fam = as.integer(fam),
-                x = as.double(xfoo),
                 root = as.double(root),
                 ctau = as.double(ctau),
                 tau = matrix(as.double(0), nind, nnode),
@@ -244,6 +223,7 @@ predict.aster <- function(object, x, root, modmat, amat,
                     fam = as.integer(fam),
                     beta = as.double(beta),
                     root = as.double(root),
+                    origin = as.double(origin),
                     modmat = as.double(modmat),
                     gradmat = matrix(as.double(0), nind * nnode, ncoef),
                     PACKAGE = "aster")$gradmat
@@ -314,7 +294,6 @@ predict.aster <- function(object, x, root, modmat, amat,
                 nnode = as.integer(nnode),
                 pred = as.integer(pred),
                 fam = as.integer(fam),
-                x = as.double(root),
                 root = as.double(root),
                 ctau = as.double(ctau),
                 tau = matrix(as.double(0), nind, nnode),
@@ -333,6 +312,8 @@ predict.aster <- function(object, x, root, modmat, amat,
                     PACKAGE = "aster")$gradmat
         }
     }
+
+    clearfam()
 
     result <- as.double(zeta)
     if (! missing(amat)) {
