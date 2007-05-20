@@ -587,6 +587,78 @@ static double trunc_neg_bin_simulate(double xpred, double theta,
     return result;
 }
 
+/* normal location (known scale) */
+
+#ifndef __GNUC__
+static int norm_loc_parval(double xpred, double hyper1, double hyper2)
+#else
+static int norm_loc_parval(double xpred,
+    double hyper1 __attribute__ ((unused)),
+    double hyper2 __attribute__ ((unused)))
+#endif /* __GNUC__ */
+{
+    /* must be nonnegative real */
+    return (xpred >= 0.0);
+}
+
+static int norm_loc_validate(double x, double xpred,
+    double hyper1, double hyper2)
+{
+    /* xpred must be valid */
+    /* x must be real */
+    /* xpred == 0 implies x == 0 */
+    int foo = 1;
+    foo = foo && norm_loc_parval(xpred, hyper1, hyper2);
+    foo = foo && (xpred > 0.0 || x == 0.0);
+    return foo;
+}
+
+#ifndef __GNUC__
+static int norm_loc_hypval(double hyper1, double hyper2)
+#else
+static int norm_loc_hypval(double hyper1,
+    double hyper2 __attribute__ ((unused)))
+#endif /* __GNUC__ */
+{
+    /* hyper1 (size) must be positive real */
+    return (hyper1 > 0.0);
+}
+
+#ifndef __GNUC__
+static double norm_loc(int deriv, double theta,
+    double hyper1, double hyper2)
+#else
+static double norm_loc(int deriv, double theta, double hyper1,
+    double hyper2 __attribute__ ((unused)))
+#endif /* __GNUC__ */
+{
+    double sigmasq = hyper1 * hyper1;
+
+    switch (deriv) {
+    case 0:
+        return sigmasq * theta * theta / 2.0;
+    case 1:
+        return sigmasq * theta;
+    case 2:
+        return sigmasq;
+    default:
+        die("deriv %d not valid", deriv);
+    }
+}
+
+#ifndef __GNUC__
+static double norm_loc_simulate(double xpred, double theta,
+    double hyper1, double hyper2)
+#else
+static double norm_loc_simulate(double xpred, double theta,
+    double hyper1, double hyper2 __attribute__ ((unused)))
+#endif /* __GNUC__ */
+{
+    double mu = theta * hyper1 * hyper1 * xpred;
+    double sigma = hyper1 * sqrt(xpred);
+    return my_rnorm(mu, sigma);
+}
+
 typedef double (*famfun_ptr)(int deriv, double theta, double hyper1,
     double hyper2);
 typedef int (*famval_ptr)(double x, double xpred, double hyper1,
@@ -626,6 +698,9 @@ static struct superfamtab const mysuperfamtab[] =
     {"truncated.negative.binomial", trunc_neg_bin, trunc_neg_bin_validate,
         trunc_neg_bin_parval, trunc_neg_bin_hypval, trunc_neg_bin_simulate,
         1, 1, 2, "size", "truncation", -1.0},
+    {"normal.location", norm_loc, norm_loc_validate,
+        norm_loc_parval, norm_loc_hypval, norm_loc_simulate,
+        1, 1, 1, "sd", "", 0.0},
     {NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, NULL, 0.0},
 };
 

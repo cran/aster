@@ -1,6 +1,6 @@
 
-R : Copyright 2006, The R Foundation for Statistical Computing
-Version 2.3.1 (2006-06-01)
+R version 2.4.1 (2006-12-18)
+Copyright (C) 2006 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -111,6 +111,14 @@ Loading required package: trust
 [1] NA
 
 [[5]]$truncation
+[1] NA
+
+
+[[6]]
+[[6]]$name
+[1] "normal.location"
+
+[[6]]$sd
 [1] NA
 
 

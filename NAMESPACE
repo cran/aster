@@ -16,6 +16,7 @@ export(fam.bernoulli)
 export(fam.poisson)
 export(fam.truncated.poisson)
 export(fam.negative.binomial)
+export(fam.normal.location)
 export(fam.truncated.negative.binomial)
 export(fam.default)
 

@@ -5,6 +5,7 @@
 \alias{fam.truncated.poisson}
 \alias{fam.negative.binomial}
 \alias{fam.truncated.negative.binomial}
+\alias{fam.normal.location}
 \alias{fam.default}
 \alias{famfun}
 \title{Families for Aster Models}
@@ -14,6 +15,7 @@ fam.poisson()
 fam.truncated.poisson(truncation)
 fam.negative.binomial(size)
 fam.truncated.negative.binomial(size, truncation)
+fam.normal.location(sd)
 fam.default()
 famfun(fam, deriv, theta)
 }
@@ -28,6 +30,7 @@ to construct by hand.
   \item{truncation}{the truncation point, called \eqn{k} in the details
   section below.}
   \item{size}{the sample size.  May be non-integer.}
+  \item{sd}{the standard deviation.  May be non-integer.}
   \item{fam}{a family specification, which is a list of class \code{"astfam"}
       containing, at least one element named \code{"name"} and perhaps other
       elements specifying hyperparameters.}
@@ -105,6 +108,18 @@ Currently implemented families are
       \deqn{\tau = \mu + \frac{k + 1}{p (1 + \beta)}}{tau = mu + (k + 1) / (p (1 + beta))}
       and the second derivative is too complicated to write here (the
       formula can be found in the vignette \code{trunc.pdf}.}
+    \item{\code{"normal.location"}}{Normal, unknown mean, known variance.
+      The sd (standard deviation) parameter
+      \eqn{\sigma}{sigma} may be noninteger, meaning the cumulant function
+      is \eqn{\sigma^2}{sigma^2} times the cumulant function of the standard
+      normal distribution.  The mean value parameter \eqn{\mu}{mu} is the
+      mean of the normal distribution.
+      The canonical parameter
+      is \eqn{\theta = \mu / \sigma^2}{theta = mu / sigma^2}.
+      The first derivative of the cumulant function has the value
+      \deqn{\mu = \sigma^2 \theta}{mu = sigma^2 theta}
+      and the second derivative has the value
+      \deqn{\sigma^2.}{sigma^2.}}
   }
 }
 \value{

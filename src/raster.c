@@ -100,6 +100,11 @@ double my_dnbinom(double x, double n, double p, int give_log)
     return dnbinom(x, n, p, give_log);
 }
 
+double my_rnorm(double mu, double sigma)
+{
+    return rnorm(mu, sigma);
+}
+
 double my_nan(void)
 {
     return R_NaN;

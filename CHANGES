@@ -45,3 +45,5 @@
             restricted parameter space.  foobar.R is not enough.  Note
             0.6 and 0.6-1 were not made public, so no one bug CJG saw
             this bug.  Still it does show the tests directory is deficient.)
+ 0.7    added normal-location families; see ?fam.normal.location
+ 0.7-1  fixed incorrect signature in as.character.astfam

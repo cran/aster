@@ -33,6 +33,8 @@ double my_pnbinom(double x, double n, double p, int lower_tail, int log_p);
 
 double my_dnbinom(double x, double n, double p, int give_log);
 
+double my_rnorm(double mu, double sigma);
+
 double my_nan(void);
 
 double my_is_na_or_nan(double foo);

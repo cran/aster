@@ -44,6 +44,15 @@ fam.truncated.negative.binomial <- function(size, truncation) {
     return(result)
 }
 
+fam.normal.location <- function(sd) {
+    stopifnot(is.numeric(sd))
+    stopifnot(length(sd) == 1)
+    stopifnot(sd > 0)
+    result <- list(name = "normal.location", sd = sd)
+    class(result) <- "astfam"
+    return(result)
+}
+
 fam.default <- function() {
     list(fam.bernoulli(), fam.poisson(), fam.truncated.poisson(truncation = 0),
        fam.truncated.poisson(truncation = 2))
@@ -142,20 +151,20 @@ getsupfam <- function() {
     return(result)
 }
 
-as.character.astfam <- function(obj) {
-    nam <- obj$name
+as.character.astfam <- function(x, ...) {
+    nam <- x$name
     if (is.null(nam))
         stop("astfam object with no name")
-    obj$name <- NULL
+    x$name <- NULL
 
-    if (length(obj) == 0)
+    if (length(x) == 0)
         return(nam)
 
     fred <- ""
-    for (i in 1:length(obj)) {
+    for (i in 1:length(x)) {
         if (fred != "")
             fred <- paste(fred, ", ", sep = "")
-        fred <- paste(fred, names(obj)[i], " = ", obj[[i]], sep = "")
+        fred <- paste(fred, names(x)[i], " = ", x[[i]], sep = "")
     }
     nam <- paste(nam, "(", fred, ")", sep = "")
     return(nam)

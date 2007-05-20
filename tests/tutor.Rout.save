@@ -1,6 +1,6 @@
 
-R : Copyright 2006, The R Foundation for Statistical Computing
-Version 2.3.1 (2006-06-01)
+R version 2.5.0 (2007-04-23)
+Copyright (C) 2007 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -297,7 +297,7 @@ Original predictor variables dropped (aliased)
 >  niter.save <- cbind(niter.save, niter)
 >  cpu.save <- c(cpu.save, proc.time()[1] - cpu)
 >  all.equal(beta.star.trust, beta.star)
-[1] "Mean relative  difference: 1.066699e-05"
+[1] "Mean relative  difference: 5.65075e-06"
 > 
 > ###################################################
 > ### chunk number 38: doit (one mo time)
@@ -339,13 +339,14 @@ Original predictor variables dropped (aliased)
 >  # dimnames(niter.save) <- list(NULL, c("trust", "CG", "L-BFGS-B", "nlm"))
 >  niter.save
        function gradient function gradient    
-[1,] 4     9187     3607      564      564 168
-[2,] 5    11801     4645      607      607 168
-[3,] 4    11548     4542      486      486 171
-[4,] 4     6924     2723      337      337 172
-[5,] 5     6660     2615      448      448 174
+[1,] 4    10686     4206      500      500 168
+[2,] 5     9098     3576      605      605 168
+[3,] 4    12434     4880      470      470 171
+[4,] 4    10231     4021      391      391 172
+[5,] 5     6434     2534      470      470 174
 >  cpu.save
-[1]   2.344 489.882  40.207   8.888
+user.self user.self user.self user.self 
+    2.356   527.433    39.886     8.889 
 >  length(beta.hat)
 [1] 17
 > 

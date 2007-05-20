@@ -1,6 +1,6 @@
 
-R : Copyright 2006, The R Foundation for Statistical Computing
-Version 2.3.1 (2006-06-01)
+R version 2.5.0 (2007-04-23)
+Copyright (C) 2007 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -112,7 +112,7 @@ varbf3       4.307e-01  9.032e-01    0.477    0.634
 varbh2      -1.350e+00  9.006e-01   -1.499    0.134
 varbh3      -2.720e-01  7.136e-01   -0.381    0.703
 varbl2       5.227e-01  6.754e-01    0.774    0.439
-varbl3       6.260e-16  7.319e-01 8.55e-16    1.000
+varbl3       7.393e-16  7.319e-01 1.01e-15    1.000
 > 
 >  foo <- match(sort(unique(site)), site)
 >  modmat.pred <- out$modmat[foo, , ]
