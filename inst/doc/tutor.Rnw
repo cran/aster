@@ -169,6 +169,20 @@ listed with parent nodes before child nodes.  This doesn't make sense
 now, but is nessary to satisfy condition \eqref{eq:foo}
 on page~\pageref{eq:foo}.
 
+\paragraph{Warning} The variable \verb@varb@ in the data frame produced
+by the \verb@reshape@ function (here called \verb@redata@) must be a factor.
+<<show-redata-varb>>=
+class(redata$varb)
+levels(redata$varb)
+@
+The \verb@redata@ command used above accomplishes this.
+If the argument
+\begin{verbatim}
+times = as.factor(vars)
+\end{verbatim}
+of the \verb@redata@ function is omitted in the call, then this
+will not happen and all of the following analysis will be wrong.
+
 \medskip
 Let's look at an example
 <<reshape-explain>>=
