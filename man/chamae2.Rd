@@ -40,7 +40,7 @@ of the \dQuote{original} variables are
 }
 \source{
 Julie Etterson
-\url{http://www.d.umn.edu/biology/faculty/Etterson_page1.htm}}
+\url{http://www.d.umn.edu/biology/faculty/Etterson_page1.htm}
 }
 \references{
 These data have been previously analyzed by non-aster methods in the following.

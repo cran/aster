@@ -49,3 +49,4 @@
  0.7-1  fixed incorrect signature in as.character.astfam
  0.7-2  new data sets: echin2 chamae2 chamae aphid
         added warning (varb must be factor) to vignette
+ 0.7-3  unmatched braces in .Rd files chamae2 chamae
