@@ -72,8 +72,13 @@
     For \code{predict.aster}, a three-dimensional
     array with \code{dim(amat)[1:2] == dim(modmat)[1:2]}.
 
-    For \code{predict.aster.formula}, a matrix with
-    \code{nrow(amat) == nrow(newdata)}.}
+    For \code{predict.aster.formula}, a three-dimensional array
+    of the same dimensions as required for \code{predict.aster}
+    (even though \code{modmat} is not provided).  First dimension
+    is number of individuals in \code{newdata}, if provided, otherwise
+    number of individuals in \code{object$data}.  Second dimension
+    is number of variables (\code{length{object$pred})}.
+  }
 
   \item{parm.type}{the type of parameter to predict.  The default is
     mean value parameters (the opposite of the default

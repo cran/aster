@@ -50,3 +50,7 @@
  0.7-2  new data sets: echin2 chamae2 chamae aphid
         added warning (varb must be factor) to vignette
  0.7-3  unmatched braces in .Rd files chamae2 chamae
+ 0.7-4  fixed bug in predict.aster.formula documentation.
+            amat is three-way array just as for predict.aster
+            example already required this.
+        removed tests/tutor.R   took too long and tested nothing specific
