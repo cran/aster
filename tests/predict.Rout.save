@@ -1,6 +1,6 @@
 
-R version 2.5.0 (2007-04-23)
-Copyright (C) 2007 The R Foundation for Statistical Computing
+R version 2.7.1 (2008-06-23)
+Copyright (C) 2008 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -603,6 +603,17 @@ varbl3       7.393e-16  7.319e-01 1.01e-15    1.000
 >  identical(fred, fred.too)
 [1] TRUE
 > 
+>  ##### test of newcoef #####
+> 
+>  fake <- out2
+>  beta.new <- fake$coefficients + rnorm(length(fake$coefficients)) * 0.1
+>  fake$coefficients <- beta.new
+>  fred.fake <- predict(fake, modmat = modmat.pred, root = root.pred,
++      se.fit = TRUE)
+>  fred.new <- predict(out2, modmat = modmat.pred, root = root.pred,
++      se.fit = TRUE, newcoef = beta.new)
+>  identical(fred.fake, fred.new)
+[1] TRUE
 > 
 > 
 > 

@@ -3,7 +3,7 @@ predict.aster <- function(object, x, root, modmat, amat,
     parm.type = c("mean.value", "canonical"),
     model.type = c("unconditional", "conditional"),
     se.fit = FALSE, info = c("expected", "observed"),
-    info.tol = sqrt(.Machine$double.eps), ...)
+    info.tol = sqrt(.Machine$double.eps), newcoef = NULL, ...)
 {
     parm.type <- match.arg(parm.type)
     model.type <- match.arg(model.type)
@@ -79,6 +79,12 @@ predict.aster <- function(object, x, root, modmat, amat,
     }
 
     beta <- object$coefficients
+    if (! is.null(newcoef)) {
+        stopifnot(is.numeric(newcoef))
+        stopifnot(is.finite(newcoef))
+        stopifnot(length(newcoef) == length(object$coefficients))
+        beta <- newcoef
+    }
 
     eta <- .C("aster_mat_vec_mult",
         nrow = as.integer(nind * nnode),
@@ -341,7 +347,7 @@ predict.aster.formula <- function(object, newdata, varvar, idvar, root, amat,
     parm.type = c("mean.value", "canonical"),
     model.type = c("unconditional", "conditional"),
     se.fit = FALSE, info = c("expected", "observed"),
-    info.tol = sqrt(.Machine$double.eps), ...)
+    info.tol = sqrt(.Machine$double.eps), newcoef = NULL, ...)
 {
     parm.type <- match.arg(parm.type)
     model.type <- match.arg(model.type)
@@ -434,11 +440,13 @@ predict.aster.formula <- function(object, newdata, varvar, idvar, root, amat,
     if (missing(amat)) {
         foo <- predict.aster(object, x, root, modmat,
             parm.type = parm.type, model.type = model.type,
-            se.fit = se.fit, info = info, info.tol = info.tol)
+            se.fit = se.fit, info = info, info.tol = info.tol,
+            newcoef = newcoef)
     } else {
         foo <- predict.aster(object, x, root, modmat, amat,
             parm.type = parm.type, model.type = model.type,
-            se.fit = se.fit, info = info, info.tol = info.tol)
+            se.fit = se.fit, info = info, info.tol = info.tol,
+            newcoef = newcoef)
     }
     if (is.list(foo)) {
         foo$modmat <- modmat

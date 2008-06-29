@@ -54,3 +54,4 @@
             amat is three-way array just as for predict.aster
             example already required this.
         removed tests/tutor.R   took too long and tested nothing specific
+ 0.7-5  added newcoef argument to predict.aster and predict.aster.formula

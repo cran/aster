@@ -10,14 +10,14 @@
     parm.type = c("mean.value", "canonical"),
     model.type = c("unconditional", "conditional"),
     se.fit = FALSE, info = c("expected", "observed"),
-    info.tol = sqrt(.Machine$double.eps), \ldots)
+    info.tol = sqrt(.Machine$double.eps), newcoef = NULL, \ldots)
 
 
 \method{predict}{aster.formula}(object, newdata, varvar, idvar, root, amat,
     parm.type = c("mean.value", "canonical"),
     model.type = c("unconditional", "conditional"),
     se.fit = FALSE, info = c("expected", "observed"),
-    info.tol = sqrt(.Machine$double.eps), \ldots)
+    info.tol = sqrt(.Machine$double.eps), newcoef = NULL, \ldots)
 }
 \arguments{
   \item{object}{a fitted object of class inheriting from \code{"aster"}
@@ -132,6 +132,11 @@
     of individuals is \code{nind}.
     Must be of the form \code{rep(inds, times = nnode)} where \code{inds} is
     a vector of labels for individuals.  Not used if \code{newdata} is missing.}
+
+  \item{newcoef}{if not \code{NULL},
+    a variable of length \code{object$coefficients} and used
+    in its place when one wants predictions at other than the fitted
+    coefficient values.}
 
   \item{\dots}{further arguments passed to or from other methods.}
 }

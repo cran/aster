@@ -454,5 +454,15 @@
      se.fit = TRUE)
  identical(fred, fred.too)
 
+ ##### test of newcoef #####
+
+ fake <- out2
+ beta.new <- fake$coefficients + rnorm(length(fake$coefficients)) * 0.1
+ fake$coefficients <- beta.new
+ fred.fake <- predict(fake, modmat = modmat.pred, root = root.pred,
+     se.fit = TRUE)
+ fred.new <- predict(out2, modmat = modmat.pred, root = root.pred,
+     se.fit = TRUE, newcoef = beta.new)
+ identical(fred.fake, fred.new)
 
 
