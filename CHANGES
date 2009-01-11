@@ -55,3 +55,4 @@
             example already required this.
         removed tests/tutor.R   took too long and tested nothing specific
  0.7-5  added newcoef argument to predict.aster and predict.aster.formula
+ 0.7-6  fix doc bug found by Rd version 2 parser

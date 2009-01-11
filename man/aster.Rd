@@ -56,7 +56,7 @@ aster(x, \dots)
     three-dimensional array, the model matrix.
 
     \code{aster.formula} constructs such a \code{modmat} from 
-    its formula, the data frame \verb@data@, and the variables
+    its formula, the data frame \code{data}, and the variables
     in the environment of the formula.}
 
   \item{parm}{usually missing.  Otherwise a vector of length \code{ncoef}
@@ -96,8 +96,8 @@ aster(x, \dots)
 
   \item{newton}{if \code{TRUE} (the default), do one Newton iteration
     on the result produced by the optimization routine, except when
-    \verb@method == "trust"@ when no such Newton iteration is done,
-    regardless of the value of \verb@newton@, because \code{\link[trust]{trust}}
+    \code{method == "trust"} when no such Newton iteration is done,
+    regardless of the value of \code{newton}, because \code{\link[trust]{trust}}
     always terminates with a Newton iteration when it converges.}
 
   \item{optout}{if \code{TRUE}, save the entire result of the optimization
@@ -105,7 +105,7 @@ aster(x, \dots)
     as the case may be).}
 
   \item{coef.names}{names of the regression coefficients.  If missing,
-    \code{dimnames(modmat)[[3]]} is used.  In \verb@aster.formula@ these
+    \code{dimnames(modmat)[[3]]} is used.  In \code{aster.formula} these
     are produced automatically by the R formula machinery.}
 
   \item{\ldots}{other arguments passed to the optimization method.}
