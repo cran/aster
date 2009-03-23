@@ -256,6 +256,18 @@ things in the right order and creates \code{varvar} and \code{idvar}.
   \item{terms}{the \code{\link{terms}} object used.}
   \item{data}{the \code{data argument}.}
 }
+\references{
+Geyer, C. J., Wagenius, S., and Shaw, R. G. (2007)
+Aster Models for Life History Analysis.
+\emph{Biometrika} \bold{94} 415--426.
+
+Shaw, R. G., Geyer, C. J., Wagenius, S., Hangelbroek, H. H., and
+    Etterson, J. R. (2007)
+Unifying Life History Analysis for Inference of Fitness
+    and population growth.
+\emph{American Naturalist} \bold{172} E35--E47.
+(e-paper \url{http://www.journals.uchicago.edu/doi/full/10.1086/588063})
+}
 \seealso{
 \code{\link{anova.aster}},
 \code{\link{summary.aster}},
