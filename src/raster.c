@@ -20,7 +20,6 @@ void die(const char *format, ...)
     va_end(arg);
     buf[BUFSIZE - 1] = '\0';
     error(buf);
-    exit(1); /* never get here, just to shut up gcc -Wall -W */
 }
 
 #ifdef ASTER_OLD_STUFF
