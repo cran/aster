@@ -37,11 +37,16 @@ original data that were zero have been deleted.
 These data were published in the following, where they were analyzed
 by non-aster methods.
 
-Lenski, R.~E. and Service, P.~M. (1982).
+Lenski, R. E. and Service, P. M. (1982).
 The statistical analysis of population growth rates calculated
     from schedules of survivorship and fecunidity.
 \emph{Ecology}, \bold{63}, 655-662.
 
+These data are reanalyzed by aster methods in the following.                                     
+Shaw, R. G., Geyer, C. J., Wagenius, S., Hangelbroek, H. H.,
+   and Etterson, J. R. (2008)
+Unifying life history analyses for inference of fitness and population growth.
+\emph{American Naturalist}, \bold{172}, E35-E47.
 }
 \examples{
 data(aphid)

@@ -1,7 +1,8 @@
 
-R version 2.7.1 (2008-06-23)
-Copyright (C) 2008 The R Foundation for Statistical Computing
+R version 2.15.0 (2012-03-30)
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -74,7 +75,7 @@ varbh3      -1.53971    1.09216  -1.410   0.1586
 varbl2      -1.02810    1.24891  -0.823   0.4104  
 varbl3      -1.65561    1.19680  -1.383   0.1666  
 ---
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
 > 
 >  ##### redo with aster.default and predict.aster
 > 
@@ -96,7 +97,7 @@ varbh3      -1.53971    1.09216  -1.410   0.1586
 varbl2      -1.02810    1.24891  -0.823   0.4104  
 varbl3      -1.65561    1.19680  -1.383   0.1666  
 ---
-Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1 
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 
 > 
 >  foo <- match(sort(unique(site)), site)
 >  modmat.pred <- out$modmat[foo, , ]
@@ -159,17 +160,17 @@ Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’
 Call:
 NULL
 
-              Estimate Std. Error  z value Pr(>|z|)
-(Intercept)  8.173e-01  6.865e-01    1.191    0.234
-foo          1.167e-01  2.630e-01    0.444    0.657
-siteB       -2.681e-01  6.180e-01   -0.434    0.664
-siteC       -9.232e-01  5.999e-01   -1.539    0.124
-siteD       -1.326e+00  8.440e-01   -1.571    0.116
-varbf3       4.307e-01  9.032e-01    0.477    0.634
-varbh2      -1.350e+00  9.006e-01   -1.499    0.134
-varbh3      -2.720e-01  7.136e-01   -0.381    0.703
-varbl2       5.227e-01  6.754e-01    0.774    0.439
-varbl3       7.393e-16  7.319e-01 1.01e-15    1.000
+              Estimate Std. Error z value Pr(>|z|)
+(Intercept)  8.173e-01  6.865e-01   1.191    0.234
+foo          1.167e-01  2.630e-01   0.444    0.657
+siteB       -2.681e-01  6.180e-01  -0.434    0.664
+siteC       -9.232e-01  5.999e-01  -1.539    0.124
+siteD       -1.326e+00  8.440e-01  -1.571    0.116
+varbf3       4.307e-01  9.032e-01   0.477    0.634
+varbh2      -1.350e+00  9.006e-01  -1.499    0.134
+varbh3      -2.720e-01  7.136e-01  -0.381    0.703
+varbl2       5.227e-01  6.754e-01   0.774    0.439
+varbl3       5.645e-16  7.319e-01   0.000    1.000
 > 
 >  fred <- predict(out3, modmat = modmat.pred, parm.type = "canon",
 +      se.fit = TRUE)
@@ -617,3 +618,6 @@ varbl3       7.393e-16  7.319e-01 1.01e-15    1.000
 > 
 > 
 > 
+> proc.time()
+   user  system elapsed 
+  0.282   0.031   0.437 

@@ -335,6 +335,30 @@ static double trunc_poisson(int deriv, double theta, double hyper1,
     double mu = exp(theta);
     double foo, bar, baz, qux, alpha;
 
+    /* special case k == 0 backporting stuff from aster2 */
+    if (k == 0) {
+        if (deriv > 2 || deriv < 0)
+            die("deriv %d not valid", deriv);
+        double m = exp(theta);
+        double mu;
+        if (theta > (- 4.0)) {
+            if (deriv == 0)
+                return m + my_log1p(- exp(- m));
+            mu = m / (1.0 - exp(- m));
+        } else {
+            double bar = m / 2.0 * (1.0 + m / 3.0 * (1.0 + m / 4.0 *
+                (1.0 + m / 5.0 * (1.0 + m / 6.0 * (1.0 + m / 7.0 *
+                (1.0 + m / 8.0))))));
+            if (deriv == 0)
+                return theta + my_log1p(bar);
+            mu = m + 1.0 / (1.0 + bar);
+        }
+        if (deriv == 1)
+            return mu;
+        /* deriv == 2 */
+        return mu * (1.0 + m - mu);
+    }
+
     switch (deriv) {
     case 0:
         return mu + my_ppois(k, mu, 0, 1);

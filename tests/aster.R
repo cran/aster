@@ -53,8 +53,8 @@
 
  all.equal(out0$coefficients, out1$coefficients)
  all.equal(out1$coefficients, out2$coefficients)
- all.equal(out2$coefficients, out3$coefficients)
- all.equal(out3$coefficients, out0$coefficients)
+ all.equal(out2$coefficients, out3$coefficients, tol = 1e-7)
+ all.equal(out3$coefficients, out0$coefficients, tol = 1e-7)
 
  out4 <- aster(x, root, pred, fam, modmat, type = "unco",
      method = "trust", origin = theta.origin)

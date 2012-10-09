@@ -46,17 +46,24 @@ Julie Etterson
 \url{http://www.d.umn.edu/biology/faculty/Etterson_page1.htm}
 }
 \references{
-These data have been previously analyzed by non-aster methods in the following.
+These data are a subset of data previously analyzed by non-aster methods in the following.
 
-Etterson, J.~R. (2004).
+Etterson, J. R. (2004).
 Evolutionary potential of \emph{Chamaecrista fasciculata} in
     relation to climate change.  I. Clinal patterns of selection along
     an environmental gradient in the great plains.
 \emph{Evolution}, \bold{58}, 1446-1458.
 
-Etterson, J.~R., and Shaw, R.~G. (2001).
+Etterson, J. R., and Shaw, R. G. (2001).
 Constraint to adaptive evolution in response to global warming.
 \emph{Science}, \bold{294}, 151-154.
+
+These data are reanalyzed in the following.
+
+Shaw, R. G., Geyer, C. J., Wagenius, S., Hangelbroek, H. H.,
+   and Etterson, J. R. (2008)
+Unifying life history analyses for inference of fitness and population growth.
+\emph{American Naturalist}, \bold{172}, E35-E47.
 }
 \examples{
 data(chamae)

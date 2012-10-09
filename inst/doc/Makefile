@@ -1,4 +1,4 @@
 
-foo :
-	rm -rf *.aux *.log rm tutor.tex trunc.tex tutor-fig?.* trunc-fig?.* Rplots.ps
+clean :
+	rm -rf *.aux *.log *.dvi tutor.tex trunc.tex tutor-fig?.* trunc-fig?.* Rplots.ps Rplots.pdf re.tex
 

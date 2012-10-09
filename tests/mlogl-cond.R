@@ -1,7 +1,10 @@
 
  library(aster)
 
+ options(digits=4) # avoid rounding differences
+
  set.seed(42)
+
  nind <- 25
  nnode <- 5
  ncoef <- nnode + 1

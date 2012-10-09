@@ -126,7 +126,7 @@
  tau <- sum(xxx * ppp)
 
  sum(x - tau)
- max(abs( sum(x - tau) + out$gradient ))
+ max(abs( sum(x - tau) + out$gradient )) < 1e-12
 
  length(x) * sum((xxx - tau)^2 * ppp)
 

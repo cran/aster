@@ -46,14 +46,15 @@ redata <- reshape(echinacea, varying = list(vars), direction = "long",
 redata <- data.frame(redata, root = 1)
 pred <- c(0, 1, 2, 1, 2, 3, 4, 5, 6)
 fam <- c(1, 1, 1, 1, 1, 1, 3, 3, 3)
-hdct <- grep("hdct", as.character(redata$varb))
-hdct <- is.element(seq(along = redata$varb), hdct)
+hdct <- grepl("hdct", as.character(redata$varb))
 redata <- data.frame(redata, hdct = as.integer(hdct))
-aout3 <- aster(resp ~ varb + nsloc + ewloc + pop * hdct,
+level <- gsub("[0-9]", "", as.character(redata$varb))
+redata <- data.frame(redata, level = as.factor(level))
+aout1 <- aster(resp ~ varb + hdct : (nsloc + ewloc + pop),
     pred, fam, varb, id, root, data = redata)
-aout4 <- aster(resp ~ varb + nsloc + ewloc + pop * hdct - pop,
+aout2 <- aster(resp ~ varb + level : (nsloc + ewloc) + hdct : pop,
     pred, fam, varb, id, root, data = redata)
-anova(aout4, aout3)
+anova(aout1, aout2)
 }
 \keyword{models}
 \keyword{regression}

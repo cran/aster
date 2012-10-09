@@ -422,7 +422,7 @@ anova.asterlist <- function(object, ...)
         "Deviance"))
     title <- "Analysis of Deviance Table\n"
     topnote <- paste("Model ", format(1:nmodels),": ",
-        variables, sep = "", collapse = "\n")
+        variables, collapse = "\n", sep = "")
     table <- cbind(table, "P(>|Chi|)" = pchisq(table[ , "Deviance"],
         table[ , "Df"], lower.tail = FALSE))
     structure(table, heading = c(title, topnote),

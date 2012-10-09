@@ -259,13 +259,13 @@ things in the right order and creates \code{varvar} and \code{idvar}.
 \references{
 Geyer, C. J., Wagenius, S., and Shaw, R. G. (2007)
 Aster Models for Life History Analysis.
-\emph{Biometrika} \bold{94} 415--426.
+\emph{Biometrika}, \bold{94}, 415--426.
 
 Shaw, R. G., Geyer, C. J., Wagenius, S., Hangelbroek, H. H., and
     Etterson, J. R. (2007)
 Unifying Life History Analysis for Inference of Fitness
     and population growth.
-\emph{American Naturalist} \bold{172} E35--E47.
+\emph{American Naturalist}, \bold{172}, E35--E47.
 (e-paper \url{http://www.journals.uchicago.edu/doi/full/10.1086/588063})
 }
 \seealso{
@@ -285,12 +285,13 @@ redata <- reshape(echinacea, varying = list(vars), direction = "long",
 redata <- data.frame(redata, root = 1)
 pred <- c(0, 1, 2, 1, 2, 3, 4, 5, 6)
 fam <- c(1, 1, 1, 1, 1, 1, 3, 3, 3)
-hdct <- grep("hdct", as.character(redata$varb))
-hdct <- is.element(seq(along = redata$varb), hdct)
+hdct <- grepl("hdct", as.character(redata$varb))
 redata <- data.frame(redata, hdct = as.integer(hdct))
-aout4 <- aster(resp ~ varb + nsloc + ewloc + pop * hdct - pop,
+level <- gsub("[0-9]", "", as.character(redata$varb))
+redata <- data.frame(redata, level = as.factor(level))
+aout <- aster(resp ~ varb + level : (nsloc + ewloc) + hdct : pop,
     pred, fam, varb, id, root, data = redata)
-summary(aout4, show.graph = TRUE)
+summary(aout, show.graph = TRUE)
 }
 \keyword{models}
 \keyword{regression}

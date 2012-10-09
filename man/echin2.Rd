@@ -75,6 +75,14 @@ the three levels of \code{crosstype}.
 Stuart Wagenius,
 \url{http://www.chicagobotanic.org/research/staff/wagenius.php}
 }
+\references{
+These data are analyzed in the following.                                     
+
+Shaw, R. G., Geyer, C. J., Wagenius, S., Hangelbroek, H. H.,
+   and Etterson, J. R. (2008)
+Unifying life history analyses for inference of fitness and population growth.
+\emph{American Naturalist}, \bold{172}, E35-E47.
+}
 \examples{
 data(echin2)
 }

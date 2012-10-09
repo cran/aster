@@ -1,7 +1,10 @@
 
  library(aster)
 
+ options(digits=4) # avoid rounding differences
+
  set.seed(42)
+
  nind <- 25
  nnode <- 5
  ncoef <- nnode + 1
@@ -111,7 +114,7 @@
          type = "unco")
  mout.old <- mlogl(beta.mle.old, pred, fam, x, root, modmat, deriv = 1,
          type = "unco", origin = zip)
- all.equal(mout.new, mout.old)
+ all.equal(mout.new, mout.old, tol = 1e-7)
 
  ##########
 
@@ -152,5 +155,5 @@
  nout.old <- nlm(objfun.old, beta.mle.old, fscale = nind, iterlim = 1000)
  print(nout.old)
  all.equal(nout$minimum, nout.old$minimum)
- all.equal(nout$estimate, nout.old$estimate - alpha)
+ all.equal(nout$estimate, nout.old$estimate - alpha, tol = 1e-4)
 

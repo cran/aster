@@ -1,7 +1,8 @@
 
-R : Copyright 2006, The R Foundation for Statistical Computing
-Version 2.3.1 (2006-06-01)
+R version 2.15.0 (2012-03-30)
+Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
+Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -19,7 +20,10 @@ Type 'q()' to quit R.
 >  library(aster)
 Loading required package: trust
 > 
+>  options(digits=4) # avoid rounding differences
+> 
 >  set.seed(42)
+> 
 >  nind <- 25
 >  nnode <- 5
 >  ncoef <- nnode + 1
@@ -60,19 +64,19 @@ Loading required package: trust
 +      type = "unco", origin = zip)
 >  print(out)
 $value
-[1] 123.9680
+[1] 124
 
 $gradient
-[1] 41.9553321  0.5679575 12.9399758 -1.4608417 28.3767383 27.9290757
+[1] 41.955  0.568 12.940 -1.461 28.377 27.929
 
 $hessian
-          [,1]      [,2]       [,3]      [,4]       [,5]       [,6]
-[1,] 618.58754 40.278506 173.359839 72.121848 305.696826  26.306053
-[2,]  40.27851 11.702546   3.353047 17.380877   5.231394  -2.212379
-[3,] 173.35984  3.353047  61.948882  4.980101  96.895585  10.514502
-[4,]  72.12185 17.380877   4.980101 38.114502   7.770363  -1.323664
-[5,] 305.69683  5.231394  96.895585  7.770363 186.157029  20.455780
-[6,]  26.30605 -2.212379  10.514502 -1.323664  20.455780 303.041693
+       [,1]   [,2]    [,3]   [,4]    [,5]    [,6]
+[1,] 618.59 40.279 173.360 72.122 305.697  26.306
+[2,]  40.28 11.703   3.353 17.381   5.231  -2.212
+[3,] 173.36  3.353  61.949  4.980  96.896  10.515
+[4,]  72.12 17.381   4.980 38.115   7.770  -1.324
+[5,] 305.70  5.231  96.896  7.770 186.157  20.456
+[6,]  26.31 -2.212  10.515 -1.324  20.456 303.042
 
 > 
 >  aster:::setfam(fam.default())
@@ -139,14 +143,13 @@ $hessian
 >  nout <- nlm(objfun, beta, fscale = nind)
 >  print(nout)
 $minimum
-[1] 119.1048
+[1] 119.1
 
 $estimate
-[1]  1.62506234 -1.45889278 -0.96558882 -1.61557689 -2.06951752 -0.08435998
+[1]  1.62506 -1.45889 -0.96559 -1.61558 -2.06952 -0.08436
 
 $gradient
-[1]  8.452131e-06 -2.515249e-05 -3.569333e-06 -2.927416e-06  1.135145e-05
-[6] -6.876573e-07
+[1]  8.452e-06 -2.515e-05 -3.569e-06 -2.927e-06  1.135e-05 -6.877e-07
 
 $code
 [1] 1
@@ -157,14 +160,13 @@ $iterations
 >  nout <- nlm(objfun, nout$estimate, fscale = nind)
 >  print(nout)
 $minimum
-[1] 119.1048
+[1] 119.1
 
 $estimate
-[1]  1.62506234 -1.45889278 -0.96558882 -1.61557689 -2.06951752 -0.08435998
+[1]  1.62506 -1.45889 -0.96559 -1.61558 -2.06952 -0.08436
 
 $gradient
-[1]  8.452131e-06 -2.515249e-05 -3.569333e-06 -2.927416e-06  1.135145e-05
-[6] -6.876573e-07
+[1]  8.452e-06 -2.515e-05 -3.569e-06 -2.927e-06  1.135e-05 -6.877e-07
 
 $code
 [1] 1
@@ -179,8 +181,8 @@ $iterations
 +          type = "unco")
 >  mout.old <- mlogl(beta.mle.old, pred, fam, x, root, modmat, deriv = 1,
 +          type = "unco", origin = zip)
->  all.equal(mout.new, mout.old)
-[1] "Component 2: Mean relative  difference: 3.221245e-08"
+>  all.equal(mout.new, mout.old, tol = 1e-7)
+[1] TRUE
 > 
 >  ##########
 > 
@@ -209,14 +211,13 @@ $iterations
 >  nout <- try(nlm(objfun, beta, fscale = nind))
 >  print(nout)
 $minimum
-[1] 119.1066
+[1] 119.1
 
 $estimate
-[1]  1.61154159 -1.43994211 -0.97003887 -1.60248718 -2.04287896 -0.08345522
+[1]  1.61154 -1.43994 -0.97004 -1.60249 -2.04288 -0.08346
 
 $gradient
-[1] -0.027848502  0.008147191 -0.078372174  0.004814663  0.103718207
-[6]  0.050151163
+[1] -0.027849  0.008147 -0.078372  0.004815  0.103718  0.050151
 
 $code
 [1] 4
@@ -227,14 +228,13 @@ $iterations
 >  nout <- nlm(objfun, nout$estimate, fscale = nind, iterlim = 1000)
 >  print(nout)
 $minimum
-[1] 119.1048
+[1] 119.1
 
 $estimate
-[1]  1.62499634 -1.45880221 -0.96551285 -1.61551376 -2.06945265 -0.08435909
+[1]  1.62500 -1.45880 -0.96551 -1.61551 -2.06945 -0.08436
 
 $gradient
-[1] -8.888587e-05  1.875676e-05  5.313826e-05  2.266534e-05  6.445778e-05
-[6]  4.977037e-05
+[1] -8.889e-05  1.876e-05  5.314e-05  2.267e-05  6.446e-05  4.977e-05
 
 $code
 [1] 2
@@ -254,14 +254,13 @@ $iterations
 >  nout.old <- nlm(objfun.old, beta.mle.old, fscale = nind, iterlim = 1000)
 >  print(nout.old)
 $minimum
-[1] 119.1048
+[1] 119.1
 
 $estimate
-[1] -0.06808484 -0.30707046  0.18623351  0.07757029 -0.37637034 -0.08435998
+[1] -0.06808 -0.30707  0.18623  0.07757 -0.37637 -0.08436
 
 $gradient
-[1]  8.452130e-06 -2.515249e-05 -3.569333e-06 -2.927416e-06  1.135145e-05
-[6] -6.876573e-07
+[1]  8.452e-06 -2.515e-05 -3.569e-06 -2.927e-06  1.135e-05 -6.877e-07
 
 $code
 [1] 1
@@ -271,7 +270,10 @@ $iterations
 
 >  all.equal(nout$minimum, nout.old$minimum)
 [1] TRUE
->  all.equal(nout$estimate, nout.old$estimate - alpha)
-[1] "Mean relative  difference: 4.622505e-05"
+>  all.equal(nout$estimate, nout.old$estimate - alpha, tol = 1e-4)
+[1] TRUE
 > 
 > 
+> proc.time()
+   user  system elapsed 
+  1.740   0.031   1.923 
