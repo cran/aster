@@ -99,19 +99,55 @@ reaster(fixed, random, pred, fam, varvar, idvar, root,
   where \eqn{M} and the \eqn{Z_i}{Z[i]} are model matrices specifed by
   the arguments \code{fixed} and \code{random}, where \eqn{\beta}{beta}
   is a vector of
-  fixed effects and each \code{b_i}{b[i]} is a vector of random
+  fixed effects and each \eqn{b_i}{b[i]} is a vector of random
   effects that are assumed to be (marginally) normally distributed with
   mean vector zero and variance matrix \eqn{\sigma_i^2}{sigma[i]^2} times
   the identity matrix.
-  The vectors of random effects \code{b_i}{b[i]} are not parameters, rather
+  The vectors of random effects \eqn{b_i}{b[i]} are not parameters, rather
   they are latent (unobservable, hypothetical) variables.  The square roots
   of the variance components \eqn{\sigma_i}{sigma[i]} are parameters as
   are the components of \eqn{\beta}{beta}.
+}
+\section{NA Values}{
+It was almost always wrong for an aster model to have \code{NA} values.
+Although theoretically possible for the R formula mini-language to do the
+right thing for an aster model with NA values in the data, usually it does
+some wrong thing.  Thus, since version 0.8-20.  The this function and
+the \code{\link{aster}} function give errors when used with data having
+\code{NA} values.  Users must remove all \code{NA} values (or replace them
+with what they should be, perhaps zero values) \dQuote{by hand}.
 }
 \value{
   \code{reaster} returns an object of class inheriting from \code{"reaster"}.
   An object of class \code{"reaster"} is a list containing at least the
   following components:
+
+  \item{obj}{The aster object returned by a call to the \code{\link{aster}}
+     function to fit the fixed effects model.}
+  \item{fixed}{the model matrix for fixed effects.}
+  \item{random}{the model matrix or matrices for random effects.}
+  \item{dropped}{names of columns dropped from the fixed effects matrix.}
+  \item{sigma}{approximate MLE for square roots of variance components.}
+  \item{nu}{approximate MLE for variance components.}
+  \item{c}{penalized likelihood estimates for the \eqn{c}'s,
+    which are rescaled random effects.}
+  \item{b}{penalized likelihood estimates for the random effects.}
+  \item{alpha}{approximate MLE for fixed effects.}
+  \item{zwz}{\eqn{Z W Z^T}{Z \%*\% W \%*\% t(Z)} where \eqn{Z} is
+    the model matrix for random effects and \eqn{W} is the Hessian matrix
+    of minus the complete data log likelihood with respect to random effects
+    with MLE values of the parameters plugged in.}
+  \item{response}{the response vector.}
+  \item{origin}{the origin (offset) vector.}
+  \item{iterations}{number of iterations of trust region algorithm in
+    each iteration of re-estimating \code{zwz} and re-fitting.}
+  \item{counts}{number of iterations of Nelder-Mead in initial optimization
+    of approximate missing data log likelihood.}
+
+  Calls to \code{reaster.formula} return a list also containing:
+
+  \item{call}{the matched call.}
+  \item{formula}{the formulas supplied.}
 }
 \references{
 Geyer, Charles J., Ridley, Caroline E., Latta, Robert G., Etterson, Julie R.

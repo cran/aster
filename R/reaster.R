@@ -231,6 +231,9 @@ reaster.formula <- function(fixed, random, pred, fam, varvar, idvar, root,
     save.fixed <- fixed
     save.random <- random
 
+    oldopt <- options(na.action = na.fail)
+    on.exit(options(oldopt))
+
     ##### stuff copied from glm.R and not understood #####
     ##### see also http://developer.r-project.org/model-fitting-functions.txt
 

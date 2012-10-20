@@ -1,6 +1,6 @@
 Package: aster
-Version: 0.8-19
-Date: 2012-10-09
+Version: 0.8-20
+Date: 2012-10-20
 Title: Aster Models
 Author: Charles J. Geyer <charlie@stat.umn.edu>.
 Maintainer: Charles J. Geyer <charlie@stat.umn.edu>
@@ -11,6 +11,6 @@ Description: functions and datasets for Aster modeling (forest graph
         statistic models for life history analysis)
 License: X11
 URL: http://www.stat.umn.edu/geyer/aster/
-Packaged: 2012-10-09 21:57:31 UTC; geyer
+Packaged: 2012-10-20 21:08:29 UTC; geyer
 Repository: CRAN
-Date/Publication: 2012-10-10 05:31:37
+Date/Publication: 2012-10-21 13:20:13

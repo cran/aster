@@ -246,6 +246,9 @@ aster.formula <- function(formula, pred, fam, varvar, idvar, root,
     origin.type <- match.arg(origin.type)
     method <- match.arg(method)
 
+    oldopt <- options(na.action = na.fail)
+    on.exit(options(oldopt))
+
     ##### stuff copied from glm.R and not understood #####
     ##### see also http://developer.r-project.org/model-fitting-functions.txt
 

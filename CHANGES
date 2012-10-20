@@ -131,3 +131,5 @@
 
  0.8-19 added tech rept ref to reaster.Rd
 
+ 0.8-20 added options(na.action = na.fail) to aster and reaster
+

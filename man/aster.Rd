@@ -211,6 +211,15 @@ function on a data frame in which the columns of the \code{x} matrix
 are variables in the data frame.  \code{reshape} automatically puts
 things in the right order and creates \code{varvar} and \code{idvar}.
 }
+\section{NA Values}{
+It was almost always wrong for an aster model to have \code{NA} values.
+Although theoretically possible for the R formula mini-language to do the
+right thing for an aster model with NA values in the data, usually it does
+some wrong thing.  Thus, since version 0.8-20.  The this function and
+the \code{\link{reaster}} function give errors when used with data having
+\code{NA} values.  Users must remove all \code{NA} values (or replace them
+with what they should be, perhaps zero values) \dQuote{by hand}.
+}
 \value{
   \code{aster} returns an object of class inheriting from \code{"aster"}.
   \code{aster.formula}, returns an object of class \code{"aster"} and
