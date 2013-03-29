@@ -133,3 +133,5 @@
 
  0.8-20 added options(na.action = na.fail) to aster and reaster
 
+ 0.8-21 changed license to "MIT + file LICENSE" as per CRAN instructions
+
