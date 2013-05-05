@@ -58,8 +58,14 @@ Evolutionary potential of \emph{Chamaecrista fasciculata} in
 \examples{
 data(chamae3)
 ### wide version
-chamae3w <- reshape(chamae3, direction = "wide", timevar = "varb",
+\dontrun{
+### CRAN policy says examples must take < 5 sec.  This doesn't.
+foo <- chamae3
+### delete fit because it makes no sense in wide version
+foo$fit <- NULL
+chamae3w <- reshape(foo, direction = "wide", timevar = "varb",
     v.names = "resp", varying = list(levels(chamae3$varb)))
+}
 }
 \keyword{datasets}
 

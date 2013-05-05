@@ -323,6 +323,10 @@ summary.reaster <- function(object, standard.deviation = TRUE, ...)
         se.bee <- rep(NA_real_, length(bee))
         se.sigma <- rep(NA_real_, length(sigma))
         se.nu <- rep(NA_real_, length(nu))
+        # want to return "subfish" created in other part
+        # not defining subfish here is bug that causes crash
+        # when this case (all variance components zero) occurs
+        subfish <- obj$fisher
     } else {
         subrandom <- random[! iz]
         subnu <- nu[! iz]

@@ -135,3 +135,9 @@
 
  0.8-21 changed license to "MIT + file LICENSE" as per CRAN instructions
 
+ 0.8-22 bug fix.  summary.reaster crashed with inexplicable error message
+        when all variance component estimates were zero
+
+ 0.8-23 added \dontrun to some examples per instructions from Brian Ripley
+
+
