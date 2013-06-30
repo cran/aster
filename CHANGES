@@ -140,4 +140,19 @@
 
  0.8-23 added \dontrun to some examples per instructions from Brian Ripley
 
+ 0.8-24 fixed bug in penmlogl2 (needed drop = FALSE) when only one random
+            effect
+        added deviance component to result of reaster function (can now
+            so some "anova" tests
+        made aster and reaster objects subclass of class "asterOrReaster"
+            so one "anova" function can do both and can compare models
+            with and without random effects
 
+ 0.8-25 fixed inst/doc/Makefile as per instructions from Uwe Ligges
+            and "Writing R Extensions"
+        No.  That does not work either.  Just removed Makefile
+
+ 0.8-26 added .Rbuildignore as per instructions from Brian Ripley
+
+ 0.8-27 moved vignettes to vignettes directory as per instructions from
+            Uwe Ligges

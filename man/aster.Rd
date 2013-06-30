@@ -212,10 +212,10 @@ are variables in the data frame.  \code{reshape} automatically puts
 things in the right order and creates \code{varvar} and \code{idvar}.
 }
 \section{NA Values}{
-It was almost always wrong for an aster model to have \code{NA} values.
+It was almost always wrong for aster model data to have \code{NA} values.
 Although theoretically possible for the R formula mini-language to do the
-right thing for an aster model with NA values in the data, usually it does
-some wrong thing.  Thus, since version 0.8-20.  The this function and
+right thing for an aster model with \code{NA} values in the data, usually
+it does some wrong thing.  Thus, since version 0.8-20, this function and
 the \code{\link{reaster}} function give errors when used with data having
 \code{NA} values.  Users must remove all \code{NA} values (or replace them
 with what they should be, perhaps zero values) \dQuote{by hand}.
@@ -239,7 +239,8 @@ with what they should be, perhaps zero values) \dQuote{by hand}.
   \item{rank}{the numeric rank of the fitted generalized linear model
       part of the aster model (i.e., the rank of \code{modmat}).}
   \item{deviance}{up to a constant, minus twice the maximized
-    log-likelihood.}
+    log-likelihood.  (Note the minus.  This is somewhat counterintuitive,
+    but cannot be changed for reasons of backward compatibility.)}
   \item{iter}{the number of iterations used by the optimization method.}
   \item{converged}{logical. Was the optimization algorithm judged to have
      converged?}

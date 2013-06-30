@@ -225,7 +225,7 @@ aster.default <- function(x, root, pred, fam, modmat, parm,
     } else {
         aout[["fisher"]] <- mout$hessian
     }
-    class(aout) <- "aster"
+    class(aout) <- c("aster", "asterOrReaster")
     if (! aout$converged)
         warning("Algorithm did not converge")
     if (length(outies) > 0)
@@ -324,7 +324,7 @@ aster.formula <- function(formula, pred, fam, varvar, idvar, root,
     out <- aster(x, root, pred, fam, modmat, parm, type, famlist, origin,
         origin.type, method, fscale, maxiter, nowarn, newton, optout, ...)
 
-    class(out) <- c("aster.formula", "aster")
+    class(out) <- c("aster.formula", "aster", "asterOrReaster")
     out$call <- call
     out$formula <- formula
     out$terms <- mt

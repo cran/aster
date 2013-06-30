@@ -107,12 +107,15 @@ reaster(fixed, random, pred, fam, varvar, idvar, root,
   they are latent (unobservable, hypothetical) variables.  The square roots
   of the variance components \eqn{\sigma_i}{sigma[i]} are parameters as
   are the components of \eqn{\beta}{beta}.
+
+  This function maximizes an approximation to the likelihood introduced
+  by Breslow and Clayton (1993).  See Geyer, et al. (2013) for details.
 }
 \section{NA Values}{
-It was almost always wrong for an aster model to have \code{NA} values.
+It was almost always wrong for aster model data to have \code{NA} values.
 Although theoretically possible for the R formula mini-language to do the
-right thing for an aster model with NA values in the data, usually it does
-some wrong thing.  Thus, since version 0.8-20.  The this function and
+right thing for an aster model with \code{NA} values in the data, usually
+it does some wrong thing.  Thus, since version 0.8-20, this function and
 the \code{\link{aster}} function give errors when used with data having
 \code{NA} values.  Users must remove all \code{NA} values (or replace them
 with what they should be, perhaps zero values) \dQuote{by hand}.
@@ -143,6 +146,10 @@ with what they should be, perhaps zero values) \dQuote{by hand}.
     each iteration of re-estimating \code{zwz} and re-fitting.}
   \item{counts}{number of iterations of Nelder-Mead in initial optimization
     of approximate missing data log likelihood.}
+  \item{deviance}{up to a constant, minus twice the maximized value of
+    the Breslow-Clayton approximation to the
+    log-likelihood.  (Note the minus.  This is somewhat counterintuitive,
+    but agrees with the convention used by the \code{\link{aster}} function.)}
 
   Calls to \code{reaster.formula} return a list also containing:
 
@@ -150,11 +157,21 @@ with what they should be, perhaps zero values) \dQuote{by hand}.
   \item{formula}{the formulas supplied.}
 }
 \references{
-Geyer, Charles J., Ridley, Caroline E., Latta, Robert G., Etterson, Julie R.
-    and Shaw, Ruth G. (2012)
+Breslow, N. E., and Clayton, D. G. (1993).
+Approximate Inference in Generalized Linear Mixed Models.
+\emph{Journal of the American Statistical Association}, \bold{88}, 9--25.
+
+Geyer, C. J., Ridley, C. E., Latta, R. G., Etterson, J. R.,
+    and Shaw, R. G. (2012)
 Aster Models with Random Effects via Penalized Likelihood.
 Technical Report 692, School of Statistics, University of Minnesota.
 \url{http://purl.umn.edu/135870}.
+
+Geyer, C. J., Ridley, C. E., Latta, R. G., Etterson, J. R.,
+    and Shaw, R. G. (2013)
+Local Adaptation and Genetic Effects on Fitness: Calculations
+    for Exponential Family Models with Random Effects.
+To appear in \emph{Annals of Applied Statistics}.
 }
 \examples{
 library(aster)

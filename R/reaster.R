@@ -164,6 +164,7 @@ reaster.default <- function(fixed, random, pred, fam, varvar, idvar, root,
     zwz.mle <- makezwz(sigma.mle, parm = parm.mle,
         fixed = fixed, random = random, obj = aout, y = y)
     save.iter <- NULL
+    value.mle <- NaN
 
     # now iterate pickle3 and trust
     foo <- function(alphaceesigma)
@@ -180,6 +181,7 @@ reaster.default <- function(fixed, random, pred, fam, varvar, idvar, root,
         parm.mle <- tout$argument[seq(1, nfix + sum(nrand))]
         zwz.mle <- makezwz(sigma.mle, parm.mle,
             fixed = fixed, random = random, obj = aout, y = y)
+        value.mle <- tout$value
         if (isTRUE(all.equal(sigma.old, as.vector(sigma.mle)))) break
     }
 
@@ -213,8 +215,9 @@ reaster.default <- function(fixed, random, pred, fam, varvar, idvar, root,
         dropped = dropped, sigma = sigma.mle, nu = sigma.mle^2,
         c = c.mle, b = b.mle, alpha = alpha.mle, zwz = zwz.mle,
         response = response, origin = origin,
-        iterations = save.iter, counts = oout$counts)
-    class(result) <- "reaster"
+        iterations = save.iter, counts = oout$counts,
+        deviance = 2.0 * value.mle)
+    class(result) <- c("reaster", "asterOrReaster")
     return(result)
 }
 
@@ -278,7 +281,7 @@ reaster.formula <- function(fixed, random, pred, fam, varvar, idvar, root,
 
     result$formula <- list(fixed = save.fixed, random = save.random)
     result$call <- call
-    class(result) <- c("reaster.formula", "reaster")
+    class(result) <- c("reaster.formula", "reaster", "asterOrReaster")
     return(result)
 }
 
@@ -421,5 +424,116 @@ print.summary.reaster <-
     }
 
     return(invisible(x))
+}
+
+anova.reaster <- function(object, ...)
+{
+    dotargs <- list(...)
+    if (length(dotargs) == 0)
+        stop("need at least two objects of class \"reaster\"")
+    allargs <- c(list(object), dotargs)
+    if (! all(sapply(allargs, function(x) inherits(x, "reaster"))))
+        stop("some arguments not of class \"reaster\"")
+    return(anova.reasterlist(allargs))
+}
+
+anova.reasterlist <- function(object, ...)
+{
+    stopifnot(is.list(object))
+    stopifnot(length(object) >= 2)
+    if (! all(sapply(object, function(x) inherits(x, "reaster"))))
+        stop("some components not of class \"reaster\"")
+
+    nmodels <- length(object)
+
+    # attempt to check that models are nested
+    # all models have same origin
+    ok <- TRUE
+    for (i in 2:nmodels) {
+        o1 <- object[[i - 1]]$origin
+        o2 <- object[[i]]$origin
+        ok <- ok & identical(o1, o2)
+    }
+    if (! ok) warning("not same origin for all models, probably not nested")
+
+    # all fixed effect model matrices have column labels
+    ok <- TRUE
+    for (i in 1:nmodels) {
+        mf <- object[[i]]$fixed
+        ok <- ok & (! is.null(colnames(mf)))
+    }
+    if (! ok) warning("no colnames for some model matrix for fixed effects, cannot check nesting")
+
+    # all fixed effect model matrices column labels are nested
+    ok <- TRUE
+    for (i in 2:nmodels) {
+        mf1 <- object[[i - 1]]$fixed
+        mf2 <- object[[i]]$fixed
+        ok <- ok & all(colnames(mf1) %in% colnames(mf2))
+    }
+    if (! ok) warning("colnames for model matrices for fixed effects not nested, models probably not nested")
+
+    # all random effect model matrices have column labels
+    ok <- TRUE
+    for (i in 1:nmodels) {
+        mr <- object[[i]]$random
+        cr <- lapply(mr, colnames)
+        ok <- ok & (! any(is.null(cr)))
+    }
+    if (! ok) warning("no colnames for some model matrix for random effects, cannot check nesting")
+
+    # all random effect model matrices column labels are nested
+    ok <- TRUE
+    for (i in 2:nmodels) {
+        mr1 <- object[[i - 1]]$random
+        mr2 <- object[[i]]$random
+        cr1 <- lapply(mr1, colnames)
+        cr2 <- lapply(mr2, colnames)
+        for (j1 in seq(along = cr1)) {
+            ok.too <- FALSE
+            for (j2 in seq(along = cr2)) {
+                ok.too <- ok.too | identical(cr1[[j1]], cr2[[j2]])
+            }
+            ok <- ok & ok.too
+        }
+    }
+    if (! ok) warning("colnames for model matrices for random effects not nested, models probably not nested")
+
+    resdf.fix <- sapply(object, function(x) nrow(x$fixed))
+    resdf.rand <- sapply(object, function(x) length(x$random))
+    if (any(resdf.rand > 1)) stop("don't yet know how to compare models differing by two or more variance components")
+    resdf <- resdf.fix + resdf.rand
+    resdev <- sapply(object, function(x) x$deviance)
+    table <- data.frame(resdf, resdev, c(NA, diff(resdf.fix)),
+        c(NA, diff(resdf.rand)), c(NA, diff(resdev)))
+    fred <- function(x) {
+        foo <- x$fixed
+        if (is.null(foo)) return("(no formulas)")
+        result <- as.character(deparse(foo))
+        for (i in seq(along = x$random)) {
+            foo <- x$random[[i]]
+            if (is.null(foo)) return("(no formulas)")
+            more.result <- as.character(deparse(foo))
+            result <- paste(result, more.result, sep = ", ")
+        }
+        return(result)
+    }
+    variables <- sapply(object, fred)
+    dimnames(table) <- list(1:nmodels, c("Model Df", "Model Dev", "Df Fix",
+        "Df Rand", "Deviance"))
+    title <- "Analysis of Deviance Table\n"
+    topnote <- paste("Model ", format(1:nmodels),": ",
+        variables, collapse = "\n", sep = "")
+    mixers <- table[ , "Df Rand"] == 1
+    pval <- double(nrow(table))
+    pval[! mixers] <- pchisq(table[ , "Deviance"],
+        table[ , "Df Fix"], lower.tail = FALSE)
+    pval[mixers] <- (0.5) * pchisq(table[ , "Deviance"],
+        table[ , "Df Fix"], lower.tail = FALSE) +
+        pchisq(table[ , "Deviance"], table[ , "Df Fix"] + 1,
+        lower.tail = FALSE)
+    table <- cbind(table, "P-value" = pval)
+    structure(table, heading = c(title, topnote),
+              class = c("anova", "data.frame"))
 }
 

@@ -70,8 +70,8 @@ penmlogl2 <- function(parm, alpha, sigma, fixed, random, obj, y, origin) {
     nfix <- ncol(fixed)
     idx <- seq(along = pout$gradient) > nfix
     pout$gradient <- pout$gradient[idx]
-    tmp <- pout$hessian[idx, ]
-    pout$hessian <- tmp[ , idx]
+    tmp <- pout$hessian[idx, , drop = FALSE]
+    pout$hessian <- tmp[ , idx, drop = FALSE]
     pout$scale <- pout$scale[idx]
     return(pout)
 }

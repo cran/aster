@@ -71,7 +71,7 @@ the generalized linear mixed models literature.
 }
 \details{
 Define
-\deqn{p(\alpha, c, \sigma) = m(a + M \alpha + Z A c) + c^T c / 2 + \log \det[A Z^T \widehat{W} Z A + I]}{p(alpha, c, sigma) = m(a + M alpha + Z A c) + t(c) c / 2 + log det[A t(Z) What Z A + I]}
+\deqn{p(\alpha, c, \sigma) = m(a + M \alpha + Z A c) + c^T c / 2 + \log \det[A Z^T \widehat{W} Z A + I] / 2}{p(alpha, c, sigma) = m(a + M alpha + Z A c) + t(c) c / 2 + log det[A t(Z) What Z A + I] / 2}
 where \eqn{m} is minus the log likelihood function of a saturated aster model,
 \eqn{a} is a known vector (the \emph{offset vector} in the terminology
 of \code{\link{glm}} but the \emph{origin} in the terminology
