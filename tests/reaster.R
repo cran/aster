@@ -84,7 +84,9 @@
 
  # now check standard error calculations in summary.reaster
 
- fish.inv <- solve(sout$fish)
+ fred <- eigen(sout$fish, symmetric = TRUE)
+ fish.inv <- fred$vectors %*% diag(1 / fred$values) %*% t(fred$vectors)
+ all.equal(fish.inv, solve(sout$fish))
  se.parm <- sqrt(diag(fish.inv))
  se.alpha <- se.parm[seq(along = se.parm) <= nfix]
  se.nu <- se.parm[seq(along = se.parm) > nfix]

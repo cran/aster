@@ -156,6 +156,30 @@ with what they should be, perhaps zero values) \dQuote{by hand}.
   \item{call}{the matched call.}
   \item{formula}{the formulas supplied.}
 }
+\section{Warning about Negative Binomial}{
+The negative binomial and truncated negative binomial are fundamentally
+incompatible with random effects.  The reason is that the canonical parameter
+space for a one-parameter negative binomial or truncated negative binomial
+is the negative half line.  Thus the conditional canonical parameter
+\eqn{\theta}{theta} for such a node must be negative valued.  The aster
+transform is so complicated that it is unclear what the corresponding
+constraint on the unconditional canonical parameter \eqn{\varphi}{phi} is,
+but there is a constraint: its parameter space is not the whole real line.
+A normal random effect, in contrast, does have support the whole real line.
+It wants to make parameters that are constrained to have any real number.
+The code only warns about this situation, because if the random effects do
+not influence any negative binomial or truncated negative binomial nodes
+of the graph, then there would be no problem.
+}
+\section{Warning about Individual Random Effects}{
+The Breslow-Clayton approximation assumes the complete data log likelihood
+is approximately quadratic considered as a function of random effects only.
+This will be the case by the law of large numbers if the number of individuals
+is much larger than the number of random effects.  Thus Geyer, et al. (2013)
+warn against trying to put a random effect for each individual in the model.
+If you do that, the code will try to fit the model, but it will take forever
+and no theory says the results will make any sense.
+}
 \references{
 Breslow, N. E., and Clayton, D. G. (1993).
 Approximate Inference in Generalized Linear Mixed Models.
@@ -171,7 +195,7 @@ Geyer, C. J., Ridley, C. E., Latta, R. G., Etterson, J. R.,
     and Shaw, R. G. (2013)
 Local Adaptation and Genetic Effects on Fitness: Calculations
     for Exponential Family Models with Random Effects.
-To appear in \emph{Annals of Applied Statistics}.
+\emph{Annals of Applied Statistics}, \bold{7}, 1778--1795.
 }
 \examples{
 library(aster)

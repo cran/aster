@@ -55,6 +55,11 @@ reaster.default <- function(fixed, random, pred, fam, varvar, idvar, root,
     stopifnot(is.vector(fam))
     stopifnot(is.numeric(fam))
     stopifnot(fam %in% seq(1, length(famlist)))
+    famlist.blurfle <- sapply(famlist, as.character)
+    famlist.problem <- grepl("negative.binomial", famlist.blurfle)
+    if (any(famlist.problem[fam]))
+        warning("negative binomial incompatible with random effects,",
+            " see help(reaster)")
 
     stopifnot(is.vector(root))
     stopifnot(length(root) == length(response))
@@ -152,7 +157,19 @@ reaster.default <- function(fixed, random, pred, fam, varvar, idvar, root,
     oout <- suppressWarnings(try(optim(sigma.start, pickle, parm = eff.start,
         fixed = fixed, random = random, obj = aout, y = y, cache = cache),
         silent = TRUE))
-    if (inherits(oout, "try-error") || oout$convergence != 0)
+    # this used to be
+    #
+    #     if (inherits(oout, "try-error") || oout$convergence != 0)
+    #         stop("step 1 part 1 (optim Nelder-Mead with pickle) failed")
+    #
+    # but Marcus Warwell had an example where this optim with method
+    # Nelder-Mead failed with out$convergence = 10 (indicates degeneracy
+    # of the Nelder-Mead simplex, so says the documentation), and it is
+    # very unclear what we are supposed to do with that.  Anyhoo, we
+    # are only using this result as a starting point for more polishing,
+    # so I hope this does not matter.
+
+    if (inherits(oout, "try-error"))
         stop("step 1 part 1 (optim Nelder-Mead with pickle) failed")
 
     sigma.mle <- oout$par
@@ -344,10 +361,13 @@ summary.reaster <- function(object, standard.deviation = TRUE, ...)
                 obj, y, origin = origin, zwz = subzwz, deriv = 2)
         }
         subfish <- qout$hessian
-        eout <- eigen(subfish, symmetric = TRUE, only.values = TRUE)
+        eout <- eigen(subfish, symmetric = TRUE)
         goodfish <- min(eout$values) > 0
         if (goodfish) {
-            subfish.inv <- solve(subfish)
+            # was buggy.  Have to use eigen to invert if use eigen to
+            # check if invertible !!!!!!!!
+            subfish.inv <- eout$vectors %*% diag(1 / eout$values) %*%
+                t(eout$vectors)
             se.subparm <- sqrt(diag(subfish.inv))
         } else {
             warning(paste("estimated Fisher information matrix not positive",

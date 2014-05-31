@@ -3,7 +3,8 @@ predict.aster <- function(object, x, root, modmat, amat,
     parm.type = c("mean.value", "canonical"),
     model.type = c("unconditional", "conditional"),
     se.fit = FALSE, info = c("expected", "observed"),
-    info.tol = sqrt(.Machine$double.eps), newcoef = NULL, ...)
+    info.tol = sqrt(.Machine$double.eps), newcoef = NULL,
+    gradient = se.fit, ...)
 {
     parm.type <- match.arg(parm.type)
     model.type <- match.arg(model.type)
@@ -20,6 +21,11 @@ predict.aster <- function(object, x, root, modmat, amat,
     }
 
     setfam(object$famlist)
+
+    stopifnot(is.logical(se.fit))
+    stopifnot(length(se.fit) == 1)
+    stopifnot(is.logical(gradient))
+    stopifnot(length(gradient) == 1)
 
     stopifnot(all(dim(modmat)[2:3] == dim(object$modmat)[2:3]))
     stopifnot(all(dimnames(modmat)[[2]] == dimnames(object$modmat)[[2]]))
@@ -111,7 +117,7 @@ predict.aster <- function(object, x, root, modmat, amat,
     if (parm.type == "canonical") {
         if (model.type == object$type) {
             zeta <- eta
-            if (se.fit)
+            if (se.fit | gradient)
                 gradmat <- matrix(modmat, ncol = ncoef)
         } else {
             if (model.type == "unconditional") {
@@ -124,7 +130,7 @@ predict.aster <- function(object, x, root, modmat, amat,
                     theta = as.double(eta),
                     phi = matrix(as.double(0), nind, nnode),
                     PACKAGE = "aster")$phi
-                if (se.fit)
+                if (se.fit | gradient)
                     gradmat <- .C("aster_D_beta2theta2phi",
                         nind = as.integer(nind),
                         nnode = as.integer(nnode),
@@ -146,7 +152,7 @@ predict.aster <- function(object, x, root, modmat, amat,
                     phi = as.double(eta),
                     theta = matrix(as.double(0), nind, nnode),
                     PACKAGE = "aster")$theta
-                if (se.fit)
+                if (se.fit | gradient)
                     gradmat <- .C("aster_D_beta2phi2theta",
                         nind = as.integer(nind),
                         nnode = as.integer(nnode),
@@ -180,7 +186,7 @@ predict.aster <- function(object, x, root, modmat, amat,
                 xpred = double(nind * nnode),
                 PACKAGE = "aster")$xpred
             zeta <- xpred * ctau
-            if (se.fit) {
+            if (se.fit | gradient) {
                 grad.ctau <- .C("aster_theta2whatsis",
                     nind = as.integer(nind),
                     nnode = as.integer(nnode),
@@ -220,7 +226,7 @@ predict.aster <- function(object, x, root, modmat, amat,
                 ctau = as.double(ctau),
                 tau = matrix(as.double(0), nind, nnode),
                 PACKAGE = "aster")$tau
-            if (se.fit)
+            if (se.fit | gradient)
                 gradmat <- .C("aster_D_beta2phi2tau",
                     nind = as.integer(nind),
                     nnode = as.integer(nnode),
@@ -261,7 +267,7 @@ predict.aster <- function(object, x, root, modmat, amat,
                 xpred = matrix(as.double(0), nind, nnode),
                 PACKAGE = "aster")$xpred
             zeta <- xpred * ctau
-            if (se.fit) {
+            if (se.fit | gradient) {
                 gradmat <- .C("aster_D_beta2phi2theta",
                     nind = as.integer(nind),
                     nnode = as.integer(nnode),
@@ -304,7 +310,7 @@ predict.aster <- function(object, x, root, modmat, amat,
                 ctau = as.double(ctau),
                 tau = matrix(as.double(0), nind, nnode),
                 PACKAGE = "aster")$tau
-            if (se.fit)
+            if (se.fit | gradient)
                 gradmat <- .C("aster_D_beta2theta2tau",
                     nind = as.integer(nind),
                     nnode = as.integer(nnode),
@@ -325,12 +331,12 @@ predict.aster <- function(object, x, root, modmat, amat,
     if (! missing(amat)) {
         amat <- matrix(amat, nrow = nind * nnode)
         result <- as.numeric(t(amat) %*% result)
-        if (se.fit)
+        if (se.fit | gradient)
             gradmat <- t(amat) %*% gradmat
     }
-    if (! se.fit) {
+    if (! (se.fit | gradient)) {
         return(result)
-    } else {
+    } else if (se.fit) {
         fred <- .C("aster_diag_mat_mat_mat_mult",
             nrow = nrow(gradmat),
             ncol = ncol(gradmat),
@@ -340,6 +346,9 @@ predict.aster <- function(object, x, root, modmat, amat,
             PACKAGE = "aster")$c
         return(list(fit = result, se.fit = sqrt(as.numeric(fred)),
             gradient = gradmat))
+    } else {
+        # se.fit == FALSE & gradient == TRUE
+        return(list(fit = result, gradient = gradmat))
     }
 }
 
@@ -347,7 +356,8 @@ predict.aster.formula <- function(object, newdata, varvar, idvar, root, amat,
     parm.type = c("mean.value", "canonical"),
     model.type = c("unconditional", "conditional"),
     se.fit = FALSE, info = c("expected", "observed"),
-    info.tol = sqrt(.Machine$double.eps), newcoef = NULL, ...)
+    info.tol = sqrt(.Machine$double.eps), newcoef = NULL,
+    gradient = se.fit, ...)
 {
     parm.type <- match.arg(parm.type)
     model.type <- match.arg(model.type)
@@ -441,12 +451,12 @@ predict.aster.formula <- function(object, newdata, varvar, idvar, root, amat,
         foo <- predict.aster(object, x, root, modmat,
             parm.type = parm.type, model.type = model.type,
             se.fit = se.fit, info = info, info.tol = info.tol,
-            newcoef = newcoef)
+            newcoef = newcoef, gradient = gradient, ...)
     } else {
         foo <- predict.aster(object, x, root, modmat, amat,
             parm.type = parm.type, model.type = model.type,
             se.fit = se.fit, info = info, info.tol = info.tol,
-            newcoef = newcoef)
+            newcoef = newcoef, gradient = gradient, ...)
     }
     if (is.list(foo)) {
         foo$modmat <- modmat

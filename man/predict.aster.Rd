@@ -10,14 +10,15 @@
     parm.type = c("mean.value", "canonical"),
     model.type = c("unconditional", "conditional"),
     se.fit = FALSE, info = c("expected", "observed"),
-    info.tol = sqrt(.Machine$double.eps), newcoef = NULL, \ldots)
-
+    info.tol = sqrt(.Machine$double.eps), newcoef = NULL,
+    gradient = se.fit, \ldots)
 
 \method{predict}{aster.formula}(object, newdata, varvar, idvar, root, amat,
     parm.type = c("mean.value", "canonical"),
     model.type = c("unconditional", "conditional"),
     se.fit = FALSE, info = c("expected", "observed"),
-    info.tol = sqrt(.Machine$double.eps), newcoef = NULL, \ldots)
+    info.tol = sqrt(.Machine$double.eps), newcoef = NULL,
+    gradient = se.fit, \ldots)
 }
 \arguments{
   \item{object}{a fitted object of class inheriting from \code{"aster"}
@@ -77,7 +78,7 @@
     (even though \code{modmat} is not provided).  First dimension
     is number of individuals in \code{newdata}, if provided, otherwise
     number of individuals in \code{object$data}.  Second dimension
-    is number of variables (\code{length{object$pred})}.
+    is number of variables (\code{length(object$pred)}).
   }
 
   \item{parm.type}{the type of parameter to predict.  The default is
@@ -137,6 +138,15 @@
     a variable of length \code{object$coefficients} and used
     in its place when one wants predictions at other than the fitted
     coefficient values.}
+
+  \item{gradient}{if \code{TRUE} return the gradient (Jacobian of the
+      transformation) matrix.  This matrix has number of rows equal to the
+      length of the fitted values and number of columns equal to the number
+      of regression coefficients.  It is the derivative matrix (matrix of
+      partial derivatives) of the mapping from regression coefficients to
+      whatever the predicted values are, which depends on what the
+      arguments \code{newdata}, \code{amat}, \code{parm.type}, and
+      \code{model.type} are.}
 
   \item{\dots}{further arguments passed to or from other methods.}
 }
@@ -220,10 +230,16 @@ to override the R method dispatch (which would
 call \code{predict.aster.formula} in this case).
 }
 \value{
-  If \code{se.fit = FALSE}, a vector of predictions.
+  If \code{se.fit = FALSE} and \code{gradient = FALSE}, a vector of predictions.
   If \code{se.fit = TRUE}, a list with components
   \item{fit}{Predictions}
   \item{se.fit}{Estimated standard errors}
+  \item{gradient}{The gradient of the transformation from
+    regression coefficients to predictions}
+  If \code{gradient = TRUE}, a list with components
+  \item{fit}{Predictions}
+  \item{gradient}{The gradient of the transformation from
+    regression coefficients to predictions}
 }
 \examples{
 ### see package vignette for explanation ###

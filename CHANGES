@@ -156,3 +156,16 @@
 
  0.8-27 moved vignettes to vignettes directory as per instructions from
             Uwe Ligges
+
+ 0.8-28 bug fix in summary.reaster
+
+ 0.8-29 feature change to predict.aster: finally document gradient component
+            of output and add new argument "gradient" to request gradent
+            even when not computing standard errors
+
+ 0.8-30 removed test for convergence of Nelder-Mead step in reaster.default.
+            use whether or not converged.  We are going to polish anyway.
+            Only do stop if error.
+        put warning about negative binomial and random effects in
+            documentation for reaster and also warning in reaster function.
+
