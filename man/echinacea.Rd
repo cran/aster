@@ -28,7 +28,7 @@
 }
 \source{
 Stuart Wagenius,
-\url{http://www.chicagobotanic.org/research/staff/wagenius.php}
+\url{http://www.chicagobotanic.org/research/staff/wagenius}
 }
 \examples{
 library(aster)

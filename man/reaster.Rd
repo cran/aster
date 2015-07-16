@@ -49,7 +49,7 @@ reaster(fixed, random, pred, fam, varvar, idvar, root,
     \code{data} when this is produced by the \code{\link{reshape}} function.}
 
   \item{root}{a vector whose length is the row dimension of all model
-    matrices.  For nodes whose predicessors are root nodes specifies the
+    matrices.  For nodes whose predecessors are root nodes specifies the
     value of the constant at that root node.  Typically the vector having
     all components equal to one.}
 
@@ -64,7 +64,7 @@ reaster(fixed, random, pred, fam, varvar, idvar, root,
     in the model.  If not found in \code{data}, the variables are taken
     from \code{environment(fixed)}, typically the environment from
     which \code{reaster} is called.  Usually produced by
-    the \code{\link{reshape}} function.  Not needed when model matrixes
+    the \code{\link{reshape}} function.  Not needed when model matrices
     rather than formulas are supplied in \code{fixed} and \code{random}.}
 
   \item{effects}{if not missing, a vector specifying starting values for
@@ -96,7 +96,7 @@ reaster(fixed, random, pred, fam, varvar, idvar, root,
   fixed and random effects
   \deqn{\varphi = M \beta + \sum_{i = 1}^k \sigma^2_i Z_i b_i}{phi = M beta
   + sigma[1]^2 Z[1] b[1] + \dots + sigma[k]^2 Z[k] b[k]}
-  where \eqn{M} and the \eqn{Z_i}{Z[i]} are model matrices specifed by
+  where \eqn{M} and the \eqn{Z_i}{Z[i]} are model matrices specified by
   the arguments \code{fixed} and \code{random}, where \eqn{\beta}{beta}
   is a vector of
   fixed effects and each \eqn{b_i}{b[i]} is a vector of random

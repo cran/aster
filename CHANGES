@@ -169,3 +169,5 @@
         put warning about negative binomial and random effects in
             documentation for reaster and also warning in reaster function.
 
+ 0.8-31 explicit import from non-base packages, as required by R-3.3.0
+

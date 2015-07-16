@@ -16,7 +16,7 @@
       to each component of \code{resp}.  See details below.}
     \item{root}{All ones.  Root variables for graphical model.}
     \item{id}{Categorical.  Indicates individual plants.}
-    \item{fit}{Zero-or-one-valued.  Indicates dQuote{fitness} nodes of the
+    \item{fit}{Zero-or-one-valued.  Indicates \dQuote{fitness} nodes of the
       graph.}
     \item{SIRE}{Categorical.  Sire.}
     \item{DAM}{Categorical.  Dam.}
@@ -43,7 +43,7 @@ of the \dQuote{original} variables are
 }
 \source{
 Julie Etterson
-\url{http://www.d.umn.edu/biology/faculty/Etterson_page1.htm}
+\url{http://www.d.umn.edu/~jetterso/}
 }
 \references{
 These data are a subset of data previously analyzed by non-aster methods in the following.

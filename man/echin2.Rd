@@ -73,7 +73,7 @@ the three levels of \code{crosstype}.
 }
 \source{
 Stuart Wagenius,
-\url{http://www.chicagobotanic.org/research/staff/wagenius.php}
+\url{http://www.chicagobotanic.org/research/staff/wagenius}
 }
 \references{
 These data are analyzed in the following.                                     

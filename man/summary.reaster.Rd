@@ -12,7 +12,7 @@
   \item{object}{an object of class \code{"reaster"}, usually, a result of a
     call to \code{\link{reaster}}.}
   \item{standard.deviation}{if \code{TRUE}, treat the parameters described
-    in the dQuote{variance components} section of the printout are square
+    in the \dQuote{variance components} section of the printout are square
     roots of variance components (that is, standard deviations) rather
     than the variance components themselves.  Warning: if \code{FALSE}
     so actual variance components are described, (asymptotic, approximate)

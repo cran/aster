@@ -276,7 +276,7 @@ Shaw, R. G., Geyer, C. J., Wagenius, S., Hangelbroek, H. H., and
 Unifying Life History Analysis for Inference of Fitness
     and population growth.
 \emph{American Naturalist}, \bold{172}, E35--E47.
-(e-paper \url{http://www.journals.uchicago.edu/doi/full/10.1086/588063})
+(e-paper \url{http://www.jstor.org/stable/10.1086/588063})
 }
 \seealso{
 \code{\link{anova.aster}},

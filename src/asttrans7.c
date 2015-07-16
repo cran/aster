@@ -7,14 +7,13 @@ void aster_ctau2tau(int *nindin, int *nnodein, int *pred, int *fam,
     int nind = nindin[0];
     int nnode = nnodein[0];
 
-    int i, j, k, jfam, jbase, kbase;
+    int i, j, k, jbase, kbase;
 
     aster_check_model_root(nindin, nnodein, pred, fam, root);
 
     /* j and k are 1-origin indexing */
     for (j = 1; j <= nnode; ++j) {
         k = pred[j - 1];
-        jfam = fam[j - 1];
         jbase = nind * (j - 1);
         kbase = nind * (k - 1);
         for (i = 0; i < nind; ++i) {
