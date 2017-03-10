@@ -1,7 +1,6 @@
 
  library(aster)
-
- options(digits=4) # avoid rounding differences
+ library(numDeriv)
 
  set.seed(42)
 
@@ -11,9 +10,7 @@
 
  famlist <- fam.default()
  fam <- c(1, 1, 2, 3, 3)
-
  pred <- c(0, 1, 1, 2, 3)
- print(pred)
 
  modmat <- array(0, c(nind, nnode, ncoef))
  modmat[ , , 1] <- 1
@@ -33,7 +30,6 @@
  
  out <- mlogl(beta, pred, fam, x, root, modmat, deriv = 2,
      type = "conditional")
- print(out)
 
  my.value <- 0
  for (j in 1:nnode) {
@@ -50,28 +46,17 @@
  }
  all.equal(out$value, my.value)
 
- my.grad <- NaN * out$gradient
- epsilon <- 1e-9
- for (i in 1:ncoef) {
-     beta.eps <- beta
-     beta.eps[i] <- beta[i] + epsilon
-     out.eps <- mlogl(beta.eps, pred, fam, x, root, modmat, deriv = 0,
-         type = "conditional")
-     my.grad[i] <- (out.eps$value - out$value) / epsilon
+ foo <- function(beta) {
+     stopifnot(is.numeric(beta))
+     stopifnot(is.finite(beta))
+     mlogl(beta, pred, fam, x, root, modmat, type = "conditional")$value
  }
 
- all.equal(out$gradient, my.grad, tolerance = sqrt(epsilon))
+ g <- grad(foo, beta)
+ all.equal(g, out$gradient)
 
- my.hess <- matrix(NaN, ncoef, ncoef)
- for (i in 1:ncoef) {
-     beta.eps <- beta
-     beta.eps[i] <- beta[i] + epsilon
-     out.eps <- mlogl(beta.eps, pred, fam, x, root, modmat, deriv = 1,
-         type = "conditional")
-     my.hess[ , i] <- (out.eps$gradient - out$gradient) / epsilon
- }
-
- all.equal(out$hessian, my.hess, tolerance = sqrt(epsilon))
+ h <- hessian(foo, beta)
+ all.equal(h, out$hessian)
 
  ##########
 
@@ -82,8 +67,7 @@
      attr(result, "gradient") <- out$gradient
      return(result)
  }
- out <- nlm(objfun, beta, fscale = nind)
- print(out)
+ out1 <- nlm(objfun, beta, fscale = nind)
 
  ##########
 
@@ -96,13 +80,14 @@
      return(result)
  }
  out <- nlm(objfun, beta, fscale = nind)
- print(out)
+ all.equal(out1$minimum, out$minimum)
+ all.equal(out1$estimate, out$estimate, tolerance = 1e-4)
 
  ########## expected Fisher information ##########
 
  aster:::setfam(fam.default())
 
- fout <- .C("aster_fish_cond",
+ fout <- .C(aster:::C_aster_fish_cond,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      ncoef = as.integer(ncoef),
@@ -119,20 +104,20 @@
 
  aster:::setfam(fam.default())
 
- theta <- .C("aster_mat_vec_mult",
+ theta <- .C(aster:::C_aster_mat_vec_mult,
     nrow = as.integer(nind * nnode),
     ncol = as.integer(ncoef),
     a = as.double(modmat),
     b = as.double(out$estimate),
     c = matrix(as.double(0), nind, nnode))$c
- ctau <- .C("aster_theta2ctau",
+ ctau <- .C(aster:::C_aster_theta2ctau,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),
      fam = as.integer(fam),
      theta = as.double(theta),
      ctau = matrix(as.double(0), nind, nnode))$ctau
- tau <- .C("aster_ctau2tau",
+ tau <- .C(aster:::C_aster_ctau2tau,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),
@@ -140,7 +125,7 @@
      root = as.double(root),
      ctau = as.double(ctau),
      tau = matrix(as.double(0), nind, nnode))$tau
- psiDoublePrime <- .C("aster_theta2whatsis",
+ psiDoublePrime <- .C(aster:::C_aster_theta2whatsis,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),

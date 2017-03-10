@@ -29,7 +29,7 @@
 
  aster:::setfam(fam.default())
 
- out <- .C("aster_theta2phi",
+ out <- .C(aster:::C_aster_theta2phi,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),
@@ -47,7 +47,7 @@
 
  all.equal(out$phi, my.phi)
 
- tout <- .C("aster_phi2theta",
+ tout <- .C(aster:::C_aster_phi2theta,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),
@@ -60,7 +60,7 @@
  storage.mode(x) <- "double"
  storage.mode(root) <- "double"
 
- cout <- .C("aster_theta2ctau",
+ cout <- .C(aster:::C_aster_theta2ctau,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),
@@ -81,7 +81,7 @@
 
  all.equal(cout$ctau, my.ctau)
 
- xout <- .C("aster_xpred",
+ xout <- .C(aster:::C_aster_xpred,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),
@@ -98,7 +98,7 @@
 
  all.equal(xout$xpred, my.xpred)
 
- tout <- .C("aster_ctau2tau",
+ tout <- .C(aster:::C_aster_ctau2tau,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),
@@ -117,7 +117,7 @@
 
  ##########
 
- wout <- .C("aster_theta2whatsis",
+ wout <- .C(aster:::C_aster_theta2whatsis,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),
@@ -139,7 +139,7 @@
 
  aster:::setfam(fam.default())
 
- wout <- .C("aster_theta2whatsis",
+ wout <- .C(aster:::C_aster_theta2whatsis,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),
@@ -160,7 +160,7 @@
 
  aster:::setfam(fam.default())
 
- wout <- .C("aster_theta2whatsis",
+ wout <- .C(aster:::C_aster_theta2whatsis,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),
@@ -182,7 +182,7 @@
 
  aster:::setfam(fam.default())
 
- vout <- .C("aster_tt2var",
+ vout <- .C(aster:::C_aster_tt2var,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),

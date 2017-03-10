@@ -27,18 +27,18 @@
 
  out <- aster(resp ~ foo + site + varb, pred, fam, varb, id, root,
      data = redata)
- summary(out, show.graph = TRUE)
+ sout1 <- summary(out, show.graph = TRUE)
 
  ##### redo with aster.default and predict.aster
 
  out2 <- aster(x, root, pred, fam, modmat = out$modmat)
- summary(out2)
+ sout2 <- summary(out2)
 
  foo <- match(sort(unique(site)), site)
  modmat.pred <- out$modmat[foo, , ]
  origin.pred <- out$origin[foo, ]
 
- predict(out2, modmat = modmat.pred, parm.type = "canon")
+ pout1 <- predict(out2, modmat = modmat.pred, parm.type = "canon")
 
  ##### case 1: model = "unco", obj = "unco", parm = "cano" ####
 
@@ -80,7 +80,7 @@
  ##### case 3: model = "unco", obj = "cond", parm = "cano" ####
 
  out3 <- aster(x, root, pred, fam, modmat = out$modmat, type = "cond")
- summary(out3)
+ sout3 <- summary(out3)
 
  fred <- predict(out3, modmat = modmat.pred, parm.type = "canon",
      se.fit = TRUE)
@@ -93,7 +93,7 @@
 
  beta.hat <- out3$coef
  theta.hat <- as.numeric(sally %*% beta.hat)
- phi.hat <- .C("aster_theta2phi",
+ phi.hat <- .C(aster:::C_aster_theta2phi,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),
@@ -112,7 +112,7 @@
      beta.epsilon <- beta.hat
      beta.epsilon[k] <- beta.hat[k] + epsilon
      theta.epsilon <- as.numeric(sally %*% beta.epsilon)
-     phi.epsilon <- .C("aster_theta2phi",
+     phi.epsilon <- .C(aster:::C_aster_theta2phi,
          nind = as.integer(nind),
          nnode = as.integer(nnode),
          pred = as.integer(pred),
@@ -143,7 +143,7 @@
 
  beta.hat <- out2$coef
  phi.hat <- as.numeric(origin.pred) + as.numeric(sally %*% beta.hat)
- theta.hat <- .C("aster_phi2theta",
+ theta.hat <- .C(aster:::C_aster_phi2theta,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),
@@ -162,7 +162,7 @@
      beta.epsilon <- beta.hat
      beta.epsilon[k] <- beta.hat[k] + epsilon
      phi.epsilon <- as.numeric(origin.pred) + as.numeric(sally %*% beta.epsilon)
-     theta.epsilon <- .C("aster_phi2theta",
+     theta.epsilon <- .C(aster:::C_aster_phi2theta,
          nind = as.integer(nind),
          nnode = as.integer(nnode),
          pred = as.integer(pred),
@@ -195,7 +195,7 @@
 
  beta.hat <- out3$coef
  theta.hat <- as.numeric(sally %*% beta.hat)
- xi.hat <- .C("aster_theta2ctau",
+ xi.hat <- .C(aster:::C_aster_theta2ctau,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),
@@ -221,7 +221,7 @@
      beta.epsilon <- beta.hat
      beta.epsilon[k] <- beta.hat[k] + epsilon
      theta.epsilon <- as.numeric(sally %*% beta.epsilon)
-     xi.epsilon <- .C("aster_theta2ctau",
+     xi.epsilon <- .C(aster:::C_aster_theta2ctau,
          nind = as.integer(nind),
          nnode = as.integer(nnode),
          pred = as.integer(pred),
@@ -244,7 +244,7 @@
 
      phi <- origin.pred + matrix(sally %*% beta, nrow = nind)
 
-     theta <- .C("aster_phi2theta",
+     theta <- .C(aster:::C_aster_phi2theta,
          nind = as.integer(nind),
          nnode = as.integer(nnode),
          pred = as.integer(pred),
@@ -252,7 +252,7 @@
          phi = as.double(phi),
          theta = matrix(as.double(0), nind, nnode))$theta
 
-     ctau <- .C("aster_theta2ctau",
+     ctau <- .C(aster:::C_aster_theta2ctau,
          nind = as.integer(nind),
          nnode = as.integer(nnode),
          pred = as.integer(pred),
@@ -260,7 +260,7 @@
          theta = as.double(theta),
          ctau = double(nind * nnode))$ctau
 
-     tau <- .C("aster_ctau2tau",
+     tau <- .C(aster:::C_aster_ctau2tau,
          nind = as.integer(nind),
          nnode = as.integer(nnode),
          pred = as.integer(pred),
@@ -309,7 +309,7 @@
 
      phi <- origin.pred + matrix(sally %*% beta, nrow = nind)
 
-     theta <- .C("aster_phi2theta",
+     theta <- .C(aster:::C_aster_phi2theta,
          nind = as.integer(nind),
          nnode = as.integer(nnode),
          pred = as.integer(pred),
@@ -317,7 +317,7 @@
          phi = as.double(phi),
          theta = matrix(as.double(0), nind, nnode))$theta
 
-     ctau <- .C("aster_theta2ctau",
+     ctau <- .C(aster:::C_aster_theta2ctau,
          nind = as.integer(nind),
          nnode = as.integer(nnode),
          pred = as.integer(pred),
@@ -364,7 +364,7 @@
 
      theta <- matrix(sally %*% beta, nrow = nind)
 
-     ctau <- .C("aster_theta2ctau",
+     ctau <- .C(aster:::C_aster_theta2ctau,
          nind = as.integer(nind),
          nnode = as.integer(nnode),
          pred = as.integer(pred),
@@ -372,7 +372,7 @@
          theta = as.double(theta),
          ctau = double(nind * nnode))$ctau
 
-     tau <- .C("aster_ctau2tau",
+     tau <- .C(aster:::C_aster_ctau2tau,
          nind = as.integer(nind),
          nnode = as.integer(nnode),
          pred = as.integer(pred),
@@ -414,7 +414,7 @@
 
  ##### case 1: newdata missing
 
- predict(out)
+ pout2 <- predict(out)
 
  newdata <- data.frame(site = factor(LETTERS[1:4]))
  for (v in vars)
@@ -437,13 +437,23 @@
 
  all.equal(louise$se.fit, fred$se.fit)
 
+ foo <- new.env(parent = emptyenv())
+ bar <- suppressWarnings(try(load("predict.rda", foo), silent = TRUE))
+ if (inherits(bar, "try-error")) {
+     save(sout1, sout2, sout3, pout1, pout2, file = "predict.rda")
+ } else {
+     print(all.equal(sout1, foo$sout1))
+     print(all.equal(sout2, foo$sout2))
+     print(all.equal(sout3, foo$sout3))
+     print(all.equal(pout1, foo$pout1))
+     print(all.equal(pout2, foo$pout2))
+ }
+
  ##### test for global variables #####
 
  saves <- c("out", "renewdata", "out2", "modmat.pred", "root.pred", "louise",
      "fred")
- blurfle <- ls()
- blurfle <- ls()
- rm(list = blurfle[! is.element(blurfle, saves)])
+ rm(list = setdiff(ls(), saves))
  ls()
 
  louise.too <- predict(out, newdata = renewdata, varvar = varb, idvar = id,
@@ -464,5 +474,4 @@
  fred.new <- predict(out2, modmat = modmat.pred, root = root.pred,
      se.fit = TRUE, newcoef = beta.new)
  identical(fred.fake, fred.new)
-
 

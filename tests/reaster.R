@@ -36,8 +36,8 @@
  rout <- reaster(resp ~ varb + fit : (Site * Region),
      list(block = ~ 0 + fit : Block, pop = ~ 0 + fit : Pop),
      pred, fam, varb, id, root, data = radish)
- summary(rout)
- summary(rout, stand = FALSE)
+ srout1a <- summary(rout)
+ srout1b <- summary(rout, stand = FALSE)
 
  class(rout)
  names(rout)
@@ -49,8 +49,8 @@
  foo <- rep(NA, length(rout$obj))
  names(foo) <- names(rout$obj)
  for (n in names(rout$obj))
-     foo[n] <- identical(aout[[n]], rout$obj[[n]])
- foo
+     foo[n] <- all.equal(aout[[n]], rout$obj[[n]], check.attributes = FALSE)
+ cbind(foo)
 
  foo <- aout$x
  is.matrix(foo)
@@ -86,7 +86,7 @@
 
  fred <- eigen(sout$fish, symmetric = TRUE)
  fish.inv <- fred$vectors %*% diag(1 / fred$values) %*% t(fred$vectors)
- all.equal(fish.inv, solve(sout$fish))
+ all.equal(fish.inv, solve(sout$fish), tolerance = 1e-6)
  se.parm <- sqrt(diag(fish.inv))
  se.alpha <- se.parm[seq(along = se.parm) <= nfix]
  se.nu <- se.parm[seq(along = se.parm) > nfix]
@@ -119,7 +119,7 @@
  qout <- quickle(c(alpha.mle, nu.mle), bee.mle, fixed = fixed,
      random = random, obj = rout$obj, zwz = zwz.mle, deriv = 2)
  bsp2 <- with(qout, pbb.inv %*% cbind(pba, pbn))
- all.equal(- bsp, bsp2, tol = 5e-6)
+ all.equal(- bsp, bsp2, tolerance = 1e-3)
 
  ### try reaster with no data frame
 
@@ -135,5 +135,21 @@
  rout <- reaster(y ~ v + f : (s * r),
      list(block = ~ 0 + f : b, pop = ~ 0 + f : p),
      pred, fam, v, i, rt)
- summary(rout)
+ srout2 <- summary(rout)
+
+ foo <- new.env(parent = emptyenv())
+ bar <- suppressWarnings(try(load("reaster.rda", foo), silent = TRUE))
+ if (inherits(bar, "try-error")) {
+     save(srout1a, srout1b, srout2, file = "reaster.rda")
+ } else {
+     srout1a$object$iterations <- NULL
+     srout1b$object$iterations <- NULL
+     srout2$object$iterations <- NULL
+     foo$srout1a$object$iterations <- NULL
+     foo$srout1b$object$iterations <- NULL
+     foo$srout2$object$iterations <- NULL
+     print(all.equal(srout1a, foo$srout1a, tol = 1e-4))
+     print(all.equal(srout1b, foo$srout1b, tol = 1e-4))
+     print(all.equal(srout2, foo$srout2, tol = 1e-4))
+ }
 

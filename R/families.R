@@ -59,13 +59,13 @@ fam.default <- function() {
 }
 
 clearfam <- function()
-    invisible(.C("aster_clear_families", PACKAGE = "aster"))
+    invisible(.C(C_aster_clear_families))
 
 getsupfambyname <- function(fam) {
     stopifnot(is.character(fam))
     stopifnot(length(fam) == 1)
-    foo <- .C("aster_byname_superfamily", name = fam, nhyper = integer(1),
-        hypername = character(2), PACKAGE = "aster")
+    foo <- .C(C_aster_byname_superfamily, name = fam, nhyper = integer(1),
+        hypername = character(2))
     foo$name <- fam
     return(foo)
 }
@@ -95,8 +95,8 @@ setfam <- function(famlist) {
                     foo$hypername[2], "\"")
             hyper[2] <- bar
         }
-       .C("aster_add_family", name = famname, hyper = as.double(hyper),
-           nhyper = as.integer(foo$nhyper), PACKAGE = "aster")
+       .C(C_aster_add_family, name = famname, hyper = as.double(hyper),
+           nhyper = as.integer(foo$nhyper))
     }
 }
 
@@ -104,9 +104,9 @@ getfam <- function() {
     result <- list()
     ifam <- 1
     repeat {
-        foo <- .C("aster_get_family", idx = as.integer(ifam),
+        foo <- .C(C_aster_get_family, idx = as.integer(ifam),
             name = character(1), hyper = double(2), nhyper = integer(1),
-            hypername = character(2), origin = double(1), PACKAGE = "aster")
+            hypername = character(2), origin = double(1))
         if (foo$name == "")
             break;
         sally <- list(name = foo$name)
@@ -131,9 +131,9 @@ getsupfam <- function() {
     result <- list()
     ifam <- 1
     repeat {
-        foo <- .C("aster_get_superfamily", idx = as.integer(ifam),
+        foo <- .C(C_aster_get_superfamily, idx = as.integer(ifam),
             name = character(1), nhyper = integer(1),
-            hypername = character(2), PACKAGE = "aster")
+            hypername = character(2))
         if (foo$name == "")
             break;
         sally <- list(name = foo$name)

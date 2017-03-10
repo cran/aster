@@ -8,7 +8,7 @@
  a <- matrix(rnorm(m * n), nrow = m)
  b <- rnorm(n)
 
- out <- .C("aster_mat_vec_mult",
+ out <- .C(aster:::C_aster_mat_vec_mult,
      nrow = as.integer(m),
      ncol = as.integer(n),
      a = as.double(a),
@@ -21,7 +21,7 @@
 
  b <- rnorm(m)
 
- out <- .C("aster_vec_mat_mult",
+ out <- .C(aster:::C_aster_vec_mat_mult,
      nrow = as.integer(m),
      ncol = as.integer(n),
      a = as.double(a),
@@ -32,7 +32,7 @@
 
  ##########
 
- out <- .C("aster_mat_vec_mat_mult",
+ out <- .C(aster:::C_aster_mat_vec_mat_mult,
      nrow = as.integer(m),
      ncol = as.integer(n),
      a = as.double(a),
@@ -45,7 +45,7 @@
 
  b <- matrix(rnorm(n * n), n)
 
- out <- .C("aster_diag_mat_mat_mat_mult",
+ out <- .C(aster:::C_aster_diag_mat_mat_mat_mult,
      nrow = as.integer(m),
      ncol = as.integer(n),
      a = as.double(a),

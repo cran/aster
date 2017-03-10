@@ -1675,18 +1675,19 @@ Geyer, C.~J. (1994).
 \newblock \emph{Journal of the Royal Statistical Society, Series B},
     \textbf{56}, 261--274.
 
-\bibitem[Geyer(2012)]{package-aster}
-Geyer, C.~J. (2012).
-\newblock aster: Aster Models.
-\newblock R package version 0.8-11.
-\newblock \url{http://www.stat.umn.edu/geyer/aster/}.
+\bibitem[Geyer(2015)]{package-aster}
+Geyer, C.~J. (2015).
+\newblock R package \texttt{aster} (Aster Models), version 0.8-31.
+\newblock \url{http://www.stat.umn.edu/geyer/aster/} and
+    \url{http://cran.r-project.org/package=aster}
 
-\bibitem[Geyer(in press)]{simple}
-Geyer, C.~J. (in press).
-\newblock Asymptotics of maximum likelihood without the LLN or CLT
-    or sample size going to infinity.
-\newblock To appear in \emph{Festschrift for Morris L. Eaton},
-    G. Jones and X. Shen eds.
+\bibitem[Geyer(2013)]{simple}
+Geyer, C.~J. (2013).
+\newblock Asymptotics of maximum likelihood
+    without the LLN or CLT or sample size going to infinity.
+\newblock In \textit{Advances in Modern Statistical Theory and Applications:
+    A Festschrift in honor of Morris L. Eaton}, G.~L. Jones and X. Shen eds.
+\newblock IMS Collections, Vol. 10, pp. 1--24.
 \newblock Institute of Mathematical Statistics: Hayward, CA.
 
 % \bibitem[Geyer and Meeden(2005)]{fuzzy-orange}

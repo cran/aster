@@ -15,21 +15,19 @@ mlogl <- function(parm, pred, fam, x, root, modmat, deriv = 0,
     nind <- floor(length(x) / nnode)
     stopifnot(length(x) == nind * nnode)
     if (missing(origin)) {
-        origin <- .C("aster_default_origin",
+        origin <- .C(C_aster_default_origin,
             nind = as.integer(nind),
             nnode = as.integer(nnode),
             fam = as.integer(fam),
-            theta = matrix(as.double(0), nind, nnode),
-            PACKAGE = "aster")$theta
+            theta = matrix(as.double(0), nind, nnode))$theta
         if (type == "unconditional")
-            origin <- .C("aster_theta2phi",
+            origin <- .C(C_aster_theta2phi,
                 nind = as.integer(nind),
                 nnode = as.integer(nnode),
                 pred = as.integer(pred),
                 fam = as.integer(fam),
                 theta = origin,
-                phi = matrix(as.double(0), nind, nnode),
-                PACKAGE = "aster")$phi
+                phi = matrix(as.double(0), nind, nnode))$phi
     } else {
         stopifnot(is.numeric(origin))
         storage.mode(origin) <- "double"
@@ -44,23 +42,21 @@ mlogl <- function(parm, pred, fam, x, root, modmat, deriv = 0,
         if (origin.type == "model.type")
             origin.type <- type
         if (type == "unconditional" && origin.type == "conditional")
-            origin <- .C("aster_theta2phi",
+            origin <- .C(C_aster_theta2phi,
                 nind = as.integer(nind),
                 nnode = as.integer(nnode),
                 pred = as.integer(pred),
                 fam = as.integer(fam),
                 theta = origin,
-                phi = matrix(as.double(0), nind, nnode),
-                PACKAGE = "aster")$phi
+                phi = matrix(as.double(0), nind, nnode))$phi
         if (type == "conditional" && origin.type == "unconditional")
-            origin <- .C("aster_phi2theta",
+            origin <- .C(C_aster_phi2theta,
                 nind = as.integer(nind),
                 nnode = as.integer(nnode),
                 pred = as.integer(pred),
                 fam = as.integer(fam),
                 phi = origin,
-                theta = matrix(as.double(0), nind, nnode),
-                PACKAGE = "aster")$theta
+                theta = matrix(as.double(0), nind, nnode))$theta
     }
 
     result <- mloglhelper(parm, pred, fam, x, root, modmat, origin,
@@ -108,7 +104,7 @@ mloglhelper <- function(parm, pred, fam, x, root, modmat, origin,
     stopifnot(length(origin) == nind * nnode)
 
     if (type == "unconditional") {
-        out <- .C("aster_mlogl_unco",
+        out <- .C(C_aster_mlogl_unco,
             nind = as.integer(nind),
             nnode = as.integer(nnode),
             ncoef = as.integer(ncoef),
@@ -122,10 +118,9 @@ mloglhelper <- function(parm, pred, fam, x, root, modmat, origin,
             modmat = as.double(modmat),
             value = double(1),
             gradient = double(ncoef),
-            hessian = matrix(as.double(0), ncoef, ncoef),
-            PACKAGE = "aster")
+            hessian = matrix(as.double(0), ncoef, ncoef))
     } else {
-        out <- .C("aster_mlogl_cond",
+        out <- .C(C_aster_mlogl_cond,
             nind = as.integer(nind),
             nnode = as.integer(nnode),
             ncoef = as.integer(ncoef),
@@ -139,8 +134,7 @@ mloglhelper <- function(parm, pred, fam, x, root, modmat, origin,
             modmat = as.double(modmat),
             value = double(1),
             gradient = double(ncoef),
-            hessian = matrix(as.double(0), ncoef, ncoef),
-            PACKAGE = "aster")
+            hessian = matrix(as.double(0), ncoef, ncoef))
     }
 
     if (out$value == Inf) {

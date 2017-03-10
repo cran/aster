@@ -1,5 +1,6 @@
 
  library(aster)
+ library(numDeriv)
 
  do.chisq.test <- function(x, k, mu, max.bin) {
      stopifnot(all(x > k))
@@ -15,10 +16,7 @@
      cc <- cc[xx]
      cc[length(cc)] <- nsim - sum(cc[- length(cc)])
      chisqstat <- sum((cc - ecc)^2 / ecc)
-     cat("chi squared statistic =", chisqstat, "\n")
-     cat("degrees of freedom =", length(ecc) - 1, "\n")
      pval <- pchisq(chisqstat, length(ecc) - 1, lower.tail = FALSE)
-     cat("p-value =", pval, "\n")
      if (exists("save.min.pval")) {
          save.min.pval <<- min(pval, save.min.pval)
          save.ntests <<- save.ntests + 1
@@ -26,9 +24,8 @@
          save.min.pval <<- pval
          save.ntests <<- 1
      }
-     foo <- rbind(cc, ecc)
-     dimnames(foo) <- list(c("observed", "expected"), as.character(xx))
-     print(foo)
+     list(chisqstat = chisqstat, df = length(ecc) - 1, pval = pval,
+         observed = cc, expected = ecc, x = xx)
  }
 
  set.seed(42)
@@ -37,38 +34,38 @@
  mu <- 10
  k <- 2
  x <- rktp(nsim, k, mu)
- do.chisq.test(x, k, mu, 22)
+ chisqout1 <- do.chisq.test(x, k, mu, 22)
 
  mu <- 3.5
  k <- 2
  x <- rktp(nsim, k, mu)
- do.chisq.test(x, k, mu, 11)
+ chisqout2 <- do.chisq.test(x, k, mu, 11)
 
  mu <- 2.5
  k <- 2
  x <- rktp(nsim, k, mu)
- do.chisq.test(x, k, mu, 10)
+ chisqout3 <- do.chisq.test(x, k, mu, 10)
 
  mu <- 1.5
  k <- 2
  x <- rktp(nsim, k, mu)
- do.chisq.test(x, k, mu, 8)
+ chisqout4 <- do.chisq.test(x, k, mu, 8)
 
  mu <- 0.5
  k <- 2
  x <- rktp(nsim, k, mu)
- do.chisq.test(x, k, mu, 6)
+ chisqout5 <- do.chisq.test(x, k, mu, 6)
 
  nsim <- 1e5
  mu <- 0.1
  k <- 2
  x <- rktp(nsim, k, mu)
- do.chisq.test(x, k, mu, 5)
+ chisqout6 <- do.chisq.test(x, k, mu, 5)
 
  mu <- 0.01
  k <- 2
  x <- rktp(nsim, k, mu)
- do.chisq.test(x, k, mu, 4)
+ chisqout7 <- do.chisq.test(x, k, mu, 4)
 
  mu <- 1.5
  xpred <- 0:10
@@ -85,17 +82,15 @@
  k <- 5
  mu <- pi
  x <- rktp(nsim, k, mu)
- do.chisq.test(x, k, mu, 14)
+ chisqout8 <- do.chisq.test(x, k, mu, 14)
 
  k <- 10
  mu <- exp(2)
  x <- rktp(nsim, k, mu)
- do.chisq.test(x, k, mu, 22)
+ chisqout9 <- do.chisq.test(x, k, mu, 22)
 
  cat("number of tests:", save.ntests, "\n")
- cat("minimum p-value:", save.min.pval, "\n")
- cat("Bonferroni corrected minimum p-value:",
-     save.ntests * save.min.pval, "\n")
+ save.ntests * save.min.pval > 0.05
 
  #####
 
@@ -117,7 +112,6 @@
  modmat <- matrix(1, nrow = nind, ncol = 1)
  out <- mlogl(theta, pred, fam, x, modmat, modmat, deriv = 2,
      type = "conditional")
- print(out)
 
  xxx <- seq(0, 100)
  ppp <- dpois(xxx, mu)
@@ -125,19 +119,36 @@
  ppp <- ppp / sum(ppp)
  tau <- sum(xxx * ppp)
 
- sum(x - tau)
- max(abs( sum(x - tau) + out$gradient )) < 1e-12
+ all.equal(sum(x - tau), - out$gradient)
+ all.equal(length(x) * sum((xxx - tau)^2 * ppp), as.vector(out$hessian))
 
- length(x) * sum((xxx - tau)^2 * ppp)
+ foo <- function(theta) {
+     stopifnot(is.numeric(theta))
+     stopifnot(is.finite(theta))
+     stopifnot(length(theta) == 1)
+     mlogl(theta, pred, fam, x, modmat, modmat, type = "conditional")$value
+ }
 
- epsilon <- 1e-6
- oute <- mlogl(theta + epsilon, pred, fam, x, modmat, modmat, deriv = 2,
-     type = "conditional")
- (oute$value - out$value) / epsilon
- all.equal((oute$value - out$value) / epsilon, out$gradient,
-     tol = 10 * epsilon)
+ g <- grad(foo, theta)
+ all.equal(g, out$gradient)
 
- (oute$gradient - out$gradient) / epsilon
- all.equal((oute$gradient - out$gradient) / epsilon, as.numeric(out$hessian),
-     tol = 10 * epsilon)
+ h <- hessian(foo, theta)
+ all.equal(h, out$hessian)
+
+ foo <- new.env(parent = emptyenv())
+ bar <- suppressWarnings(try(load("ktp.rda", foo), silent = TRUE))
+ if (inherits(bar, "try-error")) {
+     save(list = c(paste("chisqout", 1:9, sep = ""), "out"), file = "ktp.rda")
+ } else {
+     print(all.equal(chisqout1, foo$chisqout1))
+     print(all.equal(chisqout2, foo$chisqout2))
+     print(all.equal(chisqout3, foo$chisqout3))
+     print(all.equal(chisqout4, foo$chisqout4))
+     print(all.equal(chisqout5, foo$chisqout5))
+     print(all.equal(chisqout6, foo$chisqout6))
+     print(all.equal(chisqout7, foo$chisqout7))
+     print(all.equal(chisqout8, foo$chisqout8))
+     print(all.equal(chisqout9, foo$chisqout9))
+     print(all.equal(out, foo$out))
+ }
 

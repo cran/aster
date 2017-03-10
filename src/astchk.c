@@ -65,7 +65,7 @@ void aster_check_model_root(int *nindin, int *nnodein, int *pred, int *fam,
     int nind = nindin[0];
     int nnode = nnodein[0];
 
-    int i, j, k, jfam, jbase, kbase;
+    int i, j, k, jfam, jbase;
 
     aster_check_model(nindin, nnodein, pred, fam);
 
@@ -74,7 +74,6 @@ void aster_check_model_root(int *nindin, int *nnodein, int *pred, int *fam,
         k = pred[j - 1];
         jfam = fam[j - 1];
         jbase = nind * (j - 1);
-        kbase = nind * (k - 1);
         for (i = 0; i < nind; ++i) {
             if (k == 0) {
                 double xpred = root[jbase + i];

@@ -1,7 +1,6 @@
 
  library(aster)
-
- options(digits=4) # avoid rounding differences
+ library(numDeriv)
 
  set.seed(42)
 
@@ -26,7 +25,7 @@
 
  aster:::setfam(fam.default())
 
- theta <- .C("aster_phi2theta",
+ theta <- .C(aster:::C_aster_phi2theta,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),
@@ -43,18 +42,16 @@
 
  out <- mlogl(beta, pred, fam, x, root, modmat, deriv = 2,
      type = "unco", origin = zip)
- print(out)
 
  aster:::setfam(fam.default())
 
- a <- .C("aster_theta2phi",
+ a <- .C(aster:::C_aster_theta2phi,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),
      fam = as.integer(fam),
      theta = as.double(zip),
-     phi = matrix(as.double(0), nind, nnode),
-     PACKAGE = "aster")$phi
+     phi = matrix(as.double(0), nind, nnode))$phi
 
  M <- matrix(modmat, ncol = ncoef)
 
@@ -82,17 +79,17 @@
  }
  all.equal(out$value, my.value)
 
- my.grad <- NaN * out$gradient
- epsilon <- 1e-9
- for (i in 1:ncoef) {
-     beta.eps <- beta
-     beta.eps[i] <- beta[i] + epsilon
-     out.eps <- mlogl(beta.eps, pred, fam, x, root, modmat, deriv = 0,
-         type = "unco")
-     my.grad[i] <- (out.eps$value - out$value) / epsilon
+ foo <- function(beta) {
+     stopifnot(is.numeric(beta))
+     stopifnot(is.finite(beta))
+     mlogl(beta, pred, fam, x, root, modmat, type = "unco")$value
  }
 
- all.equal(out$gradient, my.grad, tolerance = sqrt(epsilon))
+ g <- grad(foo, beta)
+ all.equal(g, out$gradient)
+
+ h <- hessian(foo, beta)
+ all.equal(h, out$hessian)
 
  ##########
 
@@ -103,10 +100,10 @@
      attr(result, "gradient") <- out$gradient
      return(result)
  }
- nout <- nlm(objfun, beta, fscale = nind)
- print(nout)
- nout <- nlm(objfun, nout$estimate, fscale = nind)
- print(nout)
+ nout1 <- nlm(objfun, beta, fscale = nind)
+ nout <- nlm(objfun, nout1$estimate, fscale = nind)
+ all.equal(nout1$minimum, nout$minimum)
+ all.equal(nout1$estimate, nout$estimate)
 
  beta.mle.new <- nout$estimate
  beta.mle.old <- beta.mle.new + alpha
@@ -118,19 +115,6 @@
 
  ##########
 
- my.hess <- matrix(NaN, ncoef, ncoef)
- for (i in 1:ncoef) {
-     beta.eps <- beta
-     beta.eps[i] <- beta[i] + epsilon
-     out.eps <- mlogl(beta.eps, pred, fam, x, root, modmat, deriv = 1,
-         type = "unco")
-     my.hess[ , i] <- (out.eps$gradient - out$gradient) / epsilon
- }
-
- all.equal(out$hessian, my.hess, tolerance = sqrt(epsilon))
-
- ##########
-
  objfun <- function(beta) {
      out <- mlogl(beta, pred, fam, x, root, modmat, deriv = 2,
          type = "unco")
@@ -139,10 +123,10 @@
      attr(result, "hessian") <- out$hessian
      return(result)
  }
- nout <- try(nlm(objfun, beta, fscale = nind))
- print(nout)
- nout <- nlm(objfun, nout$estimate, fscale = nind, iterlim = 1000)
- print(nout)
+ nout1 <- nlm(objfun, beta, fscale = nind)
+ nout <- nlm(objfun, nout1$estimate, fscale = nind, iterlim = 1000)
+ all.equal(nout1$minimum, nout$minimum, tol = 1e-4)
+ all.equal(nout1$estimate, nout$estimate, tol = 2e-2)
 
  objfun.old <- function(beta) {
      out <- mlogl(beta, pred, fam, x, root, modmat, deriv = 2,
@@ -153,7 +137,6 @@
      return(result)
  }
  nout.old <- nlm(objfun.old, beta.mle.old, fscale = nind, iterlim = 1000)
- print(nout.old)
  all.equal(nout$minimum, nout.old$minimum)
  all.equal(nout$estimate, nout.old$estimate - alpha, tol = 1e-4)
 

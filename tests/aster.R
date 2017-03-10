@@ -24,16 +24,15 @@
 
  aster:::setfam(fam.default())
 
- phi.origin <- .C("aster_theta2phi",
+ phi.origin <- .C(aster:::C_aster_theta2phi,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),
      fam = as.integer(fam),
      theta = as.double(theta.origin),
-     phi = matrix(as.double(0), nind, nnode),
-     PACKAGE = "aster")$phi
+     phi = matrix(as.double(0), nind, nnode))$phi
 
- theta <- .C("aster_phi2theta",
+ theta <- .C(aster:::C_aster_phi2theta,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),
@@ -58,8 +57,8 @@
 
  out4 <- aster(x, root, pred, fam, modmat, type = "unco",
      method = "trust", origin = theta.origin)
- print(out4$coefficients)
- print(out0$coefficients)
+ pout4c <- out4$coefficients
+ pout0c <- out0$coefficients
 
  foo <- as.numeric(out0$origin) +
      matrix(out0$modmat, ncol = ncoef) %*% out0$coefficients
@@ -78,5 +77,15 @@
  all.equal(out2$coefficients, out3$coefficients)
  all.equal(out3$coefficients, out0$coefficients)
 
- print(out0$coefficients)
+ pout0c.too <- out0$coefficients
+
+ foo <- new.env(parent = emptyenv())
+ bar <- suppressWarnings(try(load("aster.rda", foo), silent = TRUE))
+ if (inherits(bar, "try-error")) {
+     save(pout4c, pout0c, pout0c.too, file = "aster.rda")
+ } else {
+     print(all.equal(pout4c, foo$pout4c))
+     print(all.equal(pout0c, foo$pout0c))
+     print(all.equal(pout0c.too, foo$pout0c.too))
+ }
 

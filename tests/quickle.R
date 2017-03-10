@@ -3,8 +3,6 @@ library(aster)
 
 data(radish)
 
-options(digits=4) # avoid rounding differences
-
 pred <- c(0,1,2)
 fam <- c(1,3,2)
 
@@ -13,8 +11,18 @@ fam <- c(1,3,2)
 rout <- reaster(resp ~ varb + fit : (Site * Region),
     list(block = ~ 0 + fit : Block, pop = ~ 0 + fit : Pop),
     pred, fam, varb, id, root, data = radish)
-summary(rout)
+srout <- summary(rout)
 names(rout)
+
+foo <- new.env(parent = emptyenv())
+bar <- suppressWarnings(try(load("quickle.rda", foo), silent = TRUE))
+if (inherits(bar, "try-error")) {
+    save(srout, file = "quickle.rda")
+} else {
+    srout$object$iterations <- NULL
+    foo$srout$object$iterations <- NULL
+    print(all.equal(srout, foo$srout, tol = 1e-4))
+}
 
 alpha.mle <- rout$alpha
 bee.mle <- rout$b

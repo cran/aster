@@ -26,14 +26,25 @@
      v.names = "resp")
 
  out <- aster(resp ~ foo + site, pred, fam, varb, id, root, data = redata)
- summary(out, show.graph = TRUE)
+ sout1 <- summary(out, show.graph = TRUE)
 
  out <- aster(resp ~ foo + site + varb, pred, fam, varb, id, root,
      data = redata)
- summary(out)
+ sout2 <- summary(out)
+
  out0 <- aster(resp ~ foo + site + varb, pred, fam, varb, id, root,
      origin = rep(0, nind * nnode), data = redata)
- summary(out0)
+ sout0 <- summary(out0)
+
+ foo <- new.env(parent = emptyenv())
+ bar <- suppressWarnings(try(load("formula.rda", foo), silent = TRUE))
+ if (inherits(bar, "try-error")) {
+     save(sout0, sout1, sout2, file = "formula.rda")
+ } else {
+     print(all.equal(sout0, foo$sout0))
+     print(all.equal(sout1, foo$sout1))
+     print(all.equal(sout2, foo$sout2))
+ }
 
  ncoef <- length(out$coefficients)
  foo <- as.numeric(out0$origin) +

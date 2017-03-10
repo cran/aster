@@ -18,7 +18,7 @@ rktp <- function(n, k, mu, xpred = 1) {
     stopifnot(length(k) >= 0)
     stopifnot(all(k == as.integer(k)))
 
-    .C("aster_rktp",
+    .C(C_aster_rktp,
         n = as.integer(n),
         lenxp = length(xpred),
         lenmu = length(mu),
@@ -26,7 +26,7 @@ rktp <- function(n, k, mu, xpred = 1) {
         xpred = as.double(xpred),
         mu = as.double(mu),
         k = as.integer(k),
-        result = double(n), PACKAGE = "aster")$result
+        result = double(n))$result
 }
 
 rnzp <- function(n, mu, xpred = 1) rktp(n, 0, mu, xpred)

@@ -59,7 +59,6 @@ oout <- optim(sigma.crude, pickle, parm = tout$argument,
     fixed = modmat.fix, random = list(modmat.blk, modmat.pop),
     obj = aout, cache = cache)
 oout$convergence == 0
-oout$par
 
 sigma.mle <- oout$par
 tout <- trust(objfun = penmlogl, cache$parm, rinit = 1, rmax = 10,
@@ -114,8 +113,6 @@ qux <- function(parm, sigma, zwz) {
 }
 
 qout <- qux(parm.mle, sigma.mle, zwz)
-qout$iterations
-qout$sigma
 
 sigma.mle <- qout$sigma
 parm.mle <- qout$parm
@@ -138,7 +135,19 @@ gradfun <- function(alphasigma) pickle2(alphasigma, parm = c.mle,
     fixed = modmat.fix, random = list(modmat.blk, modmat.pop),
     obj = aout, zwz = zwz.mle, deriv = 1)$gradient
 
-oout <- optim(alphasigma.mle, objfun, gradfun, method = "BFGS", hessian = TRUE)
-oout$convergence
-hessian.mle <- oout$hessian
+oout2 <- optim(alphasigma.mle, objfun, gradfun, method = "BFGS", hessian = TRUE)
+
+ foo <- new.env(parent = emptyenv())
+ bar <- suppressWarnings(try(load("pickle.rda", foo), silent = TRUE))
+ if (inherits(bar, "try-error")) {
+     save(oout, qout, oout2, file = "pickle.rda")
+ } else {
+     print(all.equal(oout, foo$oout))
+     qout$iterations <- NULL
+     foo$qout$iterations <- NULL
+     print(all.equal(qout, foo$qout, tolerance = 1e-6))
+     print(all.equal(oout2, foo$oout2, tolerance = 1e-4))
+ }
+
+########## ?????????? LOOKS LIKE UNFINISHED ??????????
 

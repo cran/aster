@@ -41,21 +41,19 @@ aster.default <- function(x, root, pred, fam, modmat, parm,
     setfam(famlist)
 
     if (missing(origin)) {
-        origin <- .C("aster_default_origin",
+        origin <- .C(C_aster_default_origin,
             nind = as.integer(nind),
             nnode = as.integer(nnode),
             fam = as.integer(fam),
-            theta = matrix(as.double(0), nind, nnode),
-            PACKAGE = "aster")$theta
+            theta = matrix(as.double(0), nind, nnode))$theta
         if (type == "unconditional")
-            origin <- .C("aster_theta2phi",
+            origin <- .C(C_aster_theta2phi,
                 nind = as.integer(nind),
                 nnode = as.integer(nnode),
                 pred = as.integer(pred),
                 fam = as.integer(fam),
                 theta = origin,
-                phi = matrix(as.double(0), nind, nnode),
-                PACKAGE = "aster")$phi
+                phi = matrix(as.double(0), nind, nnode))$phi
     } else {
         stopifnot(is.numeric(origin))
         storage.mode(origin) <- "double"
@@ -70,23 +68,21 @@ aster.default <- function(x, root, pred, fam, modmat, parm,
         if (origin.type == "model.type")
             origin.type <- type
         if (type == "unconditional" && origin.type == "conditional")
-            origin <- .C("aster_theta2phi",
+            origin <- .C(C_aster_theta2phi,
                 nind = as.integer(nind),
                 nnode = as.integer(nnode),
                 pred = as.integer(pred),
                 fam = as.integer(fam),
                 theta = origin,
-                phi = matrix(as.double(0), nind, nnode),
-                PACKAGE = "aster")$phi
+                phi = matrix(as.double(0), nind, nnode))$phi
         if (type == "conditional" && origin.type == "unconditional")
-            origin <- .C("aster_phi2theta",
+            origin <- .C(C_aster_phi2theta,
                 nind = as.integer(nind),
                 nnode = as.integer(nnode),
                 pred = as.integer(pred),
                 fam = as.integer(fam),
                 phi = origin,
-                theta = matrix(as.double(0), nind, nnode),
-                PACKAGE = "aster")$theta
+                theta = matrix(as.double(0), nind, nnode))$theta
     }
 
     ##### try starting parm and origin
@@ -209,7 +205,7 @@ aster.default <- function(x, root, pred, fam, modmat, parm,
     aout$famlist <- famlist
     names(aout$coefficients) <- coef.names
     if (type == "conditional") {
-        fout <- .C("aster_fish_cond",
+        fout <- .C(C_aster_fish_cond,
             nind = as.integer(nind),
             nnode = as.integer(nnode),
             ncoef = as.integer(ncoef),
@@ -219,8 +215,7 @@ aster.default <- function(x, root, pred, fam, modmat, parm,
             root = as.double(root),
             x = as.double(x),
             modmat = as.double(modmat),
-            fish = matrix(as.double(0), ncoef, ncoef),
-            PACKAGE = "aster")
+            fish = matrix(as.double(0), ncoef, ncoef))
         aout[["fisher"]] <- fout$fish
     } else {
         aout[["fisher"]] <- mout$hessian

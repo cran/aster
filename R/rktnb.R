@@ -22,7 +22,7 @@ rktnb <- function(n, size, k, mu, xpred = 1) {
     stopifnot(length(size) >= 0)
     stopifnot(all(size > 0))
 
-    .C("aster_rktnb",
+    .C(C_aster_rktnb,
         n = as.integer(n),
         lenxp = length(xpred),
         lenmu = length(mu),
@@ -32,6 +32,6 @@ rktnb <- function(n, size, k, mu, xpred = 1) {
         mu = as.double(mu),
         k = as.integer(k),
         alpha = as.double(size),
-        result = double(n), PACKAGE = "aster")$result
+        result = double(n))$result
 }
 

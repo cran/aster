@@ -171,3 +171,10 @@
 
  0.8-31 explicit import from non-base packages, as required by R-3.3.0
 
+ 0.9    allow C functions that evaluate aster unconditional log likelihood
+        to be called from C code in other packages.
+
+        remove styles from C function registration.  Deprecated in R-3.3.3.
+
+        lots of changes to restrict visibility as per Sections 5.4 and 6.15
+        of Writing R Extensions

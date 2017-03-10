@@ -13,18 +13,16 @@ astertransform <- function(arg, obj, from = c("unconditional", "conditional"),
     stopifnot(length(arg) == nind * nnode)
     if (to.mean == "canonical") {
         if (from == "unconditional" && to.cond == "conditional") {
-            result <- .C("aster_phi2theta", nind = as.integer(nind),
+            result <- .C(C_aster_phi2theta, nind = as.integer(nind),
                 nnode = as.integer(nnode), pred = as.integer(obj$pred),
                 fam = as.integer(obj$fam), phi = as.double(arg),
-                theta = matrix(as.double(0), nind, nnode),
-                PACKAGE = "aster")$theta
+                theta = matrix(as.double(0), nind, nnode))$theta
         }
         if (from == "conditional" && to.cond == "unconditional") {
-            result <- .C("aster_theta2phi", nind = as.integer(nind),
+            result <- .C(C_aster_theta2phi, nind = as.integer(nind),
                 nnode = as.integer(nnode), pred = as.integer(obj$pred),
                 fam = as.integer(obj$fam), theta = as.double(arg),
-                phi = matrix(as.double(0), nind, nnode),
-                PACKAGE = "aster")$phi
+                phi = matrix(as.double(0), nind, nnode))$phi
         }
         if (from == to.cond) {
             result <- arg
@@ -35,22 +33,21 @@ astertransform <- function(arg, obj, from = c("unconditional", "conditional"),
             theta <- arg
         }
         if (from == "unconditional") {
-            theta <- .C("aster_phi2theta", nind = as.integer(nind),
+            theta <- .C(C_aster_phi2theta, nind = as.integer(nind),
                 nnode = as.integer(nnode), pred = as.integer(obj$pred),
                 fam = as.integer(obj$fam), phi = as.double(arg),
-                theta = matrix(as.double(0), nind, nnode),
-                PACKAGE = "aster")$theta
+                theta = matrix(as.double(0), nind, nnode))$theta
         }
-        result <- .C("aster_theta2ctau", nind = as.integer(nind),
+        result <- .C(C_aster_theta2ctau, nind = as.integer(nind),
             nnode = as.integer(nnode), pred = as.integer(obj$pred),
             fam = as.integer(obj$fam), theta = as.double(theta),
-            ctau = matrix(as.double(0), nind, nnode), PACKAGE = "aster")$ctau
+            ctau = matrix(as.double(0), nind, nnode))$ctau
         if (to.cond == "unconditional") {
-            result <- .C("aster_ctau2tau", nind = as.integer(nind),
+            result <- .C(C_aster_ctau2tau, nind = as.integer(nind),
                nnode = as.integer(nnode), pred = as.integer(obj$pred),
                fam = as.integer(obj$fam), root = as.double(obj$root),
                ctau = as.double(result), tau = matrix(as.double(0),
-                 nind, nnode), PACKAGE = "aster")$tau
+                 nind, nnode))$tau
         }
     }
     clearfam()

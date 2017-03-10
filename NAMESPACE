@@ -1,5 +1,5 @@
 
-useDynLib(aster)
+useDynLib(aster, .registration = TRUE, .fixes = "C_")
 
 export(famfun)
 export(rnzp)

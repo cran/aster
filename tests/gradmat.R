@@ -27,13 +27,23 @@
 
  out <- aster(resp ~ foo + site + varb, pred, fam, varb, id, root,
      data = redata)
- summary(out, show.graph = TRUE)
+ sout1 <- summary(out, show.graph = TRUE)
 
  out2 <- aster(x, root, pred, fam, modmat = out$modmat)
- summary(out2)
+ sout2 <- summary(out2)
 
  out3 <- aster(x, root, pred, fam, modmat = out$modmat, type = "cond")
- summary(out3)
+ sout3 <- summary(out3)
+
+ foo <- new.env(parent = emptyenv())
+ bar <- suppressWarnings(try(load("gradmat.rda", foo), silent = TRUE))
+ if (inherits(bar, "try-error")) {
+     save(sout1, sout2, sout3, file = "gradmat.rda")
+ } else {
+     print(all.equal(sout1, foo$sout1))
+     print(all.equal(sout2, foo$sout2))
+     print(all.equal(sout3, foo$sout3))
+ }
 
  foo <- match(sort(unique(site)), site)
  modmat.pred <- out$modmat[foo, , ]
@@ -52,7 +62,7 @@
 
  aster:::setfam(fam.default())
 
- phi.hat <- .C("aster_theta2phi",
+ phi.hat <- .C(aster:::C_aster_theta2phi,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),
@@ -71,7 +81,7 @@
  gradmat <- 0 * modmat.pred
  storage.mode(gradmat) <- "double"
 
- gradmat <- .C("aster_D_beta2theta2phi",
+ gradmat <- .C(aster:::C_aster_D_beta2theta2phi,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      ncoef = as.integer(ncoef),
@@ -87,7 +97,7 @@
      beta.epsilon <- beta.hat
      beta.epsilon[k] <- beta.hat[k] + epsilon
      theta.epsilon <- matrix(modmat.pred.mat %*% beta.epsilon, nrow = nind)
-     phi.epsilon <- .C("aster_theta2phi",
+     phi.epsilon <- .C(aster:::C_aster_theta2phi,
          nind = as.integer(nind),
          nnode = as.integer(nnode),
          pred = as.integer(pred),
@@ -105,7 +115,7 @@
 
  phi.hat <- matrix(modmat.pred.mat %*% beta.hat, nrow = nind)
 
- theta.hat <- .C("aster_phi2theta",
+ theta.hat <- .C(aster:::C_aster_phi2theta,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      pred = as.integer(pred),
@@ -113,7 +123,7 @@
      phi = as.double(phi.hat),
      theta = matrix(as.double(0), nind, nnode))$theta
 
- gradmat <- .C("aster_D_beta2phi2theta",
+ gradmat <- .C(aster:::C_aster_D_beta2phi2theta,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      ncoef = as.integer(ncoef),
@@ -129,7 +139,7 @@
      beta.epsilon <- beta.hat
      beta.epsilon[k] <- beta.hat[k] + epsilon
      phi.epsilon <- matrix(modmat.pred.mat %*% beta.epsilon, nrow = nind)
-     theta.epsilon <- .C("aster_phi2theta",
+     theta.epsilon <- .C(aster:::C_aster_phi2theta,
          nind = as.integer(nind),
          nnode = as.integer(nnode),
          pred = as.integer(pred),
@@ -151,7 +161,7 @@
 
      phi <- matrix(modmat.pred.mat %*% beta, nrow = nind)
 
-     theta <- .C("aster_phi2theta",
+     theta <- .C(aster:::C_aster_phi2theta,
          nind = as.integer(nind),
          nnode = as.integer(nnode),
          pred = as.integer(pred),
@@ -159,7 +169,7 @@
          phi = as.double(phi),
          theta = matrix(as.double(0), nind, nnode))$theta
 
-     ctau <- .C("aster_theta2ctau",
+     ctau <- .C(aster:::C_aster_theta2ctau,
          nind = as.integer(nind),
          nnode = as.integer(nnode),
          pred = as.integer(pred),
@@ -167,7 +177,7 @@
          theta = as.double(theta),
          ctau = double(nind * nnode))$ctau
 
-     tau <- .C("aster_ctau2tau",
+     tau <- .C(aster:::C_aster_ctau2tau,
          nind = as.integer(nind),
          nnode = as.integer(nnode),
          pred = as.integer(pred),
@@ -181,7 +191,7 @@
 
  tau.hat <- beta2tau(beta.hat)
 
- gradmat <- .C("aster_D_beta2phi2tau",
+ gradmat <- .C(aster:::C_aster_D_beta2phi2tau,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      ncoef = as.integer(ncoef),
@@ -212,7 +222,7 @@
 
      theta <- matrix(modmat.pred.mat %*% beta, nrow = nind)
 
-     ctau <- .C("aster_theta2ctau",
+     ctau <- .C(aster:::C_aster_theta2ctau,
          nind = as.integer(nind),
          nnode = as.integer(nnode),
          pred = as.integer(pred),
@@ -220,7 +230,7 @@
          theta = as.double(theta),
          ctau = double(nind * nnode))$ctau
 
-     tau <- .C("aster_ctau2tau",
+     tau <- .C(aster:::C_aster_ctau2tau,
          nind = as.integer(nind),
          nnode = as.integer(nnode),
          pred = as.integer(pred),
@@ -234,7 +244,7 @@
 
  tau.hat <- beta2tau(beta.hat)
 
- gradmat <- .C("aster_D_beta2theta2tau",
+ gradmat <- .C(aster:::C_aster_D_beta2theta2tau,
      nind = as.integer(nind),
      nnode = as.integer(nnode),
      ncoef = as.integer(ncoef),

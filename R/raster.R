@@ -25,15 +25,14 @@ raster <- function(theta, pred, fam, root, famlist = fam.default())
 
     setfam(famlist)
 
-    result <- .C("aster_simulate_data",
+    result <- .C(C_aster_simulate_data,
         nind = as.integer(nind),
         nnode = as.integer(nnode),
         pred = as.integer(pred),
         fam = as.integer(fam),
         theta = theta,
         root = root,
-        x = matrix(as.double(0), nind, nnode),
-        PACKAGE = "aster")$x
+        x = matrix(as.double(0), nind, nnode))$x
 
     clearfam()
     return(result)

@@ -16,10 +16,7 @@
      cc <- cc[xx]
      cc[length(cc)] <- nsim - sum(cc[- length(cc)])
      chisqstat <- sum((cc - ecc)^2 / ecc)
-     cat("chi squared statistic =", chisqstat, "\n")
-     cat("degrees of freedom =", length(ecc) - 1, "\n")
      pval <- pchisq(chisqstat, length(ecc) - 1, lower.tail = FALSE)
-     cat("p-value =", pval, "\n")
      if (exists("save.min.pval")) {
          save.min.pval <<- min(pval, save.min.pval)
          save.ntests <<- save.ntests + 1
@@ -27,9 +24,8 @@
          save.min.pval <<- pval
          save.ntests <<- 1
      }
-     foo <- rbind(cc, ecc)
-     dimnames(foo) <- list(c("observed", "expected"), as.character(xx))
-     print(foo)
+     list(chisqstat = chisqstat, df = length(ecc) - 1, pval = pval,
+         observed = cc, expected = ecc, x = xx)
  }
 
  set.seed(42)
@@ -39,44 +35,44 @@
  mu <- 10
  k <- 2
  x <- rktnb(nsim, alpha, k, mu)
- do.chisq.test(x, alpha, k, mu, 40)
+ chisqout1 <- do.chisq.test(x, alpha, k, mu, 40)
 
  alpha <- 2.222
  mu <- 3.5
  k <- 2
  x <- rktnb(nsim, alpha, k, mu)
- do.chisq.test(x, alpha, k, mu, 20)
+ chisqout2 <- do.chisq.test(x, alpha, k, mu, 20)
 
  alpha <- 2.222
  mu <- 2.5
  k <- 2
  x <- rktnb(nsim, alpha, k, mu)
- do.chisq.test(x, alpha, k, mu, 16)
+ chisqout3 <- do.chisq.test(x, alpha, k, mu, 16)
 
  alpha <- 2.222
  mu <- 1.5
  k <- 2
  x <- rktnb(nsim, alpha, k, mu)
- do.chisq.test(x, alpha, k, mu, 12)
+ chisqout4 <- do.chisq.test(x, alpha, k, mu, 12)
 
  alpha <- 2.222
  mu <- 0.5
  k <- 2
  x <- rktnb(nsim, alpha, k, mu)
- do.chisq.test(x, alpha, k, mu, 8)
+ chisqout5 <- do.chisq.test(x, alpha, k, mu, 8)
 
  alpha <- 2.222
  mu <- 0.1
  k <- 2
  x <- rktnb(nsim, alpha, k, mu)
- do.chisq.test(x, alpha, k, mu, 5)
+ chisqout6 <- do.chisq.test(x, alpha, k, mu, 5)
 
  nsim <- 2e5
  alpha <- 2.222
  mu <- 0.01
  k <- 2
  x <- rktnb(nsim, alpha, k, mu)
- do.chisq.test(x, alpha, k, mu, 5)
+ chisqout7 <- do.chisq.test(x, alpha, k, mu, 5)
 
  alpha <- 2.222
  mu <- 1.5
@@ -96,18 +92,16 @@
  k <- 5
  mu <- pi
  x <- rktnb(nsim, alpha, k, mu)
- do.chisq.test(x, alpha, k, mu, 16)
+ chisqout8 <- do.chisq.test(x, alpha, k, mu, 16)
 
  alpha <- 5.55
  k <- 10
  mu <- exp(2)
  x <- rktnb(nsim, alpha, k, mu)
- do.chisq.test(x, alpha, k, mu, 29)
+ chisqout9 <- do.chisq.test(x, alpha, k, mu, 29)
 
  cat("number of tests:", save.ntests, "\n")
- cat("minimum p-value:", save.min.pval, "\n")
- cat("Bonferroni corrected minimum p-value:",
-     save.ntests * save.min.pval, "\n")
+ save.ntests * save.min.pval > 0.05
 
  #####
 
@@ -133,7 +127,6 @@
 
  out <- mlogl(theta - theta.origin, pred, fam, x, modmat, modmat,
      deriv = 2, type = "conditional", famlist = list(ifam))
- print(out)
 
  xxx <- seq(0, 100)
  ppp <- dnbinom(xxx, size = alpha, prob = p)
@@ -146,4 +139,21 @@
 
  my.fish.info <- length(x) * sum((xxx - tau)^2 * ppp)
  all.equal(as.numeric(out$hessian), my.fish.info)
+
+ foo <- new.env(parent = emptyenv())
+ bar <- suppressWarnings(try(load("ktnb.rda", foo), silent = TRUE))
+ if (inherits(bar, "try-error")) {
+     save(list = c(paste("chisqout", 1:9, sep = ""), "out"), file = "ktnb.rda")
+ } else {
+     print(all.equal(chisqout1, foo$chisqout1))
+     print(all.equal(chisqout2, foo$chisqout2))
+     print(all.equal(chisqout3, foo$chisqout3))
+     print(all.equal(chisqout4, foo$chisqout4))
+     print(all.equal(chisqout5, foo$chisqout5))
+     print(all.equal(chisqout6, foo$chisqout6))
+     print(all.equal(chisqout7, foo$chisqout7))
+     print(all.equal(chisqout8, foo$chisqout8))
+     print(all.equal(chisqout9, foo$chisqout9))
+     print(all.equal(out, foo$out))
+ }
 

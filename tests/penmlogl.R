@@ -79,7 +79,6 @@ all.equal(pout$gradient,
 all.equal(pout$hessian, pout$mlogl.hessian + diag(penaltyvec))
 
 epsilon <- 1e-7
-epsilon
 mygradient <- 0 * pout$gradient
 myhessian <- 0 * pout$hessian
 for (i in seq(along = mygradient)) {
