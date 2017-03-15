@@ -1,5 +1,5 @@
 d30a95455f02dcf354daf677356a6a9f *CHANGES
-e56ad298641df5da77b6a6200b288b31 *DESCRIPTION
+4d9fc589b7176306f0770fab4f4a5976 *DESCRIPTION
 c230e88c05dd64025cd43fbc9bec25ea *LICENSE
 b1521ee101f65ce9531541c3ba6eb1d8 *NAMESPACE
 38807a2c44c52bb4e1f5d203a6bee2c5 *R/anova.R
@@ -88,7 +88,7 @@ bf94a35ec735269a20b9984b38ddbafb *src/asttrans5.c
 134e9f053f8a6dde334104bd255477d9 *src/asttrans8.c
 e10a41c5c20180c514ca41a435b72b07 *src/asttrans9.c
 1348aba8ce59547f05553c519d4c5a9a *src/astunco.c
-04ea1c43102b1f89f42062868cd49037 *src/init.c
+a9ca1f27acdf2104a2cb392cf9d43e0e *src/init.c
 f57e1544b237d99cec89ae2b596a91c4 *src/matops.c
 0983c0be844991a26e3abb69a9123ffd *src/mlogl.c
 ef540da82a8004bfb882749e4c34cacd *src/mlogl.h

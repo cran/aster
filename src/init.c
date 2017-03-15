@@ -127,7 +127,7 @@ static R_CMethodDef cMethods[] = {
         10, ast_b2p2t_types},
     {"aster_D_beta2theta2tau", (DL_FUNC) &aster_D_beta2theta2tau,
         9, ast_b2t2t_types},
-    {"aster_clear_families", (DL_FUNC) &aster_clear_families, 0, NULL, NULL},
+    {"aster_clear_families", (DL_FUNC) &aster_clear_families, 0, NULL},
     {"aster_add_family", (DL_FUNC) &aster_add_family, 3, ast_addfam_types},
     {"aster_get_family", (DL_FUNC) &aster_get_family, 6, ast_getfam_types},
     {"aster_get_superfamily", (DL_FUNC) &aster_get_superfamily,
@@ -138,7 +138,7 @@ static R_CMethodDef cMethods[] = {
         4, ast_origin_types},
     {"aster_export_exerciser", (DL_FUNC) &aster_export_exerciser,
         9, ast_export_exerciser_types},
-    {NULL, NULL, 0, NULL}
+    {NULL, NULL, 0}
 };
  
 static R_CallMethodDef callMethods[]  = {
