@@ -1,5 +1,5 @@
 d30a95455f02dcf354daf677356a6a9f *CHANGES
-4d9fc589b7176306f0770fab4f4a5976 *DESCRIPTION
+0acda40551d222e12668812e3f303766 *DESCRIPTION
 c230e88c05dd64025cd43fbc9bec25ea *LICENSE
 b1521ee101f65ce9531541c3ba6eb1d8 *NAMESPACE
 38807a2c44c52bb4e1f5d203a6bee2c5 *R/anova.R
@@ -47,9 +47,9 @@ b088ec11c8700e0c0bdd57540c48206d *inst/doc/tutor.R
 7e772d62440b54eeb9711de729008a7b *man/anova.asterOrReaster.Rd
 e93bf10dc4257aec8767ea2987cf6e29 *man/aphid.Rd
 744365f28e566d7fb57f8769346833c5 *man/aster.Rd
-1918d1014c26cfe823fde4303e00ef45 *man/chamae.Rd
-852e8a40f77b44c57bdd88b8fc64c0ec *man/chamae2.Rd
-2b89f3183a5720fcb47b30d89a9f3f4a *man/chamae3.Rd
+50c80c888f1c32f5abdd6be5a25f3d1b *man/chamae.Rd
+35d121594de6f6e0333c2e0ad5423300 *man/chamae2.Rd
+5ea6f88dd0e59e7f5aeb5052b6253d3e *man/chamae3.Rd
 4fc5413f504ba3230324294c7395cb16 *man/echin2.Rd
 4f7b566214004003527cde0a06a71f6b *man/echinacea.Rd
 421ae09a68fd870d4cd8aa11048a4bf2 *man/families.Rd
@@ -90,7 +90,7 @@ e10a41c5c20180c514ca41a435b72b07 *src/asttrans9.c
 1348aba8ce59547f05553c519d4c5a9a *src/astunco.c
 a9ca1f27acdf2104a2cb392cf9d43e0e *src/init.c
 f57e1544b237d99cec89ae2b596a91c4 *src/matops.c
-0983c0be844991a26e3abb69a9123ffd *src/mlogl.c
+f759157abef100887df701b3ef860703 *src/mlogl.c
 ef540da82a8004bfb882749e4c34cacd *src/mlogl.h
 58b08e6a3a2c77242df4ebea430dab2c *src/raster.c
 e310d029fcfc5311a5b7d1af8a16ba54 *src/raster.h
@@ -148,8 +148,8 @@ b6d495ffa57232f7554305058ab13f43 *tests/nzp.Rout.save
 03e0148f04230f22c3e09e79d1927509 *tests/nzp.rda
 967ce3f9b59c4d60992bd586162cae30 *tests/penmlogl.R
 332f4078220421de6ac83bdc7f9dd180 *tests/penmlogl.Rout.save
-5c83e569f318640c8f4ed536297b341e *tests/pickle.R
-de9af133259bb36e96fc3bf931ec2d7c *tests/pickle.Rout.save
+ac72924c359b8ffe90b59f7f32d47ebe *tests/pickle.R
+ece98024a6ae78ef013573531ceceb4e *tests/pickle.Rout.save
 38191c7524f6e8cbfce0994d58dbe8b8 *tests/pickle.rda
 dd6f20add1362f73ff98d47911e1a48a *tests/predict.R
 3d03fe62fb9f202f985c35aa49a3a272 *tests/predict.Rout.save

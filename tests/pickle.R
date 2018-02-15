@@ -145,7 +145,10 @@ oout2 <- optim(alphasigma.mle, objfun, gradfun, method = "BFGS", hessian = TRUE)
      print(all.equal(oout, foo$oout))
      qout$iterations <- NULL
      foo$qout$iterations <- NULL
-     print(all.equal(qout, foo$qout, tolerance = 1e-6))
+     ## changes needed for alternative BLASes
+     qout$counts <- foo$qout$counts <- NULL
+     oout2$counts <- foo$oout2$counts <- NULL
+     print(all.equal(qout, foo$qout, tolerance = 1e-4))
      print(all.equal(oout2, foo$oout2, tolerance = 1e-4))
  }
 

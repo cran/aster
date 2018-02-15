@@ -58,11 +58,11 @@ double aster_mlogl_sat_cond(int nind, int nnode, int *pred, int *fam,
 #include "mlogl-export.h"
 // apparently this #pragma GCC diagnostic stuff is buggy
 // should eventually work with gcc (>= 6.1) according to gcc bug tracker
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-variable"
-static aster_mlogl_sat_either_funptr foo = aster_mlogl_sat_unco;
-static aster_mlogl_sat_either_funptr bar = aster_mlogl_sat_cond;
-#pragma GCC diagnostic pop
+//#pragma GCC diagnostic push
+//#pragma GCC diagnostic ignored "-Wunused-variable"
+//static aster_mlogl_sat_either_funptr foo = aster_mlogl_sat_unco;
+//static aster_mlogl_sat_either_funptr bar = aster_mlogl_sat_cond;
+//#pragma GCC diagnostic pop
 
 // Except.  We are going to use this typedef below in code
 // that looks like the code that would be in another package

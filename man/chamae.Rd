@@ -41,10 +41,10 @@ of the \dQuote{original} variables are
     3 of the fruits for this individual.}
 }
 }
-\source{
-Julie Etterson
-\url{http://www.d.umn.edu/~jetterso/}
-}
+%\source{
+%Julie Etterson
+%\url{http://www.d.umn.edu/~jetterso/}
+%}
 \references{
 These data are a subset of data previously analyzed by non-aster methods in the following.
 

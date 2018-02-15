@@ -1,7 +1,7 @@
 
-R version 3.3.2 (2016-10-31) -- "Sincere Pumpkin Patch"
-Copyright (C) 2016 The R Foundation for Statistical Computing
-Platform: i686-pc-linux-gnu (32-bit)
+R Under development (unstable) (2018-02-14 r74250) -- "Unsuffered Consequences"
+Copyright (C) 2018 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -166,7 +166,10 @@ Loading required package: trust
 +      print(all.equal(oout, foo$oout))
 +      qout$iterations <- NULL
 +      foo$qout$iterations <- NULL
-+      print(all.equal(qout, foo$qout, tolerance = 1e-6))
++      ## changes needed for alternative BLASes
++      qout$counts <- foo$qout$counts <- NULL
++      oout2$counts <- foo$oout2$counts <- NULL
++      print(all.equal(qout, foo$qout, tolerance = 1e-4))
 +      print(all.equal(oout2, foo$oout2, tolerance = 1e-4))
 +  }
 [1] TRUE
@@ -178,4 +181,4 @@ Loading required package: trust
 > 
 > proc.time()
    user  system elapsed 
-  4.412   0.052   4.466 
+  8.507   0.060   8.598 
