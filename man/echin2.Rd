@@ -4,7 +4,7 @@
 \alias{echin2}
 \title{Life History Data on Echinacea angustifolia}
 \description{
-  Data on life history traits for the purple coneflower
+  Data on life history traits for the narrow-leaved purple coneflower
   \emph{Echinacea angustifolia}
 }
 \usage{echin2}

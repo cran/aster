@@ -1679,7 +1679,7 @@ Geyer, C.~J. (1994).
 Geyer, C.~J. (2015).
 \newblock R package \texttt{aster} (Aster Models), version 0.8-31.
 \newblock \url{http://www.stat.umn.edu/geyer/aster/} and
-    \url{http://cran.r-project.org/package=aster}
+    \url{https://cran.r-project.org/package=aster}
 
 \bibitem[Geyer(2013)]{simple}
 Geyer, C.~J. (2013).

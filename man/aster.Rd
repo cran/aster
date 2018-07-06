@@ -69,7 +69,10 @@ aster(x, \dots)
 
   \item{origin}{Distinguished point in parameter space.  May be missing,
     in which case an unspecified default is provided.  See details below
-    for further explanation.}
+    for further explanation.  This is what \code{\link[stats]{lm}},
+    \code{\link[stats]{glm}} and other functions that do regression call
+    \dQuote{offset} but we don't change our name for reasons of backward
+    compatibility.}
 
   \item{origin.type}{Parameter space in which specified distinguished point
     is located.  If \code{"conditional"} then argument \code{"origin"} is

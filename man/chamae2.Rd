@@ -38,10 +38,10 @@ of the \dQuote{original} variables are
   \item{fruit}{Integer.  Number of fruits observed.}
 }
 }
-%\source{
-%Julie Etterson
-%\url{http://www.d.umn.edu/~jetterso/}
-%}
+\source{
+Julie Etterson
+\url{https://scse.d.umn.edu/biology-department/faculty-staff/dr-julie-etterson}
+}
 \references{
 These data are a subset of data previously analyzed by non-aster methods in the following.
 

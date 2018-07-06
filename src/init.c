@@ -138,7 +138,7 @@ static R_CMethodDef cMethods[] = {
         4, ast_origin_types},
     {"aster_export_exerciser", (DL_FUNC) &aster_export_exerciser,
         9, ast_export_exerciser_types},
-    {NULL, NULL, 0}
+    {NULL, NULL, 0, NULL}
 };
  
 static R_CallMethodDef callMethods[]  = {

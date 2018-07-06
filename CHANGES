@@ -138,6 +138,7 @@
  0.8-22 bug fix.  summary.reaster crashed with inexplicable error message
         when all variance component estimates were zero
 
+
  0.8-23 added \dontrun to some examples per instructions from Brian Ripley
 
  0.8-24 fixed bug in penmlogl2 (needed drop = FALSE) when only one random
@@ -178,3 +179,28 @@
 
         lots of changes to restrict visibility as per Sections 5.4 and 6.15
         of Writing R Extensions
+
+ 0.9.1  Minor changes made by Brian D. Ripley to CRAN package.
+
+ 0.9.1.1  A bunch changes made by Brian D. Ripley to CRAN package, and
+          package is orphaned.
+
+ 1.0    package unorphaned.
+
+        lots of fixes to computer arithmetic for zero truncated poisson,
+        both bugs (returning NaN when can do better) and inaccuracies.
+
+        fixed check for data validity for k-truncated distributions
+        check was if (xpred == 0) x == 0 else x > k
+        check is  if (xpred == 0) x == 0 else x >= xpred * (k + 1)
+
+        new argument is.always.parameter added to aster method of
+        R generic function predict.  Computes conditional mean value
+        parameters using the correct definition.
+
+ 1.0-1  Changed http: to https: in cran URLs
+
+ 1.0-2  Added dontrun to help for asterOrReaster method of R generic
+        function anova (because CRAN computers are slow)
+
+

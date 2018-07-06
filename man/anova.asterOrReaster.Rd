@@ -84,7 +84,10 @@ aout3 <- aster(resp ~ varb + level : (nsloc + ewloc + pop),
     pred, fam, varb, id, root, data = redata)
 anova(aout1, aout2, aout3)
 
-# now random effects models
+# now random effects models and models without random effects mixed
+\dontrun{
+### CRAN policy says examples must take < 5 sec.
+### This doesn't (on their computers).
 data(radish)
 pred <- c(0,1,2)
 fam <- c(1,3,2)
@@ -97,6 +100,7 @@ rout1 <- reaster(resp ~ varb + fit : (Site * Region),
 rout0 <- aster(resp ~ varb + fit : (Site * Region),
     pred, fam, varb, id, root, data = radish)
 anova(rout0, rout1, rout2)
+}
 }
 \keyword{models}
 \keyword{regression}

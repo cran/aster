@@ -2,6 +2,7 @@
 predict.aster <- function(object, x, root, modmat, amat,
     parm.type = c("mean.value", "canonical"),
     model.type = c("unconditional", "conditional"),
+    is.always.parameter = FALSE,
     se.fit = FALSE, info = c("expected", "observed"),
     info.tol = sqrt(.Machine$double.eps), newcoef = NULL,
     gradient = se.fit, ...)
@@ -180,7 +181,11 @@ predict.aster <- function(object, x, root, modmat, amat,
                 x = as.double(x),
                 root = as.double(root),
                 xpred = double(nind * nnode))$xpred
-            zeta <- xpred * ctau
+            if (is.always.parameter) {
+                zeta <- ctau
+            } else {
+                zeta <- xpred * ctau
+            }
             if (se.fit | gradient) {
                 grad.ctau <- .C(C_aster_theta2whatsis,
                     nind = as.integer(nind),
@@ -191,7 +196,11 @@ predict.aster <- function(object, x, root, modmat, amat,
                     theta = as.double(eta),
                     result = double(nind * nnode))$result
                 gradmat <- matrix(modmat, ncol = ncoef)
-                gradmat <- sweep(gradmat, 1, xpred * grad.ctau, "*")
+                if (is.always.parameter) {
+                    gradmat <- sweep(gradmat, 1, grad.ctau, "*")
+                } else {
+                    gradmat <- sweep(gradmat, 1, xpred * grad.ctau, "*")
+                }
             }
         }
         if (model.type == "unconditional" && object$type == "unconditional") {
@@ -253,7 +262,11 @@ predict.aster <- function(object, x, root, modmat, amat,
                 x = as.double(x),
                 root = as.double(root),
                 xpred = matrix(as.double(0), nind, nnode))$xpred
-            zeta <- xpred * ctau
+            if (is.always.parameter) {
+                zeta <- ctau
+            } else {
+                zeta <- xpred * ctau
+            }
             if (se.fit | gradient) {
                 gradmat <- .C(C_aster_D_beta2phi2theta,
                     nind = as.integer(nind),
@@ -272,7 +285,11 @@ predict.aster <- function(object, x, root, modmat, amat,
                     deriv = as.integer(2),
                     theta = as.double(theta),
                     result = double(nind * nnode))$result
-                deltheta2xi <- as.numeric(xpred) * grad.ctau
+                if (is.always.parameter) {
+                    deltheta2xi <- grad.ctau
+                } else {
+                    deltheta2xi <- as.numeric(xpred) * grad.ctau
+                }
                 gradmat <- sweep(gradmat, 1, deltheta2xi, "*")
             }
         }
@@ -336,6 +353,7 @@ predict.aster <- function(object, x, root, modmat, amat,
 predict.aster.formula <- function(object, newdata, varvar, idvar, root, amat,
     parm.type = c("mean.value", "canonical"),
     model.type = c("unconditional", "conditional"),
+    is.always.parameter = FALSE,
     se.fit = FALSE, info = c("expected", "observed"),
     info.tol = sqrt(.Machine$double.eps), newcoef = NULL,
     gradient = se.fit, ...)
@@ -431,11 +449,13 @@ predict.aster.formula <- function(object, newdata, varvar, idvar, root, amat,
     if (missing(amat)) {
         foo <- predict.aster(object, x, root, modmat,
             parm.type = parm.type, model.type = model.type,
+            is.always.parameter = is.always.parameter,
             se.fit = se.fit, info = info, info.tol = info.tol,
             newcoef = newcoef, gradient = gradient, ...)
     } else {
         foo <- predict.aster(object, x, root, modmat, amat,
             parm.type = parm.type, model.type = model.type,
+            is.always.parameter = is.always.parameter,
             se.fit = se.fit, info = info, info.tol = info.tol,
             newcoef = newcoef, gradient = gradient, ...)
     }

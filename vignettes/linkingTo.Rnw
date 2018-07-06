@@ -232,13 +232,13 @@ Now there is one last thing to say.  What happened to \texttt{famlist}?
 Geyer, C.~J. (2015).
 \newblock R package \texttt{aster2} (Aster Models), version 0.2-1.
 \newblock \url{http://www.stat.umn.edu/geyer/aster/} and
-    \url{http://cran.r-project.org/package=aster2}.
+    \url{https://cran.r-project.org/package=aster2}.
 
 \bibitem[Geyer(2017a)]{package-aster}
 Geyer, C.~J. (2017a).
 \newblock R package \texttt{aster} (Aster Modeels), version 0.9.
 \newblock \url{http://www.stat.umn.edu/geyer/aster/} and
-    \url{http://cran.r-project.org/package=aster}.
+    \url{https://cran.r-project.org/package=aster}.
 
 \bibitem[Geyer(2017b)]{linking-to}
 Geyer, C.~J. (2017b).

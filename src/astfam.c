@@ -7,13 +7,13 @@
 
 /* Bernoulli */
 
-#ifndef __GNUC__
-static int bernoulli_parval(double xpred, double hyper1, double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static int bernoulli_parval(double xpred,
     double hyper1 __attribute__ ((unused)),
     double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static int bernoulli_parval(double xpred, double hyper1, double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     /* must be nonnegative integer */
     int foo = 1;
@@ -35,23 +35,23 @@ static int bernoulli_validate(double x, double xpred, double hyper1,
     return foo;
 }
 
-#ifndef __GNUC__
-static int bernoulli_hypval(double hyper1, double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static int bernoulli_hypval(double hyper1 __attribute__ ((unused)),
     double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static int bernoulli_hypval(double hyper1, double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     return 1;
 }
 
-#ifndef __GNUC__
-static double bernoulli(int deriv, double theta, double hyper1, double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static double bernoulli(int deriv, double theta,
     double hyper1 __attribute__ ((unused)),
     double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static double bernoulli(int deriv, double theta, double hyper1, double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     double foo, bar;
 
@@ -73,14 +73,14 @@ static double bernoulli(int deriv, double theta,
     }
 }
 
-#ifndef __GNUC__
-static double bernoulli_simulate(double xpred, double theta, double hyper1,
-    double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static double bernoulli_simulate(double xpred, double theta,
     double hyper1 __attribute__ ((unused)),
     double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static double bernoulli_simulate(double xpred, double theta, double hyper1,
+    double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     if (xpred == 0.0) {
         return 0.0;
@@ -92,13 +92,13 @@ static double bernoulli_simulate(double xpred, double theta,
 
 /* Poisson */
 
-#ifndef __GNUC__
-static int poisson_parval(double xpred, double hyper1, double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static int poisson_parval(double xpred,
     double hyper1 __attribute__ ((unused)),
     double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static int poisson_parval(double xpred, double hyper1, double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     /* must be nonnegative real */
     return (xpred >= 0.0);
@@ -118,23 +118,23 @@ static int poisson_validate(double x, double xpred, double hyper1,
     return foo;
 }
 
-#ifndef __GNUC__
-static int poisson_hypval(double hyper1, double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static int poisson_hypval(double hyper1 __attribute__ ((unused)),
     double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static int poisson_hypval(double hyper1, double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     return 1;
 }
 
-#ifndef __GNUC__
-static double poisson(int deriv, double theta, double hyper1, double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static double poisson(int deriv, double theta,
     double hyper1 __attribute__ ((unused)),
     double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static double poisson(int deriv, double theta, double hyper1, double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     switch (deriv) {
     case 0:
@@ -146,14 +146,14 @@ static double poisson(int deriv, double theta,
     }
 }
 
-#ifndef __GNUC__
-static double poisson_simulate(double xpred, double theta, double hyper1,
-    double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static double poisson_simulate(double xpred, double theta,
     double hyper1 __attribute__ ((unused)),
     double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static double poisson_simulate(double xpred, double theta, double hyper1,
+    double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     double mu = xpred * exp(theta);
     if (mu == 0.0)
@@ -278,13 +278,13 @@ static double two_trunc_poisson_simulate(double xpred, double theta,
 
 /* k-truncated Poisson */
 
-#ifndef __GNUC__
-static int trunc_poisson_parval(double xpred, double hyper1, double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static int trunc_poisson_parval(double xpred,
     double hyper1 __attribute__ ((unused)),
     double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static int trunc_poisson_parval(double xpred, double hyper1, double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     /* must be nonnegative integer */
     int foo = 1;
@@ -300,21 +300,21 @@ static int trunc_poisson_validate(double x, double xpred,
     /* xpred must be valid */
     /* x must be integer */
     /* xpred == 0 implies x == 0 */
-    /* xpred > 0 implies x > k */
+    /* xpred > 0 implies x >= xpred * (k + 1) */
     int foo = 1;
     foo = foo && trunc_poisson_parval(xpred, hyper1, hyper2);
     foo = foo && (x == ceil(x));
     foo = foo && (xpred > 0.0 || x == 0.0);
-    foo = foo && (xpred == 0.0 || x > k);
+    foo = foo && (xpred == 0.0 || x >= xpred * (k + 1));
     return foo;
 }
 
-#ifndef __GNUC__
-static int trunc_poisson_hypval(double hyper1, double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static int trunc_poisson_hypval(double hyper1,
     double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static int trunc_poisson_hypval(double hyper1, double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     /* hyper1 (truncation) must be nonnegative integer */
     int foo = 1;
@@ -323,19 +323,22 @@ static int trunc_poisson_hypval(double hyper1,
     return foo;
 }
 
-#ifndef __GNUC__
-static double trunc_poisson(int deriv, double theta,
-    double hyper1, double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static double trunc_poisson(int deriv, double theta, double hyper1,
     double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static double trunc_poisson(int deriv, double theta,
+    double hyper1, double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     int k = hyper1;
     double mu = exp(theta);
     double foo, bar, baz, qux, alpha;
 
     /* special case k == 0 backporting stuff from aster2 */
+    /* also uses analysis in Stat 3701 notes and in the */
+    /* devel/arithmetic/zero-truncated-poisson directory */
+    /* of this package */
     if (k == 0) {
         if (deriv > 2 || deriv < 0)
             die("deriv %d not valid", deriv);
@@ -344,19 +347,29 @@ static double trunc_poisson(int deriv, double theta, double hyper1,
         if (theta > (- 4.0)) {
             if (deriv == 0)
                 return m + my_log1p(- exp(- m));
-            mu = m / (1.0 - exp(- m));
-        } else {
+            mu = m / (- expm1(- m));
+            if (deriv == 1)
+                return mu;
+            /* deriv == 2 */
+            if (isinf(mu)) {
+                return mu;
+            } else {
+                return mu * (1.0 - mu * exp(- m));
+            }
+        } else /* theta <= -4 */ {
             double bar = m / 2.0 * (1.0 + m / 3.0 * (1.0 + m / 4.0 *
                 (1.0 + m / 5.0 * (1.0 + m / 6.0 * (1.0 + m / 7.0 *
                 (1.0 + m / 8.0))))));
             if (deriv == 0)
                 return theta + my_log1p(bar);
             mu = m + 1.0 / (1.0 + bar);
+            if (deriv == 1)
+                return mu;
+            /* deriv == 2 */
+            double msq = m * m;
+            return m / 2 * (1 + m / 3 * (1 - msq / 30 *
+                (1 - msq / 28 * (1 - msq / 30))));
         }
-        if (deriv == 1)
-            return mu;
-        /* deriv == 2 */
-        return mu * (1.0 + m - mu);
     }
 
     switch (deriv) {
@@ -390,13 +403,13 @@ static double trunc_poisson(int deriv, double theta, double hyper1,
     }
 }
 
-#ifndef __GNUC__
-static double trunc_poisson_simulate(double xpred, double theta,
-    double hyper1, double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static double trunc_poisson_simulate(double xpred, double theta,
     double hyper1, double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static double trunc_poisson_simulate(double xpred, double theta,
+    double hyper1, double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     int k = hyper1;
     double mu = exp(theta);
@@ -410,13 +423,13 @@ static double trunc_poisson_simulate(double xpred, double theta,
 
 /* (untruncated) negative binomial */
 
-#ifndef __GNUC__
-static int neg_bin_parval(double xpred, double hyper1, double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static int neg_bin_parval(double xpred,
     double hyper1 __attribute__ ((unused)),
     double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static int neg_bin_parval(double xpred, double hyper1, double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     /* must be nonnegative real */
     return (xpred >= 0.0);
@@ -435,24 +448,24 @@ static int neg_bin_validate(double x, double xpred,
     return foo;
 }
 
-#ifndef __GNUC__
-static int neg_bin_hypval(double hyper1, double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static int neg_bin_hypval(double hyper1,
     double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static int neg_bin_hypval(double hyper1, double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     /* hyper1 (size) must be nonnegative real */
     return (hyper1 >= 0.0);
 }
 
-#ifndef __GNUC__
-static double neg_bin(int deriv, double theta,
-    double hyper1, double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static double neg_bin(int deriv, double theta, double hyper1,
     double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static double neg_bin(int deriv, double theta,
+    double hyper1, double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     double alpha = hyper1;
     double p, q, foo;
@@ -486,13 +499,13 @@ static double neg_bin(int deriv, double theta, double hyper1,
     }
 }
 
-#ifndef __GNUC__
-static double neg_bin_simulate(double xpred, double theta,
-    double hyper1, double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static double neg_bin_simulate(double xpred, double theta,
     double hyper1, double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static double neg_bin_simulate(double xpred, double theta,
+    double hyper1, double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     double alpha = hyper1;
     double p = - my_expm1(theta);
@@ -501,13 +514,13 @@ static double neg_bin_simulate(double xpred, double theta,
 
 /* truncated negative binomial */
 
-#ifndef __GNUC__
-static int trunc_neg_bin_parval(double xpred, double hyper1, double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static int trunc_neg_bin_parval(double xpred,
     double hyper1 __attribute__ ((unused)),
     double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static int trunc_neg_bin_parval(double xpred, double hyper1, double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     /* must be nonnegative integer */
     int foo = 1;
@@ -523,12 +536,12 @@ static int trunc_neg_bin_validate(double x, double xpred,
     /* xpred must be valid */
     /* x must be integer */
     /* xpred == 0 implies x == 0 */
-    /* xpred > 0 implies x > k */
+    /* xpred > 0 implies x >= xpred * (k + 1) */
     int foo = 1;
     foo = foo && trunc_neg_bin_parval(xpred, hyper1, hyper2);
     foo = foo && (x == ceil(x));
     foo = foo && (xpred > 0.0 || x == 0.0);
-    foo = foo && (xpred == 0.0 || x > k);
+    foo = foo && (xpred == 0.0 || x >= xpred * (k + 1));
     return foo;
 }
 
@@ -613,13 +626,13 @@ static double trunc_neg_bin_simulate(double xpred, double theta,
 
 /* normal location (known scale) */
 
-#ifndef __GNUC__
-static int norm_loc_parval(double xpred, double hyper1, double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static int norm_loc_parval(double xpred,
     double hyper1 __attribute__ ((unused)),
     double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static int norm_loc_parval(double xpred, double hyper1, double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     /* must be nonnegative real */
     return (xpred >= 0.0);
@@ -637,24 +650,24 @@ static int norm_loc_validate(double x, double xpred,
     return foo;
 }
 
-#ifndef __GNUC__
-static int norm_loc_hypval(double hyper1, double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static int norm_loc_hypval(double hyper1,
     double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static int norm_loc_hypval(double hyper1, double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     /* hyper1 (size) must be positive real */
     return (hyper1 > 0.0);
 }
 
-#ifndef __GNUC__
-static double norm_loc(int deriv, double theta,
-    double hyper1, double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static double norm_loc(int deriv, double theta, double hyper1,
     double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static double norm_loc(int deriv, double theta,
+    double hyper1, double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     double sigmasq = hyper1 * hyper1;
 
@@ -670,13 +683,13 @@ static double norm_loc(int deriv, double theta, double hyper1,
     }
 }
 
-#ifndef __GNUC__
-static double norm_loc_simulate(double xpred, double theta,
-    double hyper1, double hyper2)
-#else
+#if defined(__GNUC__) || defined(__clang__)
 static double norm_loc_simulate(double xpred, double theta,
     double hyper1, double hyper2 __attribute__ ((unused)))
-#endif /* __GNUC__ */
+#else
+static double norm_loc_simulate(double xpred, double theta,
+    double hyper1, double hyper2)
+#endif /* defined(__GNUC__) || defined(__clang__) */
 {
     double mu = theta * hyper1 * hyper1 * xpred;
     double sigma = hyper1 * sqrt(xpred);

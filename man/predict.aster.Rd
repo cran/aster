@@ -9,6 +9,7 @@
 \method{predict}{aster}(object, x, root, modmat, amat,
     parm.type = c("mean.value", "canonical"),
     model.type = c("unconditional", "conditional"),
+    is.always.parameter = FALSE,
     se.fit = FALSE, info = c("expected", "observed"),
     info.tol = sqrt(.Machine$double.eps), newcoef = NULL,
     gradient = se.fit, \ldots)
@@ -16,6 +17,7 @@
 \method{predict}{aster.formula}(object, newdata, varvar, idvar, root, amat,
     parm.type = c("mean.value", "canonical"),
     model.type = c("unconditional", "conditional"),
+    is.always.parameter = FALSE,
     se.fit = FALSE, info = c("expected", "observed"),
     info.tol = sqrt(.Machine$double.eps), newcoef = NULL,
     gradient = se.fit, \ldots)
@@ -27,7 +29,7 @@
   \item{modmat}{a model matrix to use instead of \code{object$modmat}.
     Must have the same structure (three-dimensional array, first index runs
     over individuals, second over nodes of the graphical model, third over
-    covariates.  Must have the same second and third dimensions as
+    covariates).  Must have the same second and third dimensions as
     \code{object$modmat}.  The second and third components of
     \code{dimnames(modmat)} and \code{dimnames(object$modmat)} must also be
     the same.
@@ -35,12 +37,12 @@
     May be missing, in which case \code{object$modmat} is used.
 
     \code{predict.aster.formula} constructs such a \code{modmat} from
-    \code{object$formula}, the data frame \code{newdata}, and the variables
-    in the environment of the formula.  When \code{newdata} is missing, then
+    \code{object$formula}, the data frame \code{newdata}, and variables
+    in the environment of the formula.  When \code{newdata} is missing,
     \code{object$modmat} is used.}
 
   \item{x}{response.  Ignored and may be missing unless
-    \code{parm.type == "mean.value" && model.type == "conditional"}.
+    \code{parm.type = "mean.value"} and \code{model.type = "conditional"}.
     Even then may be missing when \code{modmat} is missing,
     in which case \code{object$x} is used.  A matrix whose first and
     second dimensions and the corresponding dimnames agrees with
@@ -50,7 +52,7 @@
     the response variable name in \code{object$formula},
     the data frame \code{newdata},
     and the variables in the environment of the formula.  When \code{newdata}
-    is missing, then \code{object$x} is used.}
+    is missing, \code{object$x} is used.}
 
   \item{root}{root data.  Ignored and may be missing unless
     \code{parm.type == "mean.value"}.
@@ -62,7 +64,7 @@
     the argument \code{root} in the data frame \code{newdata} or in
     the variables in the environment of the formula and makes it a matrix
     of the same form as \code{x}.  When \code{newdata}
-    is missing, then \code{object$root} is used.}
+    is missing, \code{object$root} is used.}
 
   \item{amat}{if \code{zeta} is the requested prediction (mean value
     or canonical, unconditional or conditional, depending on \code{parm.type}
@@ -105,6 +107,14 @@
 
     The value of this argument can be abbreviated.
   }
+
+  \item{is.always.parameter}{logical, default \code{FALSE}.
+      Only affects the result when \code{parm.type = "mean.value"} and
+      \code{model.type = "conditional"}.  \code{TRUE} means the conditional
+      mean value parameter is produced.  \code{FALSE} means the conditional
+      mean values themselves are produced (which depend on data so are not
+      parameters).  See Conditional Mean Values Section below for further
+      explanation.}
 
   \item{se.fit}{logical switch indicating if standard errors are required.}
 
@@ -151,8 +161,52 @@
   \item{\dots}{further arguments passed to or from other methods.}
 }
 \description{
-  Obtains predictions and optionally estimates standard errors of those
-  predictions from a fitted Aster model object.
+  Obtains predictions (parameter estimates) and optionally estimates
+  standard errors of those predictions (parameter estimates) from
+  a fitted Aster model object.
+}
+\section{Conditional Mean Values}{
+Both the original aster paper (Geyer, et al., 2007) and this package are
+weird about unconditional mean values.  Equation (10) of that paper defines
+(using different notation from what we use here)
+\deqn{\xi_j = E(x_j | x_{p(j)})}{xi[j] = E(x[j] | x[p(j)])}
+where \eqn{x_j}{x[j]} are components of the response vector and \eqn{p(j)}
+denotes denotes the predecessor of node \eqn{j}.  That paper explicitly says
+that this is is not a parameter because it depends on the data.  In fact
+\deqn{E(x_j | x_{p(j)}) = x_{p(j)} E(x_j | x_{p(j)} = 1)}{E(x[j] | x[p(j)]) = x[p(j)] E(x[j] | x[p(j)] = 1)}
+(this is equation (3) of that paper in different notation).
+Thus it is weird to use a Greek letter to denote this.
+
+There should be a conditional mean value parameter, and
+Geyer (2010, equation (11b)) defines it as
+\deqn{\xi_j = E(y_j | y_{p(j)} = 1)}{xi[j] = E(y[j] | y[p(j)] = 1)}
+(This equation only makes sense when the conditioning event
+\eqn{x_{p(j)} = 1}{x[p(j)] = 1} is possible, which it is not for
+\eqn{k}-truncated arrows for \eqn{k > 0}.  Then a more complicated definition
+must be used.  By definition \eqn{x_j}{x[j]} is the sum
+of \eqn{x_{p(j)}}{x[p(j)]} independent and identically distributed random
+variables, and \eqn{\xi_j}{xi[j]} is always the mean of one of those
+random variables.)
+This gives us the important relationship between conditional and unconditional
+mean value parameters
+\deqn{\mu_j = \xi_j \mu_{p(j)}}{mu[j] = xi[j] mu[p(j)]}
+which holds for all successor nodes \eqn{j}.
+All later writings of this author use this definition of \eqn{\xi}{xi}
+as does the R package \code{aster2} (Geyer, 2017).
+This is one of six important parameterizations of an unconditional aster model
+(Geyer, 2010, Sections 2.7 and 2.8).  The R package \code{aster2} uses all
+of them.
+
+This function (as of version 1.0 of this package) has an argument
+\code{is.always.parameter} to switch between these two definitions
+in case \code{parm.type = "mean.value"} and \code{model.type = "conditional"}
+are specified.  Then \code{is.always.parameter = TRUE} specifies that the latter
+definition of \eqn{\xi}{xi} is produced (which is a parameter, with all other
+options for \code{parm.type} and \code{model.type}).  The option
+\code{is.always.parameter = FALSE} specifies that the former
+definition of \eqn{\xi}{xi} is produced (which is a conditional expectation
+but not a parameter) and is what this function produced in versions of this
+package before 1.0.
 }
 \details{
 Note that \code{model.type} need have nothing to do with the type
@@ -164,13 +218,11 @@ fitted model is conditional or unconditional, one typically wants
 value parameters for hypothetical individuals depend on the hypothetical
 data \code{x}, which usually makes no scientific sense.
 
-If one does ask for \emph{conditional} mean value parameters, generally
-the \dQuote{data} should satisfy \code{all(x == 1)} and \code{all(root == 1)},
-so that the mean value parameters
-are \dQuote{per unit of predecessor variable}, that is we \dQuote{predict}
-\eqn{\psi''(\theta_{i j})}{psi''(theta[i, j])} rather than this multiplied
-by \eqn{X_{i p(j)}}{x[i, p(j)]}, where \eqn{p(j)} is the mathematical
-function defined by the R expression \code{pred[j]}.
+If one asks for \emph{conditional} mean value parameters, one gets
+them only if \code{is.always.parameter = TRUE} is specified.
+Otherwise, conditional expectations that are not parameters (because
+they depend on data) are produced.
+See Conditional Mean Values Section for more about this.
 
 Similarly, if \code{object$type == "conditional"}, then the conditional
 canonical parameters are a linear function of the regression coefficients
@@ -240,6 +292,20 @@ call \code{predict.aster.formula} in this case).
   \item{fit}{Predictions}
   \item{gradient}{The gradient of the transformation from
     regression coefficients to predictions}
+}
+\references{
+Geyer, C. J. (2010)
+A Philosophical Look at Aster Models.
+Technical Report No. 676.  School of Statistics, University of Minnesota.
+\url{http://purl.umn.edu/57163}.
+
+Geyer, C.~J. (2017).
+R package \code{aster2} (Aster Models), version 0.3.
+\url{https://cran.r-project.org/package=aster2}.
+
+Geyer, C. J., Wagenius, S., and Shaw, R. G. (2007)
+Aster models for life history analysis.
+\emph{Biometrika}, \bold{94}, 415--426.
 }
 \examples{
 ### see package vignette for explanation ###
