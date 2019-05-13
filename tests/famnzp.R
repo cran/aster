@@ -3,8 +3,10 @@
 
  ifam <- fam.truncated.poisson(truncation = 0)
 
- mu <- seq(0.1, 3.0, 0.2)
- theta <- log(mu)
+ # change to include all cases in case splitting
+ # see ../src/astfam.c lines 338 to 373
+ theta <- seq(-6, 6, 0.5)
+ mu <- exp(theta)
 
  zeroth <- double(length(theta))
  first <- double(length(theta))

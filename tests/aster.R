@@ -2,6 +2,10 @@
  library(aster)
 
  set.seed(42)
+
+ # needed because of the change in R function "sample" in R-devel
+ suppressWarnings(RNGversion("3.5.2"))
+
  nind <- 25
  nnode <- 5
  ncoef <- nnode + 1

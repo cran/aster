@@ -1,6 +1,6 @@
 
-R Under development (unstable) (2017-03-08 r72321) -- "Unsuffered Consequences"
-Copyright (C) 2017 The R Foundation for Statistical Computing
+R version 3.6.0 (2019-04-26) -- "Planting of a Tree"
+Copyright (C) 2019 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -21,6 +21,9 @@ Loading required package: trust
 >  library(numDeriv)
 > 
 >  set.seed(42)
+> 
+>  # needed because of the change in R function "sample" in R-devel
+>  suppressWarnings(RNGversion("3.5.2"))
 > 
 >  nind <- 25
 >  nnode <- 5
@@ -123,6 +126,9 @@ Loading required package: trust
 +      return(result)
 +  }
 >  nout1 <- nlm(objfun, beta, fscale = nind)
+Warning message:
+In nlm(objfun, beta, fscale = nind) :
+  NA/Inf replaced by maximum positive value
 >  nout <- nlm(objfun, nout1$estimate, fscale = nind)
 >  all.equal(nout1$minimum, nout$minimum)
 [1] TRUE
@@ -172,4 +178,4 @@ Loading required package: trust
 > 
 > proc.time()
    user  system elapsed 
-  1.044   0.004   1.047 
+  0.276   0.032   0.299 
