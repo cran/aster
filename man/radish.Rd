@@ -6,7 +6,7 @@
   Data on life history traits for the 
   invasive California wild radish \emph{Raphanus sativus}
 }
-\usage{radish}
+\usage{data(radish)}
 \format{
   A data frame with records for 286 plants.
   Data are already in \dQuote{long} format; no need to reshape.
@@ -56,14 +56,24 @@ Graphical model is
 Caroline Ridley
 }
 \references{
-These data are a subset of data previously analyzed using aster methods
-in the following.
+These data are a subset of data previously analyzed using fixed effect
+aster methods (R function \code{aster}) in the following.
 
 Ridley, C. E. and Ellstrand, N. C. (2010).
 Rapid evolution of morphology and adaptive life history in
     the invasive California wild radish (\emph{Raphanus sativus}) and
     the implications for management.
 \emph{Evolutionary Applications}, \bold{3}, 64--76.
+
+These data are a subset of data previously analyzed using random effect
+aster methods (R function \code{reaster}) in the following.
+
+Geyer, C. J., Ridley, C. E., Latta, R. G., Etterson, J. R.,
+    and Shaw, R. G. (2013)
+Local Adaptation and Genetic Effects on Fitness: Calculations
+    for Exponential Family Models with Random Effects.
+\emph{Annals of Applied Statistics}, \bold{7}, 1778--1795.
+\doi{10.1214/13-AOAS653}.
 }
 \seealso{
 \code{\link{pickle}}

@@ -6,7 +6,7 @@
   Data on life history traits for the partridge pea
   \emph{Chamaecrista fasciculata}
 }
-\usage{chamae3}
+\usage{data(chamae3)}
 \format{
   A data frame with records for 2239 plants.
   Data are already in \dQuote{long} format; no need to reshape.
@@ -43,7 +43,7 @@ of the \dQuote{original} variables are
 }
 \source{
 Julie Etterson
-\url{https://scse.d.umn.edu/biology-department/faculty-staff/dr-julie-etterson}
+\url{https://sites.google.com/d.umn.edu/dr-julie-r-etterson/home}
 }
 \references{
 These data are a subset of data previously analyzed by non-aster methods in the following.
@@ -54,6 +54,16 @@ Evolutionary potential of \emph{Chamaecrista fasciculata} in
     populations reciprocally planted along an environmental gradient in the
     great plains.
 \emph{Evolution}, \bold{58}, 1459--1471.
+\doi{10.1111/j.0014-3820.2004.tb01727.x}.
+
+These data were reanalyzed by aster methods in the following.
+
+Geyer, C. J., Ridley, C. E., Latta, R. G., Etterson, J. R.,
+    and Shaw, R. G. (2013)
+Local Adaptation and Genetic Effects on Fitness: Calculations
+    for Exponential Family Models with Random Effects.
+\emph{Annals of Applied Statistics}, \bold{7}, 1778--1795.
+\doi{10.1214/13-AOAS653}.
 }
 \examples{
 data(chamae3)

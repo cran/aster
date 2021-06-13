@@ -6,7 +6,7 @@
   Data on life history traits for the 
   invasive California wild oat \emph{Avena barbata}
 }
-\usage{oats}
+\usage{data(oats)}
 \format{
   A data frame with records for 821 plants.
   Data are already in \dQuote{long} format; no need to reshape.
@@ -51,7 +51,7 @@ Graphical model is
 }
 \source{
 Robert Latta
-\url{http://biology.dal.ca/People/faculty/latta/latta.htm}
+\url{https://www.dal.ca/faculty/science/biology/faculty-staff/our-faculty/robert-latta.html}
 }
 \references{
 These data are a subset of data previously analyzed using non-aster methods
@@ -61,6 +61,16 @@ Latta, R. G. (2009).
 Testing for local adaptation in \emph{Avena barbata},
 a classic example of ecotypic divergence.
 \emph{Molecular Ecology}, \bold{18}, 3781--3791.
+\doi{https://doi.org/10.1111/j.1365-294X.2009.04302.x}.
+
+These data are reanalyzed by aster methods in the following.
+
+Geyer, C. J., Ridley, C. E., Latta, R. G., Etterson, J. R.,
+    and Shaw, R. G. (2013)
+Local Adaptation and Genetic Effects on Fitness: Calculations
+    for Exponential Family Models with Random Effects.
+\emph{Annals of Applied Statistics}, \bold{7}, 1778--1795.
+\doi{10.1214/13-AOAS653}.
 }
 \examples{
 data(oats)

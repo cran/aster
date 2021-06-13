@@ -8,7 +8,7 @@ mlogl(parm, pred, fam, x, root, modmat, deriv = 0,
 }
 \description{
 Minus the Log Likelihood for an Aster model, and its first and second
-derivative.  This function is called inside \code{\link{aster}}.
+derivative.  This function is called inside R function \code{\link{aster}}.
 Users generally do not need to call it directly.
 }
 \arguments{
@@ -19,7 +19,8 @@ Users generally do not need to call it directly.
     \code{pred[j]} is the index of the predecessor of
     the node with index \code{j} unless the predecessor is a root
     node, in which case \code{pred[j] == 0}.
-    We also refer to \code{length(pred)} as \code{nnode}.}
+    We also refer to \code{length(pred)} as \code{nnode}.
+    This argument is required to satisfy \code{pred[j] < j} for all \code{j}.}
   \item{fam}{an integer vector of length \code{nnode} determining
     the exponential family structure of the aster model.  Each element
     is an index into the vector of family specifications given by
@@ -30,14 +31,14 @@ Users generally do not need to call it directly.
     \code{x} must be as if it were such a matrix and then dimension
     information removed by \code{x = as.numeric(x)}.}
   \item{root}{A matrix or vector like \code{x}.
-    Data \code{root[i, j]} is the data for the founder that is
+    Data \code{root[i, j]} is the data for a root node that is
     the predecessor of the response \code{x[i, j]}
     and is ignored when \code{pred[j] > 0}.}
   \item{modmat}{a three-dimensional array, \code{nind} by \code{nnode} by
     \code{ncoef}, the model matrix.  Or a matrix, \code{nind * nnode} by
     \code{ncoef} (when \code{x} and \code{root} are one-dimensional
     of length \code{nind * nnode}).}
-  \item{deriv}{derivative wanted: 0, 1, or 2.}
+  \item{deriv}{derivatives wanted: 0, 1, or 2.}
   \item{type}{type of model.  The value of this argument can be abbreviated.}
   \item{famlist}{a list of family specifications (see \code{\link{families}}).}
   \item{origin}{Distinguished point in parameter space.  May be missing,

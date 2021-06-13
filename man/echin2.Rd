@@ -7,7 +7,7 @@
   Data on life history traits for the narrow-leaved purple coneflower
   \emph{Echinacea angustifolia}
 }
-\usage{echin2}
+\usage{data(echin2)}
 \format{
   A data frame with records for 557 plants observed over five years.
   Data are already in \dQuote{long} format; no need to reshape.
@@ -73,7 +73,7 @@ the three levels of \code{crosstype}.
 }
 \source{
 Stuart Wagenius,
-\url{http://www.chicagobotanic.org/research/staff/wagenius}
+\url{https://www.chicagobotanic.org/research/staff/wagenius}
 }
 \references{
 These data are analyzed in the following.                                     
@@ -82,6 +82,7 @@ Shaw, R. G., Geyer, C. J., Wagenius, S., Hangelbroek, H. H.,
    and Etterson, J. R. (2008)
 Unifying life history analyses for inference of fitness and population growth.
 \emph{American Naturalist}, \bold{172}, E35-E47.
+\doi{10.1086/588063}.
 }
 \examples{
 data(echin2)

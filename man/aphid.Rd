@@ -6,7 +6,7 @@
   Data on life history traits for the brown ambrosia aphid
   \emph{Uroleucon rudbeckiae}
 }
-\usage{aphid}
+\usage{data(aphid)}
 \format{
   A data frame with records for 18 insects.
   Data are already in \dQuote{long} format; no need to reshape.
@@ -41,12 +41,15 @@ Lenski, R. E. and Service, P. M. (1982).
 The statistical analysis of population growth rates calculated
     from schedules of survivorship and fecunidity.
 \emph{Ecology}, \bold{63}, 655-662.
+\doi{10.2307/1936785}.
 
-These data are reanalyzed by aster methods in the following.                                     
+These data are reanalyzed by aster methods in the following.
+
 Shaw, R. G., Geyer, C. J., Wagenius, S., Hangelbroek, H. H.,
    and Etterson, J. R. (2008)
 Unifying life history analyses for inference of fitness and population growth.
 \emph{American Naturalist}, \bold{172}, E35-E47.
+\doi{10.1086/588063}.
 }
 \examples{
 data(aphid)

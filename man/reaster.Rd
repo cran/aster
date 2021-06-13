@@ -184,6 +184,7 @@ and no theory says the results will make any sense.
 Breslow, N. E., and Clayton, D. G. (1993).
 Approximate Inference in Generalized Linear Mixed Models.
 \emph{Journal of the American Statistical Association}, \bold{88}, 9--25.
+\doi{10.1080/01621459.1993.10594284}.
 
 Geyer, C. J., Ridley, C. E., Latta, R. G., Etterson, J. R.,
     and Shaw, R. G. (2012)
@@ -196,6 +197,7 @@ Geyer, C. J., Ridley, C. E., Latta, R. G., Etterson, J. R.,
 Local Adaptation and Genetic Effects on Fitness: Calculations
     for Exponential Family Models with Random Effects.
 \emph{Annals of Applied Statistics}, \bold{7}, 1778--1795.
+\doi{10.1214/13-AOAS653}.
 }
 \examples{
 library(aster)

@@ -1,6 +1,6 @@
 
-R version 3.3.2 (2016-10-31) -- "Sincere Pumpkin Patch"
-Copyright (C) 2016 The R Foundation for Statistical Computing
+R version 4.0.0 (2020-04-24) -- "Arbor Day"
+Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -17,7 +17,7 @@ Type 'q()' to quit R.
 
 > 
 > library(aster)
-Loading required package: trust
+> library(trust)
 > 
 > data(radish)
 > 
@@ -150,4 +150,4 @@ Loading required package: trust
 > 
 > proc.time()
    user  system elapsed 
-  0.648   0.020   0.660 
+  0.441   0.045   0.477 

@@ -4,7 +4,7 @@
 ###
 ### in the notation of equation (26) of inst/doc/re.tex
 
-penmlogl <- function(parm, sigma, fixed, random, obj, y, origin) {
+penmlogl <- function(parm, sigma, fixed, random, obj, y, origin, deriv = 2) {
     stopifnot(inherits(obj, "aster"))
     stopifnot(is.numeric(fixed))
     stopifnot(is.finite(fixed))
@@ -44,6 +44,8 @@ penmlogl <- function(parm, sigma, fixed, random, obj, y, origin) {
         stopifnot(identical(dim(origin), dim(obj$root)))
         stopifnot(all(is.finite(as.vector(origin))))
     }
+    stopifnot(deriv %in% 0:2)
+
     scalevec <- rep(1, ncol(fixed))
     penaltyvec <- rep(0, ncol(fixed))
     modmat <- fixed
@@ -55,10 +57,17 @@ penmlogl <- function(parm, sigma, fixed, random, obj, y, origin) {
     }
     ### note: despite documentation of the mlogl function, it actually
     ### works to have modmat a matrix rather than a 3-way array
-    bar <- mlogl(parm, obj$pred, obj$fam, y, obj$root, modmat, deriv = 2,
+    bar <- mlogl(parm, obj$pred, obj$fam, y, obj$root, modmat, deriv = deriv,
         famlist = obj$famlist, origin = origin)
     val <- bar$value + sum(penaltyvec * parm^2) / 2
-    grad <- bar$gradient + penaltyvec * parm
+    if (deriv == 0)
+        return(list(value = val, argument = parm, scale = scalevec))
+    if (deriv >= 1)
+        grad <- bar$gradient + penaltyvec * parm
+    if (deriv == 1)
+        return(list(value = val, gradient = grad, argument = parm,
+            scale = scalevec, mlogl.gradient = bar$gradient))
+    ## if we get here deriv == 2
     hess <- bar$hessian + diag(penaltyvec)
     return(list(value = val, gradient = grad, hessian = hess,
         argument = parm, scale = scalevec, mlogl.hessian = bar$hessian,

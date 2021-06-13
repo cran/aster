@@ -3,7 +3,7 @@
 \alias{penmlogl2}
 \title{Penalized Minus Log Likelihood for Aster Models}
 \usage{
-penmlogl(parm, sigma, fixed, random, obj, y, origin)
+penmlogl(parm, sigma, fixed, random, obj, y, origin, deriv = 2)
 penmlogl2(parm, alpha, sigma, fixed, random, obj, y, origin)
 }
 \note{
@@ -41,6 +41,7 @@ and \code{\link{reaster}}.
   \item{origin}{origin of aster model.  May be omitted, in which case
     default origin (see \code{\link{aster}}) is used.  If supplied, must be
     a matrix of the same dimensions \code{obj$x}.}
+  \item{deriv}{number of derivatives wanted.  Allowed values are 0, 1, or 2.}
 }
 \details{
   Consider an aster model with random effects and canonical parameter vector

@@ -6,7 +6,7 @@
   Data on life history traits for the partridge pea
   \emph{Chamaecrista fasciculata}
 }
-\usage{chamae2}
+\usage{data(chamae2)}
 \format{
   A data frame with records for 2239 plants.
   Data are already in \dQuote{long} format; no need to reshape.
@@ -40,7 +40,7 @@ of the \dQuote{original} variables are
 }
 \source{
 Julie Etterson
-\url{https://scse.d.umn.edu/biology-department/faculty-staff/dr-julie-etterson}
+\url{https://sites.google.com/d.umn.edu/dr-julie-r-etterson/home}
 }
 \references{
 These data are a subset of data previously analyzed by non-aster methods in the following.
@@ -50,16 +50,20 @@ Evolutionary potential of \emph{Chamaecrista fasciculata} in
     relation to climate change.  I. Clinal patterns of selection along
     an environmental gradient in the great plains.
 \emph{Evolution}, \bold{58}, 1446-1458.
+\doi{10.1111/j.0014-3820.2004.tb01726.x}.
 
 Etterson, J. R., and Shaw, R. G. (2001).
 Constraint to adaptive evolution in response to global warming.
 \emph{Science}, \bold{294}, 151-154.
+\doi{10.1126/science.1063656}.
 
-These data are reanalyzed in the following.                                     
+These data are reanalyzed by aster methods in the following.
+
 Shaw, R. G., Geyer, C. J., Wagenius, S., Hangelbroek, H. H.,
    and Etterson, J. R. (2008)
 Unifying life history analyses for inference of fitness and population growth.
 \emph{American Naturalist}, \bold{172}, E35-E47.
+\doi{10.1086/588063}.
 }
 \examples{
 data(chamae2)

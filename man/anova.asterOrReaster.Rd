@@ -15,8 +15,7 @@ anovaAsterOrReasterList(objectlist, tolerance = .Machine$double.eps ^ 0.75)
 }
 \arguments{
   \item{object, \dots}{objects of class \code{"asterOrReaster"}, typically
-    the result of a call to \code{\link{aster}} or \code{\link{reaster}},
-    or a list of \code{objects} of class \code{"asterOrReaster"}.}
+    the result of a call to \code{\link{aster}} or \code{\link{reaster}}.}
   \item{objectlist}{list of objects of class \code{"asterOrReaster"}.}
   \item{tolerance}{tolerance for comparing nesting of model matrices.}
 }
@@ -24,7 +23,7 @@ anovaAsterOrReasterList(objectlist, tolerance = .Machine$double.eps ^ 0.75)
   Constructs a table having a row for the
   degrees of freedom and deviance for each model.
   For all but the first model, the change in degrees of freedom and
-  deviance is also given, as is the corresponding asymptotic P value.
+  deviance is also given, as is the corresponding asymptotic \eqn{P}-value.
 
   For objects of class \code{"reaster"}, the
   quantity called deviance is only approximate.  See references on
@@ -51,7 +50,7 @@ anovaAsterOrReasterList(objectlist, tolerance = .Machine$double.eps ^ 0.75)
 }
 \section{Warning}{
   The comparison between two or more models by \code{anova} or
-  \code{anova.reasterlist} will only be valid if they
+  \code{anovaAsterOrReasterList} will only be valid if they
   are (1) fitted to the same dataset, 
   (2) models are nested,
   (3) have the same

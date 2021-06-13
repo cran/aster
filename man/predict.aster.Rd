@@ -118,7 +118,7 @@
 
   \item{se.fit}{logical switch indicating if standard errors are required.}
 
-  \item{info}{the type of Fisher information use to compute standard errors.}
+  \item{info}{the type of Fisher information to use to compute standard errors.}
 
   \item{info.tol}{tolerance for eigenvalues of Fisher information.
     If \code{eval} is the vector of eigenvalues of the information matrix,
@@ -167,7 +167,7 @@
 }
 \section{Conditional Mean Values}{
 Both the original aster paper (Geyer, et al., 2007) and this package are
-weird about unconditional mean values.  Equation (10) of that paper defines
+weird about conditional mean values.  Equation (10) of that paper defines
 (using different notation from what we use here)
 \deqn{\xi_j = E(x_j | x_{p(j)})}{xi[j] = E(x[j] | x[p(j)])}
 where \eqn{x_j}{x[j]} are components of the response vector and \eqn{p(j)}
@@ -306,6 +306,7 @@ R package \code{aster2} (Aster Models), version 0.3.
 Geyer, C. J., Wagenius, S., and Shaw, R. G. (2007)
 Aster models for life history analysis.
 \emph{Biometrika}, \bold{94}, 415--426.
+\doi{10.1093/biomet/asm030}.
 }
 \examples{
 ### see package vignette for explanation ###

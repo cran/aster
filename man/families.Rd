@@ -87,7 +87,7 @@ Currently implemented families are
       of the cumulant function has the value
       \deqn{\mu = \alpha \frac{1 - p}{p}}{mu = alpha (1 - p) / p}
       and the second derivative has the value
-      \deqn{\alpha \frac{1 - p}{p^2}.}{mu = alpha (1 - p) / p^2}.}
+      \deqn{\alpha \frac{1 - p}{p^2}.}{alpha (1 - p) / p^2.}}
     \item{\code{"truncated.negative.binomial"}}{Negative binomial conditioned
       on being strictly greater than \eqn{k}, specified by
       the argument \code{truncation}.

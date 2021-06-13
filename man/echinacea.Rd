@@ -7,7 +7,7 @@
   Data on life history traits for the narrow-leaved purple coneflower
   \emph{Echinacea angustifolia}
 }
-\usage{echinacea}
+\usage{data(echinacea)}
 \format{
   A data frame with records for 570 plants observed over three years.
    \describe{
@@ -28,7 +28,15 @@
 }
 \source{
 Stuart Wagenius,
-\url{http://www.chicagobotanic.org/research/staff/wagenius}
+\url{https://www.chicagobotanic.org/research/staff/wagenius}
+}
+\references{
+These data are analyzed in the following.
+
+Geyer, C. J., Wagenius, S., and Shaw, R. G. (2007)
+Aster Models for Life History Analysis.
+\emph{Biometrika}, \bold{94}, 415--426.
+\doi{10.1093/biomet/asm030}.
 }
 \examples{
 library(aster)

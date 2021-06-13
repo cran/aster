@@ -1,5 +1,6 @@
 
 library(aster)
+library(trust)
 
 data(radish)
 

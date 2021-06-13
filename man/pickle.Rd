@@ -161,6 +161,7 @@ which is approximate observed information because
 }
 \examples{
 data(radish)
+library(trust)
 
 pred <- c(0,1,2)
 fam <- c(1,3,2)

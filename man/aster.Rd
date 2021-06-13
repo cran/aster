@@ -32,8 +32,8 @@ aster(x, \dots)
     random vectors.  See details below for further requirements.
 
     \code{aster.formula} constructs such an \code{x} from the response
-    in its formula.  Hence data for \code{aster.formula} must have
-    \code{nind * nnode} rows.}
+    in its formula.  Hence data for \code{aster.formula} must be a
+    vector of length \code{nind * nnode}.}
 
   \item{root}{an object of the same shape as \code{x}, the root data.
     For \code{aster.default} an \code{nind} by \code{nnode} matrix,
@@ -139,7 +139,7 @@ aster(x, \dots)
 }
 \details{
 The vector \code{pred} must satisfy \code{all(pred < seq(along = pred))},
-that is, each predecessor must precede in the order given in pred.
+that is, each predecessor must precede in the order given in \code{pred}.
 The vector \code{pred} defines a function \eqn{p}.
 
 The joint distribution of the data matrix \code{x} is a product of conditionals
@@ -211,8 +211,10 @@ and \code{as.numeric(root)}.
 
 The standard way to do this in R is to use the \code{\link{reshape}}
 function on a data frame in which the columns of the \code{x} matrix
-are variables in the data frame.  \code{reshape} automatically puts
+are variables in the data frame.  \code{\link{reshape}} automatically puts
 things in the right order and creates \code{varvar} and \code{idvar}.
+This is shown in the examples section below and in the package vignette
+titled "Aster Package Tutorial".
 }
 \section{NA Values}{
 It was almost always wrong for aster model data to have \code{NA} values.
@@ -269,17 +271,25 @@ with what they should be, perhaps zero values) \dQuote{by hand}.
   \item{terms}{the \code{\link{terms}} object used.}
   \item{data}{the \code{data argument}.}
 }
+\section{Directions of Recession}{Even if the result of this function
+has component \code{converges} equal to \code{TRUE}, the result will be
+nonsense if there are one or more directions of recession.  These are
+not detected by this function, but rather by the \code{summary} function
+applied to the result of this function,
+for which see \code{\link{summary.aster}}.
+}
 \references{
 Geyer, C. J., Wagenius, S., and Shaw, R. G. (2007)
 Aster Models for Life History Analysis.
 \emph{Biometrika}, \bold{94}, 415--426.
+\doi{10.1093/biomet/asm030}.
 
 Shaw, R. G., Geyer, C. J., Wagenius, S., Hangelbroek, H. H., and
-    Etterson, J. R. (2007)
+    Etterson, J. R. (2008)
 Unifying Life History Analysis for Inference of Fitness
     and population growth.
 \emph{American Naturalist}, \bold{172}, E35--E47.
-(e-paper \url{http://www.jstor.org/stable/10.1086/588063})
+\doi{10.1086/588063}.
 }
 \seealso{
 \code{\link{anova.aster}},

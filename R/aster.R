@@ -311,8 +311,20 @@ aster.formula <- function(formula, pred, fam, varvar, idvar, root,
     modmat <- array(as.numeric(modmat), c(nind, nnode, ncoef))
     dimnames(modmat) <- list(idlab, varlab, coeflab)
 
-    if (missing(parm))
+    if (missing(parm)) {
         parm <- rep(0, ncoef)
+    } else if (length(parm) != ncoef) {
+        # parm may have wrong length because it comes from
+        # previous aster fit where some predictors were dropped
+        # fix that if possible
+        if (is.null(names(parm)) || (! all(names(parm) %in% coeflab)))
+            stop("parm wrong length, not dimension 2 of modmat")
+        parm.new <- rep(0, length(coeflab))
+        names(parm.new) <- coeflab
+        parm.new[names(parm)] <- parm
+        parm <- parm.new
+        # message("fixed parm to match modmat being handed to aster.default")
+    }
     if (missing(fscale))
         fscale <- nind
 
@@ -343,10 +355,12 @@ summary.aster <- function(object, info = c("expected", "observed"),
     fred <- eigen(infomat, symmetric = TRUE)
     sally <- fred$values < max(fred$values) * info.tol
     if (any(sally)) {
-        cat("apparent null eigenvectors of information matrix\n")
-        cat("directions of recession or constancy of log likelihood\n")
-        print(zapsmall(fred$vectors[ , sally]))
-        stop("cannot compute standard errors")
+        dor <- zapsmall(fred$vectors[ , sally, drop = FALSE])
+        rownames(dor) <- names(object$coefficients)
+        foo <- errorCondition(
+            "cannot compute standard errors, apparent directions of recession",
+            dor = dor, class = "dor_error")
+        stop(foo)
     }
 
     foo <- object$coefficients

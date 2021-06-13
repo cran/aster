@@ -1,5 +1,6 @@
 
 library(aster)
+library(trust)
 
 options(digits=4) # avoid rounding differences
 

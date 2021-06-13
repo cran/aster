@@ -203,4 +203,29 @@
  1.0-2  Added dontrun to help for asterOrReaster method of R generic
         function anova (because CRAN computers are slow)
 
+ 1.0-3  Many changes to tests to make for no blather with R-3.6.0
+        mostly due to changes in R function sample in R core, but
+        also maybe partly to previous changes in 1.0 ???
+
+ 1.1    summary.aster no longer prints putative directions of recession
+        but rather returns such as dor attribute of error object
+
+        new dataset foobar has built-in directions of recession
+
+        R package trust now in Imports rather than Depends so not
+        in search path after library("aster")
+
+        Now requires R-3.6.0 to get R function base::errorCondition
+
+        Fixed bug in R function aster where using parm = aout$coefficients
+        where aout is result from previous invocation of R function aster
+        gives an error is aout$dropped is not NULL.  Before this fix the
+        user had to put in zeros for those dropped coefficients, but where?
+        A horrible guessing game.  Now we recognize coefficients based on
+        names(aout$coefficients).
+
+ 1.1-1  Fixed bug (?) in reaster to make it try harder to get fixed effect
+        fit (if at first you don't succeed, try, try again).
+
+ 1.1-2  Added deriv argument to penmlogl
 

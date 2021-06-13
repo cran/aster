@@ -5,8 +5,8 @@
 newpickle(alphaceesigma, fixed, random, obj, y, origin, zwz, deriv = 0)
 }
 \note{
-  Not intended for use by naive users.  Use \code{\link{reaster}},
-  which calls them.
+  Not intended for use by naive users.  Use \code{\link{reaster}}.
+  Actually no longer used by other functions in this package.
 }
 \description{
 Evaluates the objective function for approximate maximum likelihood for
