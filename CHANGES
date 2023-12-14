@@ -229,3 +229,5 @@
 
  1.1-2  Added deriv argument to penmlogl
 
+ 1.1-3   Fixed security bug complained about by clang.
+

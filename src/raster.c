@@ -19,7 +19,7 @@ void die(const char *format, ...)
     vsnprintf(buf, BUFSIZE, format, arg);
     va_end(arg);
     buf[BUFSIZE - 1] = '\0';
-    error(buf);
+    error("%s", buf);
 }
 
 #ifdef ASTER_OLD_STUFF

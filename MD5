@@ -1,5 +1,5 @@
-5583ed9a808fe3dd84fd90aa1cff2bf8 *CHANGES
-95a7b3963ce5d4fbebfbd64e10ad6aa7 *DESCRIPTION
+b8c160a045166c32172bce5ba825e859 *CHANGES
+9cd9e1afc6cec30f9597dadcdad2a5fa *DESCRIPTION
 c230e88c05dd64025cd43fbc9bec25ea *LICENSE
 ea72658647a219a85e051ffa3cbd4911 *NAMESPACE
 38807a2c44c52bb4e1f5d203a6bee2c5 *R/anova.R
@@ -19,8 +19,8 @@ b9dc730d7a4f4f7894ab0c87a7814e21 *R/reaster.R
 cfcb93fd4f1ac29694af89ce55d913e5 *R/rktnb.R
 ed7d0cf34001ef6a40a39a144df62c32 *R/rktp.R
 2fbac4ffb544f37e41a5a0908d9256db *R/transform.R
-c9df895d37193a5d387f37804cf0c797 *build/partial.rdb
-aa92998918267033b1972f122d47b72e *build/vignette.rds
+8faf250d78a120ba4c7ea2186efddd24 *build/partial.rdb
+d3f0df2cbd91dc58ad88653799aa5f34 *build/vignette.rds
 a62f3ae2f420dabbfaa4e39b0b945439 *data/aphid.rda
 8aed215c0c6ec8cf2d9e696fba2c2f3d *data/chamae.rda
 88c0534bd2eec7ef20d253858b37c356 *data/chamae2.rda
@@ -36,15 +36,15 @@ c8ff1f54bdf4451cf22610ccf18db743 *inst/doc/design.tex
 7af43b1bc173c3b52c447f470267e76a *inst/doc/ktp.pdf
 220bdb1a6c6061d75b613640a096e502 *inst/doc/ktp.tex
 cd63e31053914aa4b8b1dbf2afae40c4 *inst/doc/linkingTo.Rnw
-e2ff58bbec1f44e83b3846ee6391c102 *inst/doc/linkingTo.pdf
+55dcea2616bdb3219263ae2eaff27ef2 *inst/doc/linkingTo.pdf
 eca4b55ae564c4643c00d01513ad6b94 *inst/doc/re.Rnw
-db848bed00a873e612fe8255a7760a54 *inst/doc/re.pdf
+65caedce7822e53186940362292c28d4 *inst/doc/re.pdf
 14e4eca413e04b6aa19c2e6b17acaf4d *inst/doc/trunc.R
 0b069ad524cddb2140694548a6e8e241 *inst/doc/trunc.Rnw
-9a687492c88842cfa039fc4a9bda5a97 *inst/doc/trunc.pdf
+2753fcdc836ab13c132a644402e9677a *inst/doc/trunc.pdf
 7d1de28e3ad7eb1cbc721531aa52e446 *inst/doc/tutor.R
 2db357c1d0b5d84ecb995d19cc4293d7 *inst/doc/tutor.Rnw
-6f3183f2a216b0cef744cd222743fe8f *inst/doc/tutor.pdf
+41ed3e385c7503ab9c4009cb57648133 *inst/doc/tutor.pdf
 565b68de4247eb4ff74d309fe462011e *inst/include/mlogl-export.h
 402caf69966e76a5f682a15df370eb28 *man/anova.asterOrReaster.Rd
 15b9ac4a974091daff7d1962c62e6311 *man/aphid.Rd
@@ -95,7 +95,7 @@ a86b002540ca39787d53d9727491c378 *src/init.c
 f57e1544b237d99cec89ae2b596a91c4 *src/matops.c
 d41f2d11ff9b58d91d4e84ea357eaec7 *src/mlogl.c
 ef540da82a8004bfb882749e4c34cacd *src/mlogl.h
-58b08e6a3a2c77242df4ebea430dab2c *src/raster.c
+1ade6525dad7b6a6d468a9129facd964 *src/raster.c
 e310d029fcfc5311a5b7d1af8a16ba54 *src/raster.h
 72b79fd6b8b0da678af0cacfc47d20d2 *src/rraster.h
 6860cccca4cc389500d8d651da102635 *src/validtrips.c
