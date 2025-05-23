@@ -1,7 +1,7 @@
 
-R version 3.6.0 (2019-04-26) -- "Planting of a Tree"
-Copyright (C) 2019 The R Foundation for Statistical Computing
-Platform: x86_64-pc-linux-gnu (64-bit)
+R version 4.5.0 (2025-04-11) -- "How About a Twenty-Six"
+Copyright (C) 2025 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -17,7 +17,6 @@ Type 'q()' to quit R.
 
 > 
 >  library(aster)
-Loading required package: trust
 >  library(numDeriv)
 > 
 >  set.seed(42)
@@ -128,7 +127,7 @@ Loading required package: trust
 >  nout1 <- nlm(objfun, beta, fscale = nind)
 Warning message:
 In nlm(objfun, beta, fscale = nind) :
-  NA/Inf replaced by maximum positive value
+  Inf replaced by maximum positive value
 >  nout <- nlm(objfun, nout1$estimate, fscale = nind)
 >  all.equal(nout1$minimum, nout$minimum)
 [1] TRUE
@@ -178,4 +177,4 @@ In nlm(objfun, beta, fscale = nind) :
 > 
 > proc.time()
    user  system elapsed 
-  0.276   0.032   0.299 
+  0.308   0.022   0.317 

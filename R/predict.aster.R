@@ -51,8 +51,9 @@ predict.aster <- function(object, x, root, modmat, amat,
         if (is.array(amat)) {
             if (length(dim(amat)) != 3)
                 stop("amat is array but not 3-dimensional")
-            if (! all(dim(amat)[1:2] == dim(modmat)[1:2]))
+            if (! all(dim(amat)[1:2] == dim(modmat)[1:2])) {
                 stop("amat is array but dimensions 1 and 2 do not match modmat")
+            }
         } else {
             if (is.matrix(amat)) {
                 if (dim(amat)[1] != prod(dim(modmat)[1:2]))

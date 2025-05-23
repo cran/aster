@@ -231,3 +231,25 @@
 
  1.1-3   Fixed security bug complained about by clang.
 
+ 1.2    Added methods of R generic function vcov for objects of classes
+        aster and reaster
+
+ 1.2-1  Fixed bugs in vcov.reaster
+
+ 1.2-2  Fixed bug in non-exported function is.zero that does the test
+        for whether variance component is estimated to be exactly zero
+
+ 1.2-4  Fixed bug in vcov.reaster
+
+ 1.2-5  C language objective function for R function reaster
+
+ 1.3    New R function objfun, objective function for reaster problems
+
+        New implementation of vcov.reaster based on numerical differentiation
+            of R function objfun
+
+ 1.3-2  add argument accurate = FALSE to R function reaster (deleted later)
+
+ 1.3-3  first time objfun.factory really works
+
+ 1.3-4  first time vcov.reaster really works

@@ -22,6 +22,18 @@ void die(const char *format, ...)
     error("%s", buf);
 }
 
+void my_warn(const char *format, ...)
+{
+    char buf[BUFSIZE];
+    va_list arg;
+
+    va_start(arg, format);
+    vsnprintf(buf, BUFSIZE, format, arg);
+    va_end(arg);
+    buf[BUFSIZE - 1] = '\0';
+    warning("%s", buf);
+}
+
 #ifdef ASTER_OLD_STUFF
 SEXP aster_families(void)
 {
@@ -107,6 +119,11 @@ double my_rnorm(double mu, double sigma)
 double my_nan(void)
 {
     return R_NaN;
+}
+
+double my_is_finite(double foo)
+{
+    return R_finite(foo);
 }
 
 double my_is_na_or_nan(double foo)

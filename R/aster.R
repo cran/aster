@@ -406,6 +406,16 @@ print.summary.aster <-
     return(invisible(x))
 }
 
+vcov.aster <- function(object, info = c("expected", "observed"), ...)
+{
+    stopifnot(inherits(object, "aster"))
+    info <- match.arg(info)
+    if (info == "expected") result <- solve(object$fisher)
+    if (info == "observed") result <- solve(object$hessian)
+    rownames(result) <- colnames(result) <- names(object$coefficients)
+    return(result)
+}
+
 anova.aster <- function(object, ...)
 {
     dotargs <- list(...)

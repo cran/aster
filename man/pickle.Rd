@@ -32,7 +32,7 @@ the generalized linear mixed models literature.
     allowed; the vector of variance components is \code{sigma^2}.}
   \item{parm}{starting value for inner optimization.  Ignored if
     \code{cache$parm} exists, in which case the latter is used.
-    For \code{pickle} and \code{pickle1}, length
+    For \code{pickle} and \code{pickle1} and \code{makezwz}, length
     is number of effects (fixed and random).
     For \code{pickle2}, length
     is number of random effects.   For all, random effects are rescaled,
@@ -66,7 +66,7 @@ the generalized linear mixed models literature.
   \item{deriv}{Number of derivatives wanted.  For \code{pickle1}
     or \code{pickle2}, either zero or one.  For \code{pickle3},
     zero, one or two.}
-  \item{\dots}{additional arguments passed to \code{\link{trust}}, which
+  \item{\dots}{additional arguments passed to \code{\link[trust]{trust}}, which
     is used to maximize the penalized log likelihood.}
 }
 \details{
@@ -137,12 +137,12 @@ no derivatives can be computed because no derivatives of the function
 The general idea is the one uses \code{pickle} with a no-derivative
 optimizer, such as the \code{"Nelder-Mead"} method of the \code{optim}
 function to get a crude estimate of \eqn{\hat{\sigma}}{sigmahat}.
-Then one uses \code{\link{trust}} with objective
+Then one uses \code{\link[trust]{trust}} with objective
 function \code{\link{penmlogl}} to estimate the corresponding
 \eqn{\hat{\alpha}}{alphahat} and \eqn{\hat{c}}{chat} (example below).
 Then one use \code{makezwz} to produce the corresponding \code{zwz}
 (example below).
-These estimates can be improved using \code{\link{trust}} with objective
+These estimates can be improved using \code{\link[trust]{trust}} with objective
 function \code{pickle3} using this \code{zwz} (example below), and this
 step may be iterated until convergence.
 Finally, \code{\link{optim}} is used with objective function \code{pickle2}

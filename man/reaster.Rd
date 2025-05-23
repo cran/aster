@@ -82,7 +82,6 @@ reaster(fixed, random, pred, fam, varvar, idvar, root,
   \item{response}{if not missing, a vector specifying the response.  Length
     is the row dimension of all model matrices.  If missing, the response
     is determined by the response in the formula \code{fixed}.}
-
 }
 \details{
   See the help page for the function \code{\link{aster}} for specification
@@ -190,7 +189,7 @@ Geyer, C. J., Ridley, C. E., Latta, R. G., Etterson, J. R.,
     and Shaw, R. G. (2012)
 Aster Models with Random Effects via Penalized Likelihood.
 Technical Report 692, School of Statistics, University of Minnesota.
-\url{http://purl.umn.edu/135870}.
+\url{https://purl.umn.edu/135870}.
 
 Geyer, C. J., Ridley, C. E., Latta, R. G., Etterson, J. R.,
     and Shaw, R. G. (2013)
@@ -208,7 +207,7 @@ rout <- reaster(resp ~ varb + fit : (Site * Region),
     list(block = ~ 0 + fit : Block, pop = ~ 0 + fit : Pop),
     pred, fam, varb, id, root, data = radish)
 summary(rout)
-summary(rout, stand = FALSE, random = TRUE)
+summary(rout, stand = FALSE)
 }
 \keyword{models}
 \keyword{regression}

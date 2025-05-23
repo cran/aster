@@ -49,12 +49,12 @@ component of the response vector was.
 }
 \source{
 Charles J. Geyer
-\url{http://www.stat.umn.edu/geyer/8931aster/foobar.rda}
+\url{https://www.stat.umn.edu/geyer/8931aster/foobar.rda}
 }
 \references{
 These data are analyzed in deck 9 of the slides for a special topics
 course on aster models taught fall semester 2018
-(\url{http://www.stat.umn.edu/geyer/8931aster/slides/s9.pdf}).
+(\url{https://www.stat.umn.edu/geyer/8931aster/slides/s9.pdf}).
 }
 \examples{
 data(foobar)

@@ -1,4 +1,7 @@
 ### implements test of (35) of the design doc
+### No.  It does not.  This test, published in the Annals of Applied Statistics
+### paper is off by a factor of 2.  See the document devel/zero/foobar.Rnw
+### in the git repo
 
 is.zero <- function(alphabeenu, fixed, random, obj, y, origin, zwz,
     tolerance = sqrt(.Machine$double.eps))
@@ -65,7 +68,7 @@ is.zero <- function(alphabeenu, fixed, random, obj, y, origin, zwz,
         stop("apparently negative components of nu, impossible")
     nu[nu < tolerance] <- 0
 
-    modmat <- cbind(fixed, Reduce(cbind, random))
+    modmat <- Reduce(cbind, random, init = fixed)
     ### note: despite documentation of the mlogl function, it actually
     ### works to have modmat a matrix rather than a 3-way array
     mout <- mlogl(c(alpha, bee), obj$pred, obj$fam, y, obj$root, modmat,
@@ -88,7 +91,7 @@ is.zero <- function(alphabeenu, fixed, random, obj, y, origin, zwz,
     result <- rep(FALSE, length(nu))
     for (k in seq(along = nu))
         if (nu[k] == 0)
-            result[k] <- pn[k] >= sum(pb[idx == k]^2) / 4
+            result[k] <- pn[k] >= sum(pb[idx == k]^2) / 2 # was divide by 4
     return(result)
 }
 

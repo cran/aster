@@ -30,6 +30,7 @@ export(pickle3)
 export(makezwz)
 export(newpickle)
 export(quickle)
+export(objfun.factory)
 
 import(trust)
 
@@ -44,6 +45,8 @@ S3method(predict, aster)
 S3method(predict, aster.formula)
 S3method(summary, aster)
 S3method(summary, reaster)
+S3method(vcov, aster)
+S3method(vcov, reaster)
 
 S3method(reaster, default)
 S3method(reaster, formula)
@@ -59,3 +62,4 @@ importFrom(stats, optim)
 importFrom(stats, pchisq)
 importFrom(stats, pnorm)
 importFrom(stats, printCoefmat)
+

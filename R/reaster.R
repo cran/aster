@@ -227,9 +227,26 @@ reaster.default <- function(fixed, random, pred, fam, varvar, idvar, root,
         names(c.mle) <- names(b.mle)
     }
 
+    # fix up estimated zeros
+    # following code used to be in summary.reaster
+    # but does not belong there
     if (missing(origin)) origin <- NULL
+    nu.mle <- sigma.mle^2
+    if (is.null(origin)) {
+        iz <- is.zero(c(alpha.mle, b.mle, nu.mle), fixed, random,
+            obj = aout, y, zwz = zwz.mle)
+    } else {
+        iz <- is.zero(c(alpha.mle, b.mle, nu.mle), fixed, random,
+            obj = aout, y, origin = origin, zwz = zwz.mle)
+    }
+    nu.mle[iz] <- 0
+    sigma.mle[iz] <- 0
+    izbee <- rep(iz, times = nrand)
+    b.mle[izbee] <- 0
+    c.mle[izbee] <- 0
+
     result <- list(obj = aout, fixed = fixed, random = random,
-        dropped = dropped, sigma = sigma.mle, nu = sigma.mle^2,
+        dropped = dropped, sigma = sigma.mle, nu = nu.mle,
         c = c.mle, b = b.mle, alpha = alpha.mle, zwz = zwz.mle,
         response = response, origin = origin,
         iterations = save.iter, counts = oout$counts,
@@ -321,6 +338,7 @@ summary.reaster <- function(object, standard.deviation = TRUE, ...)
         random <- list(random)
     nfix <- ncol(fixed)
     nrand <- sapply(random, ncol)
+    ########## REVIEWED DOWN TO HERE ##########
 
     obj <- object$obj
     y <- matrix(object$response, nrow = nrow(obj$x), ncol = ncol(obj$x))
@@ -361,25 +379,26 @@ summary.reaster <- function(object, standard.deviation = TRUE, ...)
                 obj, y, origin = origin, zwz = subzwz, deriv = 2)
         }
         subfish <- qout$hessian
-        eout <- eigen(subfish, symmetric = TRUE)
-        goodfish <- min(eout$values) > 0
-        if (goodfish) {
-            # was buggy.  Have to use eigen to invert if use eigen to
-            # check if invertible !!!!!!!!
-            subfish.inv <- eout$vectors %*% diag(1 / eout$values) %*%
-                t(eout$vectors)
-            se.subparm <- sqrt(diag(subfish.inv))
-        } else {
-            warning(paste("estimated Fisher information matrix not positive",
-               "definite, making all standard errors infinite"))
-            se.subparm <- rep(Inf, nrow(subfish))
-        }
-        se.parm <- rep(NA_real_, length(has.se))
-        se.parm[has.se] <- se.subparm
-        se.alpha <- se.parm[seq(along = alpha)]
-        se.nu <- se.parm[- seq(along = alpha)]
-        se.sigma <- se.nu / (2 * sigma)
     }
+    eout <- eigen(subfish, symmetric = TRUE)
+    goodfish <- min(eout$values) > 0
+    if (goodfish) {
+        # was buggy.  Have to use eigen to invert if use eigen to
+        # check if invertible !!!!!!!!
+        subfish.inv <- eout$vectors %*% diag(1 / eout$values) %*%
+            t(eout$vectors)
+    } else {
+        warning(paste("estimated Fisher information matrix not positive",
+            "definite, making all standard errors infinite"))
+        subfish.inv <- matrix(NaN, nrow = nrow(subfish), ncol = ncol(subfish))
+        diag(subfish.inv) <- Inf
+    }
+    se.subparm <- sqrt(diag(subfish.inv))
+    se.parm <- rep(NA_real_, length(has.se))
+    se.parm[has.se] <- se.subparm
+    se.alpha <- se.parm[seq(along = alpha)]
+    se.nu <- se.parm[- seq(along = alpha)]
+    se.sigma <- se.nu / (2 * sigma)
 
     foo <- alpha
     foo <- cbind(foo, se.alpha)
@@ -410,7 +429,8 @@ summary.reaster <- function(object, standard.deviation = TRUE, ...)
 
     return(structure(list(alpha = foo, sigma = bar, nu = baz,
         object = object, standard.deviation = standard.deviation,
-        fisher = subfish), class = "summary.reaster"))
+        fisher = subfish, vcov = subfish.inv),
+        class = "summary.reaster"))
 }
 
 print.summary.reaster <-
@@ -444,6 +464,162 @@ print.summary.reaster <-
     }
 
     return(invisible(x))
+}
+
+vcov.reaster <- function(object, standard.deviation = TRUE,
+    re.too = FALSE, complete = TRUE, ...)
+{
+    stopifnot(inherits(object, "reaster"))
+    stopifnot(is.logical(standard.deviation))
+    stopifnot(length(standard.deviation) == 1)
+    stopifnot(is.logical(re.too))
+    stopifnot(length(re.too) == 1)
+    stopifnot(is.logical(complete))
+    stopifnot(length(complete) == 1)
+
+    # should not have to remake and re-evaluate objfun
+    # but current code is not using objfun earlier
+    objfun <- objfun.factory(object$fixed, object$random,
+        object$response, object$obj$pred, object$obj$fam,
+        as.vector(object$obj$root), object$zwz,
+        standard.deviation = standard.deviation, deriv = 2)
+    theta.hat <- if (standard.deviation) {
+        c(object$alpha, object$c, object$sigma)
+    } else {
+        c(object$alpha, object$b, object$nu)
+    }
+    oout <- objfun(theta.hat)
+
+    is.alpha <- seq_along(theta.hat) <= length(object$alpha)
+    is.nu_or_sigma <-
+        seq_along(theta.hat) > length(object$alpha) + length(object$b)
+    is.bee_or_cee <- (! (is.alpha | is.nu_or_sigma))
+    is.zero.nu_or_sigma <- object$nu == 0.0
+    if (is.matrix(object$random))
+       object$random <- list(object$random)
+    nrand <- sapply(object$random, ncol)
+    is.zero.bee_or_cee <- rep(is.zero.nu_or_sigma, times = nrand)
+    is.zero <- c(rep(FALSE, sum(is.alpha)),
+        is.zero.bee_or_cee, is.zero.nu_or_sigma)
+
+    pW <- oout$hessian
+    is.nonzero.bee <- is.bee_or_cee & (! is.zero)
+    is.nonzero.psi <- is.alpha | ((! is.zero) & is.nu_or_sigma)
+    pW_bee_bee <- pW[is.nonzero.bee, is.nonzero.bee]
+    pW_psi_psi <- pW[is.nonzero.psi, is.nonzero.psi]
+    pW_psi_bee <- pW[is.nonzero.psi, is.nonzero.bee]
+    pW_bee_bee_inv <- .Call(C_pos_def_mat_inv, pW_bee_bee)
+    if (inherits(pW_bee_bee_inv, "try-error"))
+        stop("Hessian of pW not invertible; no standard errors")
+    vcov_psi_psi_inv <- pW_psi_psi -
+        pW_psi_bee %*% pW_bee_bee_inv %*% t(pW_psi_bee)
+    vcov_psi_psi_inv <- (vcov_psi_psi_inv + t(vcov_psi_psi_inv)) / 2.0
+    vcov_psi_psi <- .Call(C_pos_def_mat_inv, vcov_psi_psi_inv)
+    if (inherits(vcov_psi_psi, "try-error"))
+        stop("Hessian of qW not invertible; no standard errors")
+
+    # Now vcov_psi_psi is the asymptotic variance-covariance matrix
+    # of the elements of (alpha, nu) or (alpha, sigma) as the case
+    # may be (depending on the value of argument standard.deviation)
+    # that are not estimated to be zero (because those estimated to
+    # be zero are not asymptotic normal)
+
+    # names
+    names.alpha <- names(object$alpha)
+    if (is.null(names.alpha))
+        names.alpha <- paste0("alpha", seq_along(object$alpha))
+    names.bee <- names(object$b)
+    if (is.null(names.bee))
+        names.bee <- paste0(ifelse(standard.deviation, "c", "b"),
+            seq_along(object$b))
+    names.nu <- names(object$nu)
+    if (is.null(names.nu))
+        names.nu <- paste0(ifelse(standard.deviation, "sigma", "nu"),
+            seq_along(object$nu))
+
+    # still have to deal with arguments re.too and complete
+
+    if ((! re.too) && ((! complete) || (! any(is.zero)))) {
+        my.names.nu <- names.nu[! is.zero.nu_or_sigma]
+        my.names <- c(names.alpha, my.names.nu)
+        stopifnot(length(my.names) == nrow(vcov_psi_psi))
+        stopifnot(length(my.names) == ncol(vcov_psi_psi))
+        dimnames(vcov_psi_psi) <- list(my.names, my.names)
+        attr(vcov_psi_psi, "is.alpha") <-
+            is.alpha[(! is.bee_or_cee) & (! is.zero)]
+        my.is <- is.nu_or_sigma[! is.bee_or_cee]
+        my.zero <- is.zero[! is.bee_or_cee]
+        if (standard.deviation) {
+            attr(vcov_psi_psi, "is.sigma") <- my.is[! my.zero]
+        } else {
+            attr(vcov_psi_psi, "is.nu") <- my.is[! my.zero]
+        }
+        return(vcov_psi_psi)
+    }
+
+    if ((! re.too)) {
+        # have some components to fill in with zeros
+        my.names <- c(names.alpha, names.nu)
+        result <- matrix(0.0, length(my.names), length(my.names))
+        my.is.nonzero <- is.nonzero.psi[!is.bee_or_cee]
+        dimnames(result) <- list(my.names, my.names)
+        result[my.is.nonzero, my.is.nonzero] <- vcov_psi_psi
+        attr(result, "is.alpha") <- is.alpha[! is.bee_or_cee]
+        if (standard.deviation) {
+            attr(result, "is.sigma") <- is.nu_or_sigma[! is.bee_or_cee]
+        } else {
+            attr(result, "is.nu") <- is.nu_or_sigma[! is.bee_or_cee]
+        }
+        return(result)
+    }
+
+    # now have only re.too == TRUE case (with either value of complete)
+
+    # have to assemble matrix V that is equation (4.21) in the Aster Theory book
+    # row dimension is total number of variables
+    # column dimension is total number of components of alpha and nu
+    #     that are not estimated to be equal to zero
+    # all rows of vee for variables (alpha, b, and nu) estimated to be
+    #     zero are all zeros
+    b_star_psi <- (- pW_bee_bee_inv %*% t(pW_psi_bee))
+    vee <- matrix(0.0, nrow = length(is.nonzero.psi),
+        ncol = sum(is.nonzero.psi))
+    vee[is.nonzero.psi, ] <- diag(sum(is.nonzero.psi))
+    vee[is.nonzero.bee, ] <- b_star_psi
+
+    if ((! complete) || (! any(is.zero))) {
+        my.names <- c(names.alpha, names.bee, names.nu)
+        my.names <- my.names[! is.zero]
+        my.vee <- vee[! is.zero, ]
+        result <- my.vee %*% vcov_psi_psi %*% t(my.vee)
+        dimnames(result) <- list(my.names, my.names)
+        attr(result, "is.alpha") <- is.alpha[! is.zero]
+        if (standard.deviation) {
+            attr(result, "is.cee") <- is.bee_or_cee[! is.zero]
+            attr(result, "is.sigma") <- is.nu_or_sigma[! is.zero]
+        } else {
+            attr(result, "is.bee") <- is.bee_or_cee[! is.zero]
+            attr(result, "is.nu") <- is.nu_or_sigma[! is.zero]
+        }
+        return(result)
+    }
+
+    # now left on re.too = TRUE and complete = TRUE
+
+    my.vee <- diag(! is.zero) %*% vee
+    result <- my.vee %*% vcov_psi_psi %*% t(my.vee)
+    my.names <- c(names.alpha, names.bee, names.nu)
+    dimnames(result) <- list(my.names, my.names)
+    attr(result, "is.alpha") <- is.alpha
+    if (standard.deviation) {
+        attr(result, "is.cee") <- is.bee_or_cee
+        attr(result, "is.sigma") <- is.nu_or_sigma
+    } else {
+        attr(result, "is.bee") <- is.bee_or_cee
+        attr(result, "is.nu") <- is.nu_or_sigma
+    }
+    return(result)
+
 }
 
 anova.reaster <- function(object, ...)
@@ -554,6 +730,6 @@ anova.reasterlist <- function(object, ...)
         lower.tail = FALSE)
     table <- cbind(table, "P-value" = pval)
     structure(table, heading = c(title, topnote),
-              class = c("anova", "data.frame"))
+        class = c("anova", "data.frame"))
 }
 

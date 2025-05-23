@@ -1,12 +1,16 @@
 \name{radish}
 \docType{data}
 \alias{radish}
+\alias{radish2}
 \title{Life History Data on Raphanus sativus}
 \description{
   Data on life history traits for the 
   invasive California wild radish \emph{Raphanus sativus}
 }
-\usage{data(radish)}
+\usage{
+  data(radish)
+  data(radish2)
+}
 \format{
   A data frame with records for 286 plants.
   Data are already in \dQuote{long} format; no need to reshape.
@@ -51,6 +55,10 @@ of the \dQuote{original} variables are
 }
 Graphical model is
 \deqn{1 \longrightarrow \mbox{Flowering} \longrightarrow \mbox{Flowers} \longrightarrow \mbox{Fruits}}{1 -> Flowering -> Flowers -> Fruits.}
+
+Dataset \code{radish2} has exactly the same structure but the estimated value
+of the \code{pop} variance component is zero.  These data were simulated by
+R function \code{\link{raster}} in this package.
 }
 \source{
 Caroline Ridley

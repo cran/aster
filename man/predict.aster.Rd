@@ -297,7 +297,7 @@ call \code{predict.aster.formula} in this case).
 Geyer, C. J. (2010)
 A Philosophical Look at Aster Models.
 Technical Report No. 676.  School of Statistics, University of Minnesota.
-\url{http://purl.umn.edu/57163}.
+\url{https://purl.umn.edu/57163}.
 
 Geyer, C.~J. (2017).
 R package \code{aster2} (Aster Models), version 0.3.

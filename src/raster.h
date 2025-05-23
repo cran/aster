@@ -11,6 +11,8 @@ void die(const char *format, ...);
 void die(const char *format, ...) __attribute__ ((__noreturn__));
 #endif /* __GNUC__ */
 
+void my_warn(const char *format, ...);
+
 double my_expm1(double x);
 
 double my_log1p(double x);
@@ -36,6 +38,8 @@ double my_dnbinom(double x, double n, double p, int give_log);
 double my_rnorm(double mu, double sigma);
 
 double my_nan(void);
+
+double my_is_finite(double foo);
 
 double my_is_na_or_nan(double foo);
 

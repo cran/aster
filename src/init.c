@@ -13,6 +13,8 @@
 #include "rraster.h"
 #endif /* ASTER_OLD_STUFF */
 #include "mlogl.h"
+#include "objfun.h"
+#include "matops2.h"
 
 static R_NativePrimitiveArgType ast_fam_types[4] =
     {INTSXP, INTSXP, REALSXP, REALSXP};
@@ -145,6 +147,8 @@ static R_CallMethodDef callMethods[]  = {
 #ifdef ASTER_OLD_STUFF
     {"aster_families", (DL_FUNC) &aster_families, 0},
 #endif /* ASTER_OLD_STUFF */
+    {"objfun", (DL_FUNC) &objfun, 12},
+    {"pos_def_mat_inv", (DL_FUNC) &pos_def_mat_inv, 1},
     {NULL, NULL, 0}
 };
 

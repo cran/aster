@@ -66,14 +66,14 @@
 Geyer, C. J and Shaw, R. G. (2008)
 Supporting Data Analysis for a talk to be given at Evolution 2008.
 Technical Report No. 669.  School of Statistics, University of Minnesota.
-\url{http://hdl.handle.net/11299/56204}.
+\url{https://hdl.handle.net/11299/56204}.
 }
 \references{
 Geyer, C. J and Shaw, R. G. (2009)
 Hypothesis Tests and Confidence Intervals
     Involving Fitness Landscapes fit by Aster Models.
 Technical Report No. 671.  School of Statistics, University of Minnesota.
-\url{http://hdl.handle.net/11299/56219}.
+\url{https://hdl.handle.net/11299/56219}.
 }
 \examples{
 data(sim)
