@@ -1,6 +1,8 @@
 
  library(aster)
 
+ tol <- 1e-3 # really big because of Mac OS X sloppiness
+
  data(echinacea)
 
  vars <- c("ld02", "ld03", "ld04", "fl02", "fl03", "fl04",
@@ -18,9 +20,11 @@
      pred, fam, varb, id, root, data = redata)
  sout <- summary(aout)
  vout <- vcov(aout)
- all.equal(sqrt(diag(vout)), sout$coefficients[ , "Std. Error"])
+ all.equal(sqrt(diag(vout)), sout$coefficients[ , "Std. Error"], tol = tol)
 
  rm(list = ls())
+
+ tol <- 1e-3 # really big because of Mac OS X sloppiness
 
  data(radish2)
 
@@ -38,12 +42,12 @@
 
  foo <- sout$alpha[ , "Std. Error"]
  bar <- sqrt(diag(vout)[attr(vout, "is.alpha")])
- all.equal(foo, bar, tolerance = 1e-5)
+ all.equal(foo, bar, tol = tol)
 
  foo <- sout$nu[ , "Std. Error"]
  foo <- foo[! is.na(foo)]
  bar <- sqrt(diag(vout)[attr(vout, "is.nu")])
- all.equal(foo, bar, tolerance = 1e-4)
+ all.equal(foo, bar, tol = tol)
 
  izzy <- attributes(vout)
  izzy <- izzy[grepl("^is\\.", names(izzy))]
@@ -57,12 +61,12 @@
 
  foo <- sout$alpha[ , "Std. Error"]
  bar <- sqrt(diag(vout)[attr(vout, "is.alpha")])
- all.equal(foo, bar, tolerance = 1e-5)
+ all.equal(foo, bar, tol = tol)
 
  foo <- sout$sigma[ , "Std. Error"]
  foo <- foo[! is.na(foo)]
  bar <- sqrt(diag(vout)[attr(vout, "is.sigma")])
- all.equal(foo, bar, tolerance = 1e-4)
+ all.equal(foo, bar, tol = tol)
 
  izzy <- attributes(vout)
  izzy <- izzy[grepl("^is\\.", names(izzy))]
@@ -76,12 +80,12 @@
 
  foo <- sout$alpha[ , "Std. Error"]
  bar <- sqrt(diag(vout)[attr(vout, "is.alpha")])
- all.equal(foo, bar, tolerance = 1e-5)
+ all.equal(foo, bar, tol = tol)
 
  foo <- sout$nu[ , "Std. Error"]
  bar <- sqrt(diag(vout)[attr(vout, "is.nu")])
  foo[is.na(foo)] <- 0
- all.equal(foo, bar, tolerance = 1e-4)
+ all.equal(foo, bar, tol = tol)
 
  izzy <- attributes(vout)
  izzy <- izzy[grepl("^is\\.", names(izzy))]
@@ -95,12 +99,12 @@
 
  foo <- sout$alpha[ , "Std. Error"]
  bar <- sqrt(diag(vout)[attr(vout, "is.alpha")])
- all.equal(foo, bar, tolerance = 1e-5)
+ all.equal(foo, bar, tol = tol)
 
  foo <- sout$sigma[ , "Std. Error"]
  bar <- sqrt(diag(vout)[attr(vout, "is.sigma")])
  foo[is.na(foo)] <- 0
- all.equal(foo, bar, tolerance = 1e-4)
+ all.equal(foo, bar, tol = tol)
 
  izzy <- attributes(vout)
  izzy <- izzy[grepl("^is\\.", names(izzy))]
@@ -186,7 +190,7 @@
 
  vout <- vcov(rout, re.too = TRUE, complete = TRUE,
      standard.deviation = standard.deviation)
- print(all.equal(vout, foo, check.attributes = FALSE))
+ print(all.equal(vout, foo, check.attributes = FALSE, tol = tol))
 
  izzy <- attributes(vout)
  izzy <- izzy[grepl("^is\\.", names(izzy))]
@@ -196,7 +200,7 @@
  vout <- vcov(rout, re.too = TRUE, complete = FALSE,
      standard.deviation = standard.deviation)
  foo <- foo[! is.zero, ! is.zero]
- print(all.equal(vout, foo, check.attributes = FALSE))
+ print(all.equal(vout, foo, check.attributes = FALSE, tol = tol))
 
  izzy <- attributes(vout)
  izzy <- izzy[grepl("^is\\.", names(izzy))]

@@ -1,5 +1,5 @@
 f13d1807079e307eff84e50de15cc28d *CHANGES
-d6ca8b764ba2134319bdaf1ced98e796 *DESCRIPTION
+563d43bc107147e9113454dc76a28843 *DESCRIPTION
 c230e88c05dd64025cd43fbc9bec25ea *LICENSE
 8e04c4c8317b742ca0ead0ee8bf93ca5 *NAMESPACE
 38807a2c44c52bb4e1f5d203a6bee2c5 *R/anova.R
@@ -38,15 +38,15 @@ c8ff1f54bdf4451cf22610ccf18db743 *inst/doc/design.tex
 7af43b1bc173c3b52c447f470267e76a *inst/doc/ktp.pdf
 220bdb1a6c6061d75b613640a096e502 *inst/doc/ktp.tex
 cd63e31053914aa4b8b1dbf2afae40c4 *inst/doc/linkingTo.Rnw
-7a9af031981761cbc3196e949fe3b42e *inst/doc/linkingTo.pdf
+9d685e40faf41d9580b4c0cee58e3ae8 *inst/doc/linkingTo.pdf
 eca4b55ae564c4643c00d01513ad6b94 *inst/doc/re.Rnw
-366575743fcfbf06cb5bee2cdc76ca99 *inst/doc/re.pdf
+9211b7e4f95d4daeefebe0656ccc5bbd *inst/doc/re.pdf
 14e4eca413e04b6aa19c2e6b17acaf4d *inst/doc/trunc.R
 0b069ad524cddb2140694548a6e8e241 *inst/doc/trunc.Rnw
-482f6bc79515cc94a8987a1dd3abb3a3 *inst/doc/trunc.pdf
+4eb631a43a890bf6dabfe04b470df013 *inst/doc/trunc.pdf
 7d1de28e3ad7eb1cbc721531aa52e446 *inst/doc/tutor.R
 2db357c1d0b5d84ecb995d19cc4293d7 *inst/doc/tutor.Rnw
-a8ad46f243b3146c1d96b114ac7bd4ee *inst/doc/tutor.pdf
+56f8b0adf75cb1a494ead6ea19b47adb *inst/doc/tutor.pdf
 565b68de4247eb4ff74d309fe462011e *inst/include/mlogl-export.h
 402caf69966e76a5f682a15df370eb28 *man/anova.asterOrReaster.Rd
 15b9ac4a974091daff7d1962c62e6311 *man/aphid.Rd
@@ -188,8 +188,8 @@ a3ae523f5bd8878eb3ba9d9600a53886 *tests/reaster1.Rout.save
 6ffb9134731cb1279cb5ac8f189f4393 *tests/reaster1.rda
 dbeacb2445a53a5af5882cba391d3d23 *tests/trans.R
 d6237434cca008e6c0d655297858417c *tests/trans.Rout.save
-5a73b330bcff81ebce7a1d85e7a728d1 *tests/vcov.R
-54dea109096a83d3284d4bad18ff07a9 *tests/vcov.Rout.save
+1f36565096b96c36c9b3ea767c992b06 *tests/vcov.R
+22aeff1d27971f8de566dd8fcd476c15 *tests/vcov.Rout.save
 cd63e31053914aa4b8b1dbf2afae40c4 *vignettes/linkingTo.Rnw
 eca4b55ae564c4643c00d01513ad6b94 *vignettes/re.Rnw
 0b069ad524cddb2140694548a6e8e241 *vignettes/trunc.Rnw
